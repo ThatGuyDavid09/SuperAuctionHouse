@@ -1,0 +1,7 @@
+name: Superauctionhouse
+version: ${project.version}
+main: thatguydavid09.superauctionhouse.SuperAuctionHouse
+api-version: 1.16
+prefix: [SuperAuctionHouse]
+authors: [ThatGuyDavid09]
+description: An auction house plugin for Minecraft.
