@@ -1,7 +1,14 @@
 name: Superauctionhouse
-version: ${project.version}
+version: ALPHA.1.0
 main: thatguydavid09.superauctionhouse.SuperAuctionHouse
 api-version: 1.16
 prefix: [SuperAuctionHouse]
 authors: [ThatGuyDavid09]
 description: An auction house plugin for Minecraft.
+
+commands:
+  superauctionhouse:
+    description: The main command for this plugin.
+    usage: /<command>
+    aliases: [sah, ah, auctionhouse]
+    permission: superauctionhouse.general
