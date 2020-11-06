@@ -3,16 +3,23 @@ package thatguydavid09.superauctionhouse.menus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class BaseAuctionHouseMenu {
     public static Inventory auctionHouse;
+    public static HashMap itemByPlayer = new LinkedHashMap<ItemStack, Player>();
+    public static HashMap itemByPrice = new LinkedHashMap<ItemStack, Double>();
 
     // Items
     public static ItemStack findSign;
@@ -37,7 +44,8 @@ public class BaseAuctionHouseMenu {
         viewAuctions = new ItemStack(Material.DIAMOND, 1);
         ItemMeta itemMeta = viewAuctions.getItemMeta();
         itemMeta.setDisplayName(ChatColor.GOLD + "View your auctions");
-        itemMeta.setLore(Arrays.asList(ChatColor.BLUE + "You currently have " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "outstanding ", ChatColor.BLUE + "auctions and " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "auctions ready to claim."));
+        itemMeta.setLore(Arrays.asList(ChatColor.BLUE + "You currently have " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "outstanding ",
+                ChatColor.BLUE + "auctions and " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "auctions ready to claim."));
         viewAuctions.setItemMeta(itemMeta);
 
         auctionHouse.setItem(45, viewAuctions);
@@ -46,7 +54,8 @@ public class BaseAuctionHouseMenu {
         viewBids = new ItemStack(Material.GOLD_INGOT, 1);
         itemMeta = viewBids.getItemMeta();
         itemMeta.setDisplayName(ChatColor.GOLD + "View your bids");
-        itemMeta.setLore(Arrays.asList(ChatColor.BLUE + "You currently have " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "outstanding ", ChatColor.BLUE + "bids and " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "bids ready to claim."));
+        itemMeta.setLore(Arrays.asList(ChatColor.BLUE + "You currently have " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "outstanding ",
+                ChatColor.BLUE + "bids and " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "bids ready to claim."));
         viewBids.setItemMeta(itemMeta);
 
         auctionHouse.setItem(46, viewBids);
@@ -87,9 +96,22 @@ public class BaseAuctionHouseMenu {
         howToSell = new ItemStack(Material.BOOK, 1);
         itemMeta = howToSell.getItemMeta();
         itemMeta.setDisplayName(ChatColor.GOLD + "How do I sell an item?");
-        itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Simply type " + ChatColor.AQUA + "/ah sell <price>", ChatColor.GREEN + "while holding the item you", ChatColor.GREEN + "want to sell!"));
+        itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Simply type " + ChatColor.AQUA + "/ah sell <price>",
+                ChatColor.GREEN + "while holding the item you",
+                ChatColor.GREEN + "want to sell!"));
         howToSell.setItemMeta(itemMeta);
 
         auctionHouse.setItem(53, howToSell);
+    }
+
+    public static void addItem(ItemStack item) {
+        // TODO finish this
+    }
+
+    public static ItemStack addLore(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        // TODO finish this
+        meta.setLore(Stream.concat(meta.getLore().stream(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", "d").stream()).collect(Collectors.toList()));
+        return item;
     }
 }
