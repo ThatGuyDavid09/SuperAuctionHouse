@@ -1,5 +1,6 @@
-package thatguydavid09.superauctionhouse.menus;
+package thatguydavid09.superauctionhouse.menus.auctionhouse;
 
+import org.apache.commons.collections.ListUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,16 +9,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class BaseAuctionHouseMenu {
-    public static Inventory auctionHouse;
+    public static List<Inventory> auctionHousePages = new LinkedList<>();
+    public static Inventory baseAuctionHouse;
+
     public static HashMap itemByPlayer = new LinkedHashMap<ItemStack, Player>();
     public static HashMap itemByPrice = new LinkedHashMap<ItemStack, Double>();
 
@@ -33,12 +32,12 @@ public class BaseAuctionHouseMenu {
     public static void createAuctionHouse() {
         // Sets base auction house inventory
         // Make auction house inventory
-        auctionHouse = Bukkit.getServer().createInventory(null, 54, "Auction House");
+        baseAuctionHouse = Bukkit.getServer().createInventory(null, 54, "Auction House");
 
         // Set placeholder items
-        auctionHouse.setItem(47, placeholder);
-        auctionHouse.setItem(52, placeholder);
-        auctionHouse.setItem(53, placeholder);
+        baseAuctionHouse.setItem(47, placeholder);
+        baseAuctionHouse.setItem(52, placeholder);
+        baseAuctionHouse.setItem(53, placeholder);
 
         // Set view auctions diamond
         viewAuctions = new ItemStack(Material.DIAMOND, 1);
@@ -48,7 +47,7 @@ public class BaseAuctionHouseMenu {
                 ChatColor.BLUE + "auctions and " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "auctions ready to claim."));
         viewAuctions.setItemMeta(itemMeta);
 
-        auctionHouse.setItem(45, viewAuctions);
+        baseAuctionHouse.setItem(45, viewAuctions);
 
         // Set view bids item
         viewBids = new ItemStack(Material.GOLD_INGOT, 1);
@@ -58,7 +57,7 @@ public class BaseAuctionHouseMenu {
                 ChatColor.BLUE + "bids and " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "bids ready to claim."));
         viewBids.setItemMeta(itemMeta);
 
-        auctionHouse.setItem(46, viewBids);
+        baseAuctionHouse.setItem(46, viewBids);
 
         // Set the sort item
         sortItem = new ItemStack(Material.SUNFLOWER, 1);
@@ -67,7 +66,7 @@ public class BaseAuctionHouseMenu {
         itemMeta.setLore(Arrays.asList(ChatColor.BLUE + "Alphabetically, A-Z"));
         sortItem.setItemMeta(itemMeta);
 
-        auctionHouse.setItem(49, sortItem);
+        baseAuctionHouse.setItem(49, sortItem);
 
         // Set the arrows
         goBackArrow = new ItemStack(Material.ARROW, 1);
@@ -81,8 +80,9 @@ public class BaseAuctionHouseMenu {
         itemMeta.setDisplayName(ChatColor.GOLD + "Next page " + ChatColor.GRAY + "(Page 0/0)");
         goForwardArrow.setItemMeta(itemMeta);
 
-        auctionHouse.setItem(48, goBackArrow);
-        auctionHouse.setItem(50, goForwardArrow);
+        // These are set later
+        baseAuctionHouse.setItem(48, placeholder); // For back arrow
+        baseAuctionHouse.setItem(50, placeholder); // For forward arrow
 
         // Set the search sign
         findSign = new ItemStack(Material.OAK_SIGN, 1);
@@ -90,7 +90,7 @@ public class BaseAuctionHouseMenu {
         itemMeta.setDisplayName(ChatColor.GOLD + "Find an item");
         findSign.setItemMeta(itemMeta);
 
-        auctionHouse.setItem(51, findSign);
+        baseAuctionHouse.setItem(51, findSign);
 
         // Set the how to sell book
         howToSell = new ItemStack(Material.BOOK, 1);
@@ -101,17 +101,53 @@ public class BaseAuctionHouseMenu {
                 ChatColor.GREEN + "want to sell!"));
         howToSell.setItemMeta(itemMeta);
 
-        auctionHouse.setItem(53, howToSell);
+        baseAuctionHouse.setItem(53, howToSell);
     }
 
-    public static void addItem(ItemStack item) {
+    public static void addItem(ItemStack item, Player sellingPlayer, double price) {
         // TODO finish this
+        // Update dictionaries
+        itemByPlayer.put(item, sellingPlayer);
+        itemByPrice.put(item, price);
+
+        // Add correct lore
+        ItemStack itemWithLore = addLore(item, sellingPlayer, price);
+
+        // Add to auction house
+        addToMenu(itemWithLore);
     }
 
-    public static ItemStack addLore(ItemStack item) {
+    private static ItemStack addLore(ItemStack item, Player sellingPlayer, double price) {
         ItemMeta meta = item.getItemMeta();
         // TODO finish this
-        meta.setLore(Stream.concat(meta.getLore().stream(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", "d").stream()).collect(Collectors.toList()));
+        if (meta.getLore() != null) {
+            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + "for " + ChatColor.GOLD + price)));
+        } else {
+            meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + "for " + ChatColor.GOLD + price));
+        }
+        item.setItemMeta(meta);
         return item;
+    }
+
+    private static void addToMenu(ItemStack item) {
+        // If first page
+        if (auctionHousePages.size() == 0) {
+            Inventory tempFirstPage = baseAuctionHouse;
+            auctionHousePages.add(tempFirstPage);
+
+            baseAuctionHouse.setItem(auctionHousePages.get(0).firstEmpty(), item);
+        } else {
+            if (auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty() != -1) {
+                baseAuctionHouse.setItem(auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty(), item);
+            } else {
+                addPage();
+            }
+        }
+    }
+
+    private static void addPage() {
+        auctionHousePages.add(baseAuctionHouse);
+        auctionHousePages.get(auctionHousePages.size() - 2).setItem(48, goForwardArrow);
+        auctionHousePages.get(auctionHousePages.size() - 1).setItem(48, goBackArrow);
     }
 }
