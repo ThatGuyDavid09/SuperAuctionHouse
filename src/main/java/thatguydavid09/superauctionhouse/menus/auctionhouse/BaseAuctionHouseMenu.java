@@ -130,18 +130,25 @@ public class BaseAuctionHouseMenu {
     }
 
     private static void addToMenu(ItemStack item) {
+        if (auctionHousePages.size() == 0) {
+            addPage();
+        }
         if (auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty() != -1) {
-            baseAuctionHouse.setItem(auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty(), item);
+            auctionHousePages.get(auctionHousePages.size() - 1).setItem(auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty(), item);
         } else {
             addPage();
         }
     }
 
-    private static void addPage() {
+    public static void addPage() {
         // TODO make the arrows update name based on num of pages
         // TODO fix the bug that sets a back arrow for the first page for some reason
         auctionHousePages.add(baseAuctionHouse);
-        auctionHousePages.get(auctionHousePages.size() - 2).setItem(50, goForwardArrow);
-        auctionHousePages.get(auctionHousePages.size() - 1).setItem(48, goBackArrow);
+        if (auctionHousePages.size() != 1) {
+                auctionHousePages.get(auctionHousePages.size() - 2).setItem(50, goForwardArrow);
+            if (auctionHousePages.size() != 1) {
+                auctionHousePages.get(auctionHousePages.size() - 1).setItem(48, goBackArrow);
+            }
+        }
     }
 }

@@ -14,7 +14,12 @@ public class AuctionHouseCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             if (args.length == 0) {
-                ((Player) sender).openInventory(BaseAuctionHouseMenu.auctionHousePages.get(0));
+                try {
+                    ((Player) sender).openInventory(BaseAuctionHouseMenu.auctionHousePages.get(0));
+                } catch (Exception e) {
+                    BaseAuctionHouseMenu.addPage();
+                    ((Player) sender).openInventory(BaseAuctionHouseMenu.auctionHousePages.get(0));
+                }
                 return true;
             } else if (args.length == 2) {
                 // TODO implement sell feature
@@ -23,7 +28,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                 }
             } else if (args.length == 1) {
                 if (args[0].equals("add")) {
-                    for (int i = 0; i <= 44; i++) {
+                    for (int i = 0; i <= 41; i++) {
                         BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, 100.0);
                     }
                 }
