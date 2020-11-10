@@ -121,7 +121,7 @@ public class BaseAuctionHouseMenu {
         ItemMeta meta = item.getItemMeta();
         // TODO finish this
         if (meta.getLore() != null) {
-            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + "for " + ChatColor.GOLD + price)));
+            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
         } else {
             meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + "for " + ChatColor.GOLD + price));
         }
