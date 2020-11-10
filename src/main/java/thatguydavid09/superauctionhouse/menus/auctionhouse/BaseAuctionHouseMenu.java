@@ -130,18 +130,10 @@ public class BaseAuctionHouseMenu {
     }
 
     private static void addToMenu(ItemStack item) {
-        // If first page
-        if (auctionHousePages.size() == 0) {
-            Inventory tempFirstPage = baseAuctionHouse;
-            auctionHousePages.add(tempFirstPage);
-
-            baseAuctionHouse.setItem(auctionHousePages.get(0).firstEmpty(), item);
+        if (auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty() != -1) {
+            baseAuctionHouse.setItem(auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty(), item);
         } else {
-            if (auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty() != -1) {
-                baseAuctionHouse.setItem(auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty(), item);
-            } else {
-                addPage();
-            }
+            addPage();
         }
     }
 
