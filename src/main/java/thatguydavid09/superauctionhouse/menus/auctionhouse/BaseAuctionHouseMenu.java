@@ -123,7 +123,7 @@ public class BaseAuctionHouseMenu {
         if (meta.getLore() != null) {
             meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
         } else {
-            meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + "for " + ChatColor.GOLD + price));
+            meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price));
         }
         item.setItemMeta(meta);
         return item;
@@ -146,8 +146,10 @@ public class BaseAuctionHouseMenu {
     }
 
     private static void addPage() {
+        // TODO make the arrows update name based on num of pages
+        // TODO fix the bug that sets a back arrow for the first page for some reason
         auctionHousePages.add(baseAuctionHouse);
-        auctionHousePages.get(auctionHousePages.size() - 2).setItem(48, goForwardArrow);
+        auctionHousePages.get(auctionHousePages.size() - 2).setItem(50, goForwardArrow);
         auctionHousePages.get(auctionHousePages.size() - 1).setItem(48, goBackArrow);
     }
 }

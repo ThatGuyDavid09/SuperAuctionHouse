@@ -1,10 +1,12 @@
 package thatguydavid09.superauctionhouse.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
 public class AuctionHouseCommand implements CommandExecutor {
@@ -18,6 +20,12 @@ public class AuctionHouseCommand implements CommandExecutor {
                 // TODO implement sell feature
                 if (args[0].equals("sell")) {
                     SellCommand.sell((Player) sender, args);
+                }
+            } else if (args.length == 1) {
+                if (args[0].equals("add")) {
+                    for (int i = 0; i <= 44; i++) {
+                        BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, 100.0);
+                    }
                 }
             }
         } else {
