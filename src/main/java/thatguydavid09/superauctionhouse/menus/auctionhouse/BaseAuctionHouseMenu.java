@@ -14,7 +14,7 @@ import java.util.*;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class BaseAuctionHouseMenu {
-    public static List<Inventory> auctionHousePages = new LinkedList<>();
+    public static List<Inventory> auctionHousePages = new ArrayList<>();
     public static Inventory baseAuctionHouse;
 
     public static HashMap itemByPlayer = new LinkedHashMap<ItemStack, Player>();
@@ -130,25 +130,61 @@ public class BaseAuctionHouseMenu {
     }
 
     private static void addToMenu(ItemStack item) {
-        if (auctionHousePages.size() == 0) {
+        // TODO fix a stupid bug where it thinks that there is no empty slot in the last element of the pages thing
+        if (auctionHousePages.size() == 0 || auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty() == -1) {
             addPage();
         }
-        if (auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty() != -1) {
-            auctionHousePages.get(auctionHousePages.size() - 1).setItem(auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty(), item);
-        } else {
-            addPage();
-        }
+        Inventory lastInv = auctionHousePages.get(auctionHousePages.size() - 1);
+        lastInv.setItem(lastInv.firstEmpty(), item);
     }
 
     public static void addPage() {
-        // TODO make the arrows update name based on num of pages
-        // TODO fix the bug that sets a back arrow for the first page for some reason
+        // TODO make the arrows update name based on num of pages PRIORITY
         auctionHousePages.add(baseAuctionHouse);
-        if (auctionHousePages.size() != 1) {
-                auctionHousePages.get(auctionHousePages.size() - 2).setItem(50, goForwardArrow);
-            if (auctionHousePages.size() != 1) {
-                auctionHousePages.get(auctionHousePages.size() - 1).setItem(48, goBackArrow);
+        updateArrows();
+    }
+
+    public static void removePage() {
+        auctionHousePages.remove(auctionHousePages.size() - 1);
+        updateArrows();
+    }
+
+    // Update the titles on the back and forward arrows in the menu with current page number
+    private static void updateArrows() {
+        for (Inventory inv : auctionHousePages) {
+            if (auctionHousePages.size() == 1) {
+                inv.setItem(48, placeholder);
+                inv.setItem(50, placeholder);
+            } else {
+                if (auctionHousePages.indexOf(inv) == 0) {
+                    inv.setItem(48, placeholder);
+                    inv.setItem(50, createForwardArrowWithPage(1));
+                } else if (auctionHousePages.indexOf(inv) == auctionHousePages.size() - 1) {
+                    inv.setItem(48, createBackArrowWithPage(auctionHousePages.size() - 1));
+                    inv.setItem(50, placeholder);
+                } else {
+                    inv.setItem(48, createBackArrowWithPage(auctionHousePages.indexOf(inv) + 1));
+                    inv.setItem(50, createForwardArrowWithPage(auctionHousePages.indexOf(inv) + 1));
+                }
             }
         }
+    }
+
+    private static ItemStack createBackArrowWithPage(int currentPage) {
+        Material type;
+        ItemStack arrow = new ItemStack(Material.ARROW, 1);
+        ItemMeta meta = arrow.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "Previous page " + ChatColor.GRAY + "(Page " + currentPage + "/" + auctionHousePages.size() + ")");
+        arrow.setItemMeta(meta);
+        return arrow;
+    }
+
+    private static ItemStack createForwardArrowWithPage(int currentPage) {
+        Material type;
+        ItemStack arrow = new ItemStack(Material.ARROW, 1);
+        ItemMeta meta = arrow.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "Next page " + ChatColor.GRAY + "(Page " + currentPage + "/" + auctionHousePages.size() + ")");
+        arrow.setItemMeta(meta);
+        return arrow;
     }
 }
