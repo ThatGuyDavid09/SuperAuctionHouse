@@ -8,20 +8,23 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseActions;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
-import static org.bukkit.Bukkit.getLogger;
-
 public class PreventItemRemoval implements Listener {
     @EventHandler
     public void onItemClick(InventoryClickEvent event) {
-        if (event.getInventory() == BaseAuctionHouseMenu.baseAuctionHouse && event.getSlot() >= 45) {
-            if (event.getRawSlot() == 50 && event.getCurrentItem().getType() == Material.ARROW) {
-                getLogger().info("Clicked go forward");
-                AuctionHouseActions.nextPage((Player) event.getWhoClicked());
-            } else if (event.getRawSlot() == 48 && event.getCurrentItem().getType() == Material.ARROW){
-                getLogger().info("Clicked go back");
-                AuctionHouseActions.previousPage((Player) event.getWhoClicked());
+        if (event.getClickedInventory() != null) {
+            // Identify inventory as ah
+            if (BaseAuctionHouseMenu.auctionHousePages.contains(event.getClickedInventory())) {
+                if (event.getRawSlot() == 50 && event.getCurrentItem().getType() == Material.ARROW) {
+                    AuctionHouseActions.nextPage((Player) event.getWhoClicked());
+                    event.setCancelled(true);
+
+                } else if (event.getRawSlot() == 48 && event.getCurrentItem().getType() == Material.ARROW) {
+                    AuctionHouseActions.previousPage((Player) event.getWhoClicked());
+                    event.setCancelled(true);
+                } else {
+                    event.setCancelled(true);
+                }
             }
-            event.setCancelled(true);
         }
     }
 }

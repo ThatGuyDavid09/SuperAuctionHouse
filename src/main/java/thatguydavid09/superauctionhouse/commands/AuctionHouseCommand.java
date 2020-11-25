@@ -12,6 +12,7 @@ import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 public class AuctionHouseCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        // TODO PRIORITY make the ah be separate for each player
         if (sender instanceof Player) {
             if (args.length == 0) {
                 try {
@@ -23,6 +24,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                 return true;
             } else if (args.length == 2) {
                 // TODO implement sell feature
+                // TODO implement buy feature
                 if (args[0].equals("sell")) {
                     SellCommand.sell((Player) sender, args);
                 }

@@ -18,8 +18,9 @@ public class BaseAuctionHouseMenu {
     public static List<Inventory> auctionHousePages;
     public static Inventory baseAuctionHouse;
 
-    public static HashMap itemByPlayer;
-    public static HashMap itemByPrice;
+    public static HashMap itemsByPlayer;
+    public static HashMap itemsByPrice;
+    public static HashMap itemsByName;
 
     // Items
     public static ItemStack findSign;
@@ -35,8 +36,9 @@ public class BaseAuctionHouseMenu {
     public static void createAuctionHouse() {
         // Set variables
         auctionHousePages = new ArrayList<>();
-        itemByPlayer = new LinkedHashMap<ItemStack, Player>();
-        itemByPrice = new LinkedHashMap<ItemStack, Double>();
+        itemsByPlayer = new LinkedHashMap<ItemStack, Player>();
+        itemsByPrice = new LinkedHashMap<ItemStack, Double>();
+        itemsByName = new LinkedHashMap<ItemStack, String>();
 
         // Sets base auction house inventory
         // Make auction house inventory
@@ -45,7 +47,6 @@ public class BaseAuctionHouseMenu {
         // Set placeholder items
         baseAuctionHouse.setItem(47, placeholder);
         baseAuctionHouse.setItem(51, placeholder);
-        baseAuctionHouse.setItem(53, placeholder);
 
         // Set view auctions diamond
         viewAuctions = new ItemStack(Material.DIAMOND, 1);
@@ -113,27 +114,45 @@ public class BaseAuctionHouseMenu {
     }
 
     public static void addItem(ItemStack item, Player sellingPlayer, double price) {
-        // TODO finish this
         // Update dictionaries
-        itemByPlayer.put(item, sellingPlayer);
-        itemByPrice.put(item, price);
+        itemsByPlayer.put(item, sellingPlayer);
+        itemsByPrice.put(item, price);
+        itemsByName.put(item, ChatColor.stripColor(item.getItemMeta().getDisplayName()));
 
         // Add correct lore
         ItemStack itemWithLore = addLore(item, sellingPlayer, price);
 
         // Add to auction house
         addToMenu(itemWithLore);
+
+        // TODO temporary sort
+        sortItemsByName();
     }
+
+    // TODO add remove item
+    // TODO add sort item feature
 
     private static ItemStack addLore(ItemStack item, Player sellingPlayer, double price) {
         ItemMeta meta = item.getItemMeta();
-        // TODO finish this
         if (meta.getLore() != null) {
-            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
+            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", ChatColor.GREEN + "\n" + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
         } else {
             meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price));
         }
         item.setItemMeta(meta);
+        return item;
+    }
+
+    private static ItemStack removeLore(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        meta.getLore().remove(meta.getLore().size() - 1);
+        if (meta.getLore().size() > 0) {
+            meta.getLore().remove(meta.getLore().size() - 1);
+            meta.getLore().remove(meta.getLore().size() - 1);
+            meta.getLore().remove(meta.getLore().size() - 1);
+        }
+        item.setItemMeta(meta);
+
         return item;
     }
 
@@ -177,13 +196,15 @@ public class BaseAuctionHouseMenu {
                     inv.setItem(48, placeholder);
                     inv.setItem(50, createForwardArrowWithPage(1));
                 } else if (pageNum == auctionHousePages.size()) {
-                    inv.setItem(48, createBackArrowWithPage(auctionHousePages.size() - 1));
+                    inv.setItem(48, createBackArrowWithPage(auctionHousePages.size()));
                     inv.setItem(50, placeholder);
                 } else {
                     inv.setItem(48, createBackArrowWithPage(pageNum));
                     inv.setItem(50, createForwardArrowWithPage(pageNum));
                 }
             }
+
+            pageNum++;
         }
     }
 
@@ -203,5 +224,31 @@ public class BaseAuctionHouseMenu {
         meta.setDisplayName(ChatColor.GOLD + "Next page " + ChatColor.GRAY + "(Page " + currentPage + "/" + auctionHousePages.size() + ")");
         arrow.setItemMeta(meta);
         return arrow;
+    }
+
+    private static void sortItemsByName() {
+        List<Map.Entry<ItemStack, String>> items = new LinkedList<Map.Entry<ItemStack, String>>(itemsByName.entrySet());
+        Collections.sort(items, new Comparator<Map.Entry<ItemStack, String>>() {
+            public int compare(Map.Entry<ItemStack, String> o1,
+                               Map.Entry<ItemStack, String> o2) {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        HashMap<ItemStack, String> temp = new LinkedHashMap<ItemStack, String>();
+        for (Map.Entry<ItemStack, String> aa : items) {
+            temp.put(aa.getKey(), aa.getValue());
+        }
+
+        clearAuctionHouse();
+
+        for (ItemStack item : temp.keySet()) {
+            // FIXME this doesn't work
+            addItem(item, (Player) itemsByPlayer.get(removeLore(item)), (Double) itemsByPrice.get(removeLore(item)));
+        }
+    }
+
+    private static void clearAuctionHouse() {
+        auctionHousePages.clear();
     }
 }
