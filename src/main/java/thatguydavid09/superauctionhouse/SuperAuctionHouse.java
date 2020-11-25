@@ -46,7 +46,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    public SuperAuctionHouse getInstance() {
+    public static SuperAuctionHouse getInstance() {
         return instance;
     }
 

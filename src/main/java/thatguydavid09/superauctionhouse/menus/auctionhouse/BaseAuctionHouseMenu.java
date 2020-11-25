@@ -8,17 +8,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
 import java.util.*;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class BaseAuctionHouseMenu {
-    public static List<Inventory> auctionHousePages = new ArrayList<>();
+    public static List<Inventory> auctionHousePages;
     public static Inventory baseAuctionHouse;
 
-    public static HashMap itemByPlayer = new LinkedHashMap<ItemStack, Player>();
-    public static HashMap itemByPrice = new LinkedHashMap<ItemStack, Double>();
+    public static HashMap itemByPlayer;
+    public static HashMap itemByPrice;
 
     // Items
     public static ItemStack findSign;
@@ -29,14 +30,21 @@ public class BaseAuctionHouseMenu {
     public static ItemStack goForwardArrow;
     public static ItemStack howToSell;
 
+    public static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
+
     public static void createAuctionHouse() {
+        // Set variables
+        auctionHousePages = new ArrayList<>();
+        itemByPlayer = new LinkedHashMap<ItemStack, Player>();
+        itemByPrice = new LinkedHashMap<ItemStack, Double>();
+
         // Sets base auction house inventory
         // Make auction house inventory
         baseAuctionHouse = Bukkit.getServer().createInventory(null, 54, "Auction House");
 
         // Set placeholder items
         baseAuctionHouse.setItem(47, placeholder);
-        baseAuctionHouse.setItem(52, placeholder);
+        baseAuctionHouse.setItem(51, placeholder);
         baseAuctionHouse.setItem(53, placeholder);
 
         // Set view auctions diamond
@@ -90,7 +98,7 @@ public class BaseAuctionHouseMenu {
         itemMeta.setDisplayName(ChatColor.GOLD + "Find an item");
         findSign.setItemMeta(itemMeta);
 
-        baseAuctionHouse.setItem(51, findSign);
+        baseAuctionHouse.setItem(52, findSign);
 
         // Set the how to sell book
         howToSell = new ItemStack(Material.BOOK, 1);
@@ -130,18 +138,25 @@ public class BaseAuctionHouseMenu {
     }
 
     private static void addToMenu(ItemStack item) {
-        // TODO fix a stupid bug where it thinks that there is no empty slot in the last element of the pages thing
         if (auctionHousePages.size() == 0 || auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty() == -1) {
+            plugin.getLogger().info("Detected full page");
             addPage();
         }
+        plugin.getLogger().info("Adding item");
         Inventory lastInv = auctionHousePages.get(auctionHousePages.size() - 1);
         lastInv.setItem(lastInv.firstEmpty(), item);
     }
 
+    /*************************************
+     * The following deals with ah pages *
+     ************************************/
+
     public static void addPage() {
-        // TODO make the arrows update name based on num of pages PRIORITY
-        auctionHousePages.add(baseAuctionHouse);
+        Inventory inventory = Bukkit.getServer().createInventory(null, 54, "Auction House");
+        inventory.setContents(baseAuctionHouse.getContents());
+        auctionHousePages.add(inventory);
         updateArrows();
+        plugin.getLogger().info("Added page");
     }
 
     public static void removePage() {
@@ -151,20 +166,22 @@ public class BaseAuctionHouseMenu {
 
     // Update the titles on the back and forward arrows in the menu with current page number
     private static void updateArrows() {
+        int pageNum = 1;
+
         for (Inventory inv : auctionHousePages) {
             if (auctionHousePages.size() == 1) {
                 inv.setItem(48, placeholder);
                 inv.setItem(50, placeholder);
             } else {
-                if (auctionHousePages.indexOf(inv) == 0) {
+                if (pageNum == 1) {
                     inv.setItem(48, placeholder);
                     inv.setItem(50, createForwardArrowWithPage(1));
-                } else if (auctionHousePages.indexOf(inv) == auctionHousePages.size() - 1) {
+                } else if (pageNum == auctionHousePages.size()) {
                     inv.setItem(48, createBackArrowWithPage(auctionHousePages.size() - 1));
                     inv.setItem(50, placeholder);
                 } else {
-                    inv.setItem(48, createBackArrowWithPage(auctionHousePages.indexOf(inv) + 1));
-                    inv.setItem(50, createForwardArrowWithPage(auctionHousePages.indexOf(inv) + 1));
+                    inv.setItem(48, createBackArrowWithPage(pageNum));
+                    inv.setItem(50, createForwardArrowWithPage(pageNum));
                 }
             }
         }

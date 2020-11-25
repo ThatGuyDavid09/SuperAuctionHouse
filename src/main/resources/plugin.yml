@@ -1,5 +1,5 @@
-name: Superauctionhouse
-version: ALPHA.1.0
+name: SuperAuctionHouse
+version: 1.0-ALPHA
 main: thatguydavid09.superauctionhouse.SuperAuctionHouse
 api-version: 1.16
 prefix: SuperAuctionHouse
