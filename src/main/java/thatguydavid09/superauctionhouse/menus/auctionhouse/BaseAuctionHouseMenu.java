@@ -1,5 +1,7 @@
 package thatguydavid09.superauctionhouse.menus.auctionhouse;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.apache.commons.collections.ListUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,9 +20,10 @@ public class BaseAuctionHouseMenu {
     public static List<Inventory> auctionHousePages;
     public static Inventory baseAuctionHouse;
 
-    public static HashMap itemsByPlayer;
-    public static HashMap itemsByPrice;
-    public static HashMap itemsByName;
+    // Item to something
+    public static BiMap<ItemStack, Player> itemsByPlayer;
+    public static BiMap<ItemStack, Double> itemsByPrice;
+    public static BiMap<ItemStack, String> itemsByName;
 
     // Items
     public static ItemStack findSign;
@@ -36,9 +39,9 @@ public class BaseAuctionHouseMenu {
     public static void createAuctionHouse() {
         // Set variables
         auctionHousePages = new ArrayList<>();
-        itemsByPlayer = new LinkedHashMap<ItemStack, Player>();
-        itemsByPrice = new LinkedHashMap<ItemStack, Double>();
-        itemsByName = new LinkedHashMap<ItemStack, String>();
+        itemsByPlayer = HashBiMap.create();
+        itemsByPrice = HashBiMap.create();
+        itemsByName = HashBiMap.create();
 
         // Sets base auction house inventory
         // Make auction house inventory
@@ -119,6 +122,17 @@ public class BaseAuctionHouseMenu {
         itemsByPrice.put(item, price);
         itemsByName.put(item, ChatColor.stripColor(item.getItemMeta().getDisplayName()));
 
+        // Add correct lore
+        ItemStack itemWithLore = addLore(item, sellingPlayer, price);
+
+        // Add to auction house
+        addToMenu(itemWithLore);
+
+        // TODO temporary sort
+        sortItemsByName();
+    }
+
+    public static void addItemWithoutDict(ItemStack item, Player sellingPlayer, double price) {
         // Add correct lore
         ItemStack itemWithLore = addLore(item, sellingPlayer, price);
 
@@ -227,25 +241,16 @@ public class BaseAuctionHouseMenu {
     }
 
     private static void sortItemsByName() {
-        List<Map.Entry<ItemStack, String>> items = new LinkedList<Map.Entry<ItemStack, String>>(itemsByName.entrySet());
-        Collections.sort(items, new Comparator<Map.Entry<ItemStack, String>>() {
-            public int compare(Map.Entry<ItemStack, String> o1,
-                               Map.Entry<ItemStack, String> o2) {
-                return (o1.getValue()).compareTo(o2.getValue());
-            }
-        });
-
-        HashMap<ItemStack, String> temp = new LinkedHashMap<ItemStack, String>();
-        for (Map.Entry<ItemStack, String> aa : items) {
-            temp.put(aa.getKey(), aa.getValue());
-        }
+        List<String> itemNames = new ArrayList(itemsByName.values());
+        Collections.sort(itemNames);
 
         clearAuctionHouse();
 
-        for (ItemStack item : temp.keySet()) {
-            // FIXME this doesn't work
-            addItem(item, (Player) itemsByPlayer.get(removeLore(item)), (Double) itemsByPrice.get(removeLore(item)));
-        }
+        ItemStack item = new ItemStack(Material.AIR, 0);
+        for (String name : itemNames)
+            item = itemsByName.inverse().get(name);
+            // FIXME something here throws an error
+            addItemWithoutDict(removeLore(item), itemsByPlayer.get(item), itemsByPrice.get(item));
     }
 
     private static void clearAuctionHouse() {
