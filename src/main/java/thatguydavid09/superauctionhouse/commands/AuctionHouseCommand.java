@@ -31,7 +31,7 @@ public class AuctionHouseCommand implements CommandExecutor {
             } else if (args.length == 1) {
                 if (args[0].equals("add")) {
                     for (int i = 0; i <= 41; i++) {
-                        BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, Math.random() * (100 - 5 + 1) + 5);
+                        BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, (int) (Math.random() * (100 - 5 + 1) + 5));
                     }
                 }
             }

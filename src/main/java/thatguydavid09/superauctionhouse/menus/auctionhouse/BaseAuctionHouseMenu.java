@@ -6,10 +6,12 @@ import org.apache.commons.collections.ListUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
 import java.util.*;
@@ -21,8 +23,8 @@ public class BaseAuctionHouseMenu {
     public static Inventory baseAuctionHouse;
 
     // Item to something
-    public static BiMap<ItemStack, Player> itemsByPlayer;
-    public static BiMap<ItemStack, Double> itemsByPrice;
+    public static BiMap<ItemStack, String> itemsByPlayerName;
+    public static BiMap<ItemStack, Integer> itemsByPrice;
     public static BiMap<ItemStack, String> itemsByName;
 
     // Items
@@ -39,7 +41,7 @@ public class BaseAuctionHouseMenu {
     public static void createAuctionHouse() {
         // Set variables
         auctionHousePages = new ArrayList<>();
-        itemsByPlayer = HashBiMap.create();
+        itemsByPlayerName = HashBiMap.create();
         itemsByPrice = HashBiMap.create();
         itemsByName = HashBiMap.create();
 
@@ -116,9 +118,15 @@ public class BaseAuctionHouseMenu {
         baseAuctionHouse.setItem(53, howToSell);
     }
 
-    public static void addItem(ItemStack item, Player sellingPlayer, double price) {
+    public static void addItem(ItemStack item, Player sellingPlayer, int price) {
+        // Add ah id
+        ItemMeta meta = item.getItemMeta();
+        NamespacedKey key = new NamespacedKey(plugin, "id");
+        meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, itemsByPlayerName.size() + 1);
+        item.setItemMeta(meta);
+
         // Update dictionaries
-        itemsByPlayer.put(item, sellingPlayer);
+        itemsByPlayerName.put(item, sellingPlayer.getDisplayName());
         itemsByPrice.put(item, price);
         itemsByName.put(item, ChatColor.stripColor(item.getItemMeta().getDisplayName()));
 
@@ -132,7 +140,7 @@ public class BaseAuctionHouseMenu {
         sortItemsByName();
     }
 
-    public static void addItemWithoutDict(ItemStack item, Player sellingPlayer, double price) {
+    public static void addItemWithoutDict(ItemStack item, Player sellingPlayer, int price) {
         // Add correct lore
         ItemStack itemWithLore = addLore(item, sellingPlayer, price);
 
@@ -146,7 +154,7 @@ public class BaseAuctionHouseMenu {
     // TODO add remove item
     // TODO add sort item feature
 
-    private static ItemStack addLore(ItemStack item, Player sellingPlayer, double price) {
+    private static ItemStack addLore(ItemStack item, Player sellingPlayer, int price) {
         ItemMeta meta = item.getItemMeta();
         if (meta.getLore() != null) {
             meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", ChatColor.GREEN + "\n" + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
@@ -246,11 +254,14 @@ public class BaseAuctionHouseMenu {
 
         clearAuctionHouse();
 
-        ItemStack item = new ItemStack(Material.AIR, 0);
+        ItemStack item = null;
         for (String name : itemNames)
             item = itemsByName.inverse().get(name);
-            // FIXME something here throws an error
-            addItemWithoutDict(item, itemsByPlayer.get(item), itemsByPrice.get(item));
+            // FIXME WHY DOES THIS LOOKUP FAIL THEY ARE THE EXACT SAME
+            Player player = Bukkit.getPlayer(itemsByPlayerName.get(item));
+            int price = itemsByPrice.get(item);
+            addItemWithoutDict(item, player, price);
+
     }
 
     private static void clearAuctionHouse() {
