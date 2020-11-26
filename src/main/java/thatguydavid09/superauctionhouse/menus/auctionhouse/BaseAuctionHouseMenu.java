@@ -140,26 +140,15 @@ public class BaseAuctionHouseMenu {
         sortItemsByName();
     }
 
-    public static void addItemWithoutDict(ItemStack item, Player sellingPlayer, int price) {
-        // Add correct lore
-        ItemStack itemWithLore = addLore(item, sellingPlayer, price);
-
-        // Add to auction house
-        addToMenu(itemWithLore);
-
-        // TODO temporary sort
-        sortItemsByName();
-    }
-
     // TODO add remove item
     // TODO add sort item feature
 
     private static ItemStack addLore(ItemStack item, Player sellingPlayer, int price) {
         ItemMeta meta = item.getItemMeta();
         if (meta.getLore() != null) {
-            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n" + ChatColor.GRAY + "+------------------+", ChatColor.GREEN + "\n" + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
+            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n", ChatColor.GRAY + "+------------------+", ChatColor.GREEN, "\n", "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
         } else {
-            meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price));
+            meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price));
         }
         item.setItemMeta(meta);
         return item;
@@ -258,9 +247,11 @@ public class BaseAuctionHouseMenu {
         for (String name : itemNames)
             item = itemsByName.inverse().get(name);
             // FIXME WHY DOES THIS LOOKUP FAIL THEY ARE THE EXACT SAME
-            Player player = Bukkit.getPlayer(itemsByPlayerName.get(item));
-            int price = itemsByPrice.get(item);
-            addItemWithoutDict(item, player, price);
+            // This garbage parses the lore of the item to get the player selling it because for some reason looking it up from the BiMap just doesn't work
+            Player player = Bukkit.getPlayer(item.getItemMeta().getLore().get(item.getItemMeta().getLore().size() - 1).split("§6")[1].split("§a")[0]);
+            // Same here for the price
+            int price = Integer.parseInt(item.getItemMeta().getLore().get(item.getItemMeta().getLore().size() - 1).split("§6")[2]);
+            addToMenu(item/*, player, price*/);
 
     }
 
