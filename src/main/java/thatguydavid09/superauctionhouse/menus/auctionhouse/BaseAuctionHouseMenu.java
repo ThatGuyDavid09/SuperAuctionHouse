@@ -1,5 +1,6 @@
 package thatguydavid09.superauctionhouse.menus.auctionhouse;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.apache.commons.collections.ListUtils;
@@ -14,7 +15,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
@@ -23,8 +27,7 @@ public class BaseAuctionHouseMenu {
     public static Inventory baseAuctionHouse;
 
     // Item to something
-    public static BiMap<ItemStack, String> itemsByPlayerName;
-    public static BiMap<ItemStack, Integer> itemsByPrice;
+    public static BiMap<Player, List<ItemStack>> itemsForPlayer;
     public static BiMap<ItemStack, String> itemsByName;
 
     // Items
@@ -37,12 +40,12 @@ public class BaseAuctionHouseMenu {
     public static ItemStack howToSell;
 
     public static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
+    private static long auctionId = 0;
 
     public static void createAuctionHouse() {
         // Set variables
         auctionHousePages = new ArrayList<>();
-        itemsByPlayerName = HashBiMap.create();
-        itemsByPrice = HashBiMap.create();
+        itemsForPlayer = HashBiMap.create();
         itemsByName = HashBiMap.create();
 
         // Sets base auction house inventory
@@ -122,15 +125,27 @@ public class BaseAuctionHouseMenu {
         // Add ah id
         ItemMeta meta = item.getItemMeta();
         NamespacedKey key = new NamespacedKey(plugin, "id");
-        meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, itemsByPlayerName.size() + 1);
+        meta.getPersistentDataContainer().set(key, PersistentDataType.LONG, auctionId);
+        auctionId++;
+
+        // Add price as nbt
+        meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, price);
+
         item.setItemMeta(meta);
 
         // Update dictionaries
-        // TODO rework this dictionary to be a list for each player
-        itemsByPlayerName.put(item, sellingPlayer.getDisplayName());
-        itemsByPrice.put(item, price);
-        itemsByName.put(item, ChatColor.stripColor(item.getItemMeta().getDisplayName()));
+        if (!itemsForPlayer.containsKey(sellingPlayer)) {
+            itemsForPlayer.put(sellingPlayer, new ArrayList<>());
+        } else {
+            itemsForPlayer.get(sellingPlayer).add(item);
+        }
 
+        // This determines the name of the item. If it has a display name, we use that, else, we use its type
+        if (item.getItemMeta().hasDisplayName() && !Strings.isNullOrEmpty(item.getItemMeta().getDisplayName())) {
+            itemsByName.put(item, ChatColor.stripColor(item.getItemMeta().getDisplayName()) + auctionId);
+        } else {
+            itemsByName.put(item, ChatColor.stripColor(item.getType().toString()) + auctionId);
+        }
         // Add correct lore
         ItemStack itemWithLore = addLore(item, sellingPlayer, price);
 
@@ -147,7 +162,7 @@ public class BaseAuctionHouseMenu {
     private static ItemStack addLore(ItemStack item, Player sellingPlayer, int price) {
         ItemMeta meta = item.getItemMeta();
         if (meta.getLore() != null) {
-            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("\n", ChatColor.GRAY + "+------------------+", ChatColor.GREEN, "\n", "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
+            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", ChatColor.GREEN, "", "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
         } else {
             meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price));
         }
@@ -239,23 +254,27 @@ public class BaseAuctionHouseMenu {
     }
 
     private static void sortItemsByName() {
-        List<String> itemNames = new ArrayList(itemsByName.values());
+        List<String> itemNames = new ArrayList<>(itemsByName.values());
         Collections.sort(itemNames);
 
-        clearAuctionHouse();
+        clearAuctionHouseGui();
 
-        ItemStack item = null;
-        for (String name : itemNames)
+        ItemStack item;
+        for (String name : itemNames) {
             item = itemsByName.inverse().get(name);
-            // This garbage parses the lore of the item to get the player selling it because for some reason looking it up from the BiMap just doesn't work
-            Player player = Bukkit.getPlayer(item.getItemMeta().getLore().get(item.getItemMeta().getLore().size() - 1).split("§6")[1].split("§a")[0]);
-            // Same here for the price
-            int price = Integer.parseInt(item.getItemMeta().getLore().get(item.getItemMeta().getLore().size() - 1).split("§6")[2]);
-            addToMenu(item/*, player, price*/);
-
+            addToMenu(item);
+        }
     }
 
-    private static void clearAuctionHouse() {
+    private static void clearAuctionHouseGui() {
         auctionHousePages.clear();
+    }
+
+    // This removes all items from ah
+    public static void clearAuctionHouse() {
+        auctionHousePages.clear();
+        itemsForPlayer = HashBiMap.create();
+        itemsByName = HashBiMap.create();
+        auctionId = 0;
     }
 }

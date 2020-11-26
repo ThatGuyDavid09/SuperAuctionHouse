@@ -34,6 +34,10 @@ public class AuctionHouseCommand implements CommandExecutor {
                         BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, (int) (Math.random() * (100 - 5 + 1) + 5));
                     }
                 }
+
+                if (args[0].equals("clear")) {
+                    BaseAuctionHouseMenu.clearAuctionHouse();
+                }
             }
         } else {
             sender.sendMessage(ChatColor.RED + "This command can only be used by a player!");
