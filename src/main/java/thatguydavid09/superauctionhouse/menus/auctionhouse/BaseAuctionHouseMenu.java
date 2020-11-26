@@ -250,7 +250,7 @@ public class BaseAuctionHouseMenu {
         for (String name : itemNames)
             item = itemsByName.inverse().get(name);
             // FIXME something here throws an error
-            addItemWithoutDict(removeLore(item), itemsByPlayer.get(item), itemsByPrice.get(item));
+            addItemWithoutDict(item, itemsByPlayer.get(item), itemsByPrice.get(item));
     }
 
     private static void clearAuctionHouse() {
