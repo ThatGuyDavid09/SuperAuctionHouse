@@ -126,6 +126,7 @@ public class BaseAuctionHouseMenu {
         item.setItemMeta(meta);
 
         // Update dictionaries
+        // TODO rework this dictionary to be a list for each player
         itemsByPlayerName.put(item, sellingPlayer.getDisplayName());
         itemsByPrice.put(item, price);
         itemsByName.put(item, ChatColor.stripColor(item.getItemMeta().getDisplayName()));
@@ -246,7 +247,6 @@ public class BaseAuctionHouseMenu {
         ItemStack item = null;
         for (String name : itemNames)
             item = itemsByName.inverse().get(name);
-            // FIXME WHY DOES THIS LOOKUP FAIL THEY ARE THE EXACT SAME
             // This garbage parses the lore of the item to get the player selling it because for some reason looking it up from the BiMap just doesn't work
             Player player = Bukkit.getPlayer(item.getItemMeta().getLore().get(item.getItemMeta().getLore().size() - 1).split("§6")[1].split("§a")[0]);
             // Same here for the price
