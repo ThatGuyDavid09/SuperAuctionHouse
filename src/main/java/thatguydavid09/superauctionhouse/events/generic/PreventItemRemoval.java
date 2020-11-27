@@ -18,9 +18,10 @@ import java.util.List;
 import static org.bukkit.Bukkit.getLogger;
 
 public class PreventItemRemoval implements Listener {
+    private static BuyMenu confirm = null;
     @EventHandler
     public void onItemClick(InventoryClickEvent event) {
-        BuyMenu confirm = null;
+
         // List of forbidden inventory titles
         List<String> forbiddenTitles = new ArrayList<>(Arrays.asList("Auction House", "Confirm purchase"));
         if (event.getClickedInventory() != null && forbiddenTitles.contains(event.getView().getTitle())) {
