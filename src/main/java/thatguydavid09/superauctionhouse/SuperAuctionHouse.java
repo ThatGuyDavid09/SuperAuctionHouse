@@ -17,20 +17,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
     public static ItemStack placeholder;
     private static SuperAuctionHouse instance;
 
-    public static SuperAuctionHouse getInstance() {
-        return instance;
-    }
-
-    public static ItemStack addEnchantGlow(ItemStack item) {
-        item.addUnsafeEnchantment(Enchantment.LURE, 1);
-
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        item.setItemMeta(itemMeta);
-
-        return item;
-    }
-
     @Override
     public void onEnable() {
         // Allows for getInstance to work
@@ -61,5 +47,9 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     private void initMenus() {
         BaseAuctionHouseMenu.createAuctionHouse();
+    }
+
+    public static SuperAuctionHouse getInstance() {
+        return instance;
     }
 }

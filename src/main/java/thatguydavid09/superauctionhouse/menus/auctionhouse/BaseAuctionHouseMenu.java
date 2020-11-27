@@ -119,6 +119,9 @@ public class BaseAuctionHouseMenu {
         howToSell.setItemMeta(itemMeta);
 
         baseAuctionHouse.setItem(53, howToSell);
+
+        // Add first page
+        addPage(auctionHousePages);
     }
 
     public static void addItem(ItemStack item, Player sellingPlayer, int price) {
@@ -150,10 +153,7 @@ public class BaseAuctionHouseMenu {
         ItemStack itemWithLore = addLore(item, sellingPlayer, price);
 
         // Add to auction house
-        addToMenu(itemWithLore);
-
-        // TODO temporary sort
-        sortItemsByName();
+        addToMenu(itemWithLore, auctionHousePages);
     }
 
     // TODO add remove item
@@ -183,13 +183,13 @@ public class BaseAuctionHouseMenu {
         return item;
     }
 
-    private static void addToMenu(ItemStack item) {
-        if (auctionHousePages.size() == 0 || auctionHousePages.get(auctionHousePages.size() - 1).firstEmpty() == -1) {
+    public static void addToMenu(ItemStack item, List<Inventory> auctionHousePage) {
+        if (auctionHousePage.size() == 0 || auctionHousePage.get(auctionHousePage.size() - 1).firstEmpty() == -1) {
             plugin.getLogger().info("Detected full page");
-            addPage();
+            addPage(auctionHousePage);
         }
         plugin.getLogger().info("Adding item");
-        Inventory lastInv = auctionHousePages.get(auctionHousePages.size() - 1);
+        Inventory lastInv = auctionHousePage.get(auctionHousePage.size() - 1);
         lastInv.setItem(lastInv.firstEmpty(), item);
     }
 
@@ -197,33 +197,33 @@ public class BaseAuctionHouseMenu {
      * The following deals with ah pages *
      ************************************/
 
-    public static void addPage() {
+    public static void addPage(List<Inventory> auctionHousePage) {
         Inventory inventory = Bukkit.getServer().createInventory(null, 54, "Auction House");
         inventory.setContents(baseAuctionHouse.getContents());
-        auctionHousePages.add(inventory);
-        updateArrows();
+        auctionHousePage.add(inventory);
+        updateArrows(auctionHousePage);
         plugin.getLogger().info("Added page");
     }
 
-    public static void removePage() {
+    public static void removePage(List<Inventory> auctionHousePages) {
         auctionHousePages.remove(auctionHousePages.size() - 1);
-        updateArrows();
+        updateArrows(auctionHousePages);
     }
 
     // Update the titles on the back and forward arrows in the menu with current page number
-    private static void updateArrows() {
+    private static void updateArrows(List<Inventory> auctionHousePage) {
         int pageNum = 1;
 
-        for (Inventory inv : auctionHousePages) {
-            if (auctionHousePages.size() == 1) {
+        for (Inventory inv : auctionHousePage) {
+            if (auctionHousePage.size() == 1) {
                 inv.setItem(48, placeholder);
                 inv.setItem(50, placeholder);
             } else {
                 if (pageNum == 1) {
                     inv.setItem(48, placeholder);
                     inv.setItem(50, createForwardArrowWithPage(1));
-                } else if (pageNum == auctionHousePages.size()) {
-                    inv.setItem(48, createBackArrowWithPage(auctionHousePages.size()));
+                } else if (pageNum == auctionHousePage.size()) {
+                    inv.setItem(48, createBackArrowWithPage(auctionHousePage.size()));
                     inv.setItem(50, placeholder);
                 } else {
                     inv.setItem(48, createBackArrowWithPage(pageNum));
@@ -253,21 +253,27 @@ public class BaseAuctionHouseMenu {
         return arrow;
     }
 
-    private static void sortItemsByName() {
-        List<String> itemNames = new ArrayList<>(itemsByName.values());
+    public static ArrayList<ItemStack> sortItemsByName(BiMap<ItemStack, String> itemsAndNames) {
+        if (itemsAndNames.size() == 0) {
+            return new ArrayList<>();
+        }
+        List<String> itemNames = new ArrayList<>(itemsAndNames.values());
         Collections.sort(itemNames);
 
-        clearAuctionHouseGui();
+        clearAuctionHouseGui(auctionHousePages);
 
+        ArrayList<ItemStack> items = new ArrayList<>();
         ItemStack item;
         for (String name : itemNames) {
-            item = itemsByName.inverse().get(name);
-            addToMenu(item);
+            item = itemsAndNames.inverse().get(name);
+            items.add(item);
         }
+
+        return items;
     }
 
-    private static void clearAuctionHouseGui() {
-        auctionHousePages.clear();
+    public static void clearAuctionHouseGui(List<Inventory> auctionHousePage) {
+        auctionHousePage.clear();
     }
 
     // This removes all items from ah
