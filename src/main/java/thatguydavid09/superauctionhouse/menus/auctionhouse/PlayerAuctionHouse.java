@@ -27,6 +27,9 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         clearAuctionHouseGui(auctionHouse);
         currentlyDisplayedItems.clear();
 
+        // TODO remove this once you add ability to find items by name and replace it with something appropriate
+        currentlyDisplayedItems.addAll(itemsByName.keySet());
+
         BiMap<ItemStack, String> items = HashBiMap.create();
         for (ItemStack itemToAdd : currentlyDisplayedItems) {
             items.put(itemToAdd, itemsByName.get(itemToAdd));
