@@ -8,7 +8,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseActions;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
 import java.util.List;
 
@@ -25,9 +24,12 @@ public class PreventItemRemoval implements Listener {
                 } else if (event.getRawSlot() == 48 && event.getCurrentItem().getType() == Material.ARROW) {
                     AuctionHouseActions.previousPage((Player) event.getWhoClicked());
                     event.setCancelled(true);
-                } else if (event.getRawSlot() == 49) {
+                } else if (event.getRawSlot() == 49 && event.getCurrentItem().getType() == Material.SUNFLOWER) {
                     AuctionHouseActions.cycleSortMode((Player) event.getWhoClicked());
                     event.setCancelled(true);
+                } else if (event.getRawSlot() == 52 && event.getCurrentItem().getType() == Material.OAK_SIGN) {
+                    event.setCancelled(true);
+                    AuctionHouseActions.find((Player) event.getWhoClicked());
                 } else {
                     event.setCancelled(true);
                 }

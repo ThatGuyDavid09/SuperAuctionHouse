@@ -39,11 +39,12 @@ public class BaseAuctionHouseMenu {
 
     // Other necessary stuff
     public static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
-    private static long auctionId = 0;
+    public static long auctionId = 0;
     public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
     public static final NamespacedKey priceKey = new NamespacedKey(plugin, "price");
     public static final NamespacedKey sellingPlayerKey = new NamespacedKey(plugin, "sellingPlayer");
     public static final NamespacedKey nameKey = new NamespacedKey(plugin, "name");
+    public static List<Player> playersFindingStuff = new ArrayList<>();
 
     public static void createAuctionHouse() {
         // Set variables
@@ -160,9 +161,9 @@ public class BaseAuctionHouseMenu {
 
         // This determines the name of the item. If it has a display name, we use that, else, we use its type
         if (item.getItemMeta().hasDisplayName() && !Strings.isNullOrEmpty(item.getItemMeta().getDisplayName())) {
-            itemsByName.put(item, ChatColor.stripColor(item.getItemMeta().getDisplayName()) + auctionId);
+            itemsByName.put(item, ChatColor.stripColor(item.getItemMeta().getDisplayName()) + " " + auctionId);
         } else {
-            itemsByName.put(item, ChatColor.stripColor(item.getType().toString()) + auctionId);
+            itemsByName.put(item, ChatColor.stripColor(item.getType().toString()) + " " + auctionId);
         }
         // Add correct lore
         ItemStack itemWithLore = addLore(item, sellingPlayer, price);

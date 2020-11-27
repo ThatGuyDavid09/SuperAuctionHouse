@@ -24,7 +24,10 @@ public class AuctionHouseCommand implements CommandExecutor {
                 if (!auctionHousesByPlayer.containsKey(player)) {
                     auctionHousesByPlayer.put(player, new PlayerAuctionHouse(player));
                 }
+                // Reset query upon player opening ah
+                auctionHousesByPlayer.get(player).query = "";
                 auctionHousesByPlayer.get(player).openAuctionHouse();
+
                 return true;
             } else if (args.length == 2) {
                 // TODO implement buy feature
@@ -42,6 +45,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                 if (args[0].equals("clear")) {
                     BaseAuctionHouseMenu.clearAuctionHouse();
                     player.sendMessage(ChatColor.GREEN + "Auction House has been cleared!");
+                    BaseAuctionHouseMenu.auctionId = 0;
                 }
             }
         } else {

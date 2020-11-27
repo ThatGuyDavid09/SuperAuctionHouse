@@ -1,8 +1,12 @@
 package thatguydavid09.superauctionhouse.events.auctionhouse;
 
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
 import java.util.List;
 
@@ -33,5 +37,12 @@ public class AuctionHouseActions {
             AuctionHouseCommand.auctionHousesByPlayer.get(player).sortMode = 0;
         }
         AuctionHouseCommand.auctionHousesByPlayer.get(player).reloadAuctionHouse();
+    }
+
+    public static void find(Player player) {
+        player.closeInventory();
+        BaseAuctionHouseMenu.playersFindingStuff.add(player);
+        // Send player instructions
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the name of the item you want to find in chat!").color(ChatColor.GREEN).create());
     }
 }

@@ -1,5 +1,6 @@
 package thatguydavid09.superauctionhouse.menus.auctionhouse;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.bukkit.ChatColor;
@@ -13,12 +14,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     private final Player player;
     public List<Inventory> auctionHouse = new ArrayList<>();
     // 0 is Alphabetically A-Z. 1 is alphabetically Z-A, 2 is by price ascending, 3 is by price descending
     public int sortMode = 0;
+    public String query = "";
     private List<ItemStack> currentlyDisplayedItems = new ArrayList<>();
 
     public PlayerAuctionHouse(Player player) {
@@ -30,25 +33,31 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         player.openInventory(auctionHouse.get(0));
     }
 
+    public void openAuctionHouse(String query) {
+        this.query = query;
+        update();
+        player.openInventory(auctionHouse.get(0));
+    }
+
     public void closeAuctionHouse() {
         player.closeInventory();
     }
 
     public void reloadAuctionHouse() {
-        closeAuctionHouse();
         update();
-        openAuctionHouse();
-        ;
+        player.updateInventory();
     }
 
     public void update() {
         // Clear the GUI
         clearAuctionHouseGui(auctionHouse);
         currentlyDisplayedItems.clear();
-
-        // Sort the items
-        // TODO remove this once you add ability to find items by name and replace it with something appropriate
-        currentlyDisplayedItems.addAll(itemsByName.keySet());
+        if (Strings.isNullOrEmpty(query)) {
+            // Sort the items
+            currentlyDisplayedItems.addAll(itemsByName.keySet());
+        } else {
+            currentlyDisplayedItems.addAll(filterItemsByName(query, itemsByName));
+        }
 
         BiMap<ItemStack, String> items = HashBiMap.create();
         for (ItemStack itemToAdd : currentlyDisplayedItems) {
@@ -123,5 +132,16 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         for (Inventory page : auctionHouse) {
             page.setItem(49, newSortItem);
         }
+    }
+
+    public List<ItemStack> filterItemsByName(String query, BiMap<ItemStack, String> whatToFilter) {
+        List<ItemStack> listToUpdate = new ArrayList<>();
+        List<String> allItemNames = new ArrayList<>(whatToFilter.values());
+        for (String name : allItemNames) {
+            if (ChatColor.stripColor(name.toLowerCase()).startsWith(ChatColor.stripColor(query.toLowerCase()))) {
+                listToUpdate.add(whatToFilter.inverse().get(name));
+            }
+        }
+        return listToUpdate;
     }
 }
