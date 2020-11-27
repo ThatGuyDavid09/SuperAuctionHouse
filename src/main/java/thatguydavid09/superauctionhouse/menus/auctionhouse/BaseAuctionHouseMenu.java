@@ -26,6 +26,7 @@ public class BaseAuctionHouseMenu {
 
     // Item to something
     public static BiMap<Player, List<ItemStack>> itemsForPlayer;
+    public static HashMap<ItemStack, Player> itemsByPlayer = new HashMap<>();
     public static BiMap<ItemStack, String> itemsByName;
 
     // Items
@@ -45,7 +46,10 @@ public class BaseAuctionHouseMenu {
     public static final NamespacedKey sellingPlayerKey = new NamespacedKey(plugin, "sellingPlayer");
     public static final NamespacedKey nameKey = new NamespacedKey(plugin, "name");
     public static List<Player> playersFindingStuff = new ArrayList<>();
+    public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>();
+    public static HashMap<Player, Long> banks = new HashMap<>();
 
+    // TODO add way to back up ah
     public static void createAuctionHouse() {
         // Set variables
         auctionHousePages = new ArrayList<>();
@@ -129,29 +133,7 @@ public class BaseAuctionHouseMenu {
     }
 
     public static void addItem(ItemStack item, Player sellingPlayer, long price) {
-        // nbt stuff
-        ItemMeta meta = item.getItemMeta();
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-
-        // Add ah id
-        meta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
-        auctionId++;
-
-        // Add price as nbt
-        container.set(priceKey, PersistentDataType.LONG, price);
-
-        // Add player name as nbt
-        container.set(sellingPlayerKey, PersistentDataType.STRING, sellingPlayer.getDisplayName());
-
-        // Add name as nbt
-        if (item.getItemMeta().hasDisplayName() && !Strings.isNullOrEmpty(item.getItemMeta().getDisplayName())) {
-            container.set(nameKey, PersistentDataType.STRING, ChatColor.stripColor(item.getItemMeta().getDisplayName()) + auctionId);
-        } else {
-            container.set(nameKey, PersistentDataType.STRING, ChatColor.stripColor(item.getType().toString()) + auctionId);
-        }
-
-        item.setItemMeta(meta);
-
+        addNBT(item, auctionId, price);
         // Update dictionaries
         if (!itemsForPlayer.containsKey(sellingPlayer)) {
             itemsForPlayer.put(sellingPlayer, new ArrayList<>());
@@ -173,7 +155,25 @@ public class BaseAuctionHouseMenu {
     }
 
     // TODO add remove item
-    // TODO add sort item feature
+    public static void removeItem(ItemStack item) {
+        itemsByName.remove(item);
+        itemsForPlayer.get(itemsForPlayer.get(item)).remove(item);
+        itemsByPlayer.remove(item);
+    }
+
+    public static void giveItemToPlayer(ItemStack item, Player player) {
+        ItemStack itemToGive = removeLore(item);
+        itemToGive = removeNBT(itemToGive);
+
+        List<ItemStack> itemsToAddToStash = (List<ItemStack>) player.getInventory().addItem(itemToGive).values();
+        if (itemsToAddToStash.size() != 0) {
+            player.sendMessage(ChatColor.RED + "An item couldn't be added to your inventory, so it was put into your stash. Type /ah stash to get all items in your stash!");
+            if (!stashes.containsKey(player)) {
+                stashes.put(player, new ArrayList<>());
+            }
+            stashes.get(player).addAll(itemsToAddToStash);
+        }
+    }
 
     private static ItemStack addLore(ItemStack item, Player sellingPlayer, long price) {
         ItemMeta meta = item.getItemMeta();
@@ -196,6 +196,41 @@ public class BaseAuctionHouseMenu {
         }
         item.setItemMeta(meta);
 
+        return item;
+    }
+
+    private static ItemStack addNBT(ItemStack item, Long id, Long price) {
+        // nbt stuff
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        // Add ah id
+        meta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
+        auctionId++;
+
+        // Add price as nbt
+        container.set(priceKey, PersistentDataType.LONG, price);
+
+        // Add name as nbt
+        if (item.getItemMeta().hasDisplayName() && !Strings.isNullOrEmpty(item.getItemMeta().getDisplayName())) {
+            container.set(nameKey, PersistentDataType.STRING, ChatColor.stripColor(item.getItemMeta().getDisplayName()) + auctionId);
+        } else {
+            container.set(nameKey, PersistentDataType.STRING, ChatColor.stripColor(item.getType().toString()) + auctionId);
+        }
+
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private static ItemStack removeNBT(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        container.remove(auctionIdKey);
+        container.remove(priceKey);
+        container.remove(nameKey);
+
+        item.setItemMeta(meta);
         return item;
     }
 

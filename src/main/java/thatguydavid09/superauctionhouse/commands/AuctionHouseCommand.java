@@ -33,6 +33,12 @@ public class AuctionHouseCommand implements CommandExecutor {
                 // TODO implement buy feature
                 if (args[0].equals("sell")) {
                     SellCommand.sell((Player) sender, args);
+                } else if (args[0].equals("eco")) {
+                    if (!BaseAuctionHouseMenu.banks.containsKey(player)) {
+                        BaseAuctionHouseMenu.banks.put(player, 0L);
+                    }
+
+                    BaseAuctionHouseMenu.banks.put(player, BaseAuctionHouseMenu.banks.get(player) + Long.parseLong(args[1]));
                 }
             } else if (args.length == 1) {
                 if (args[0].equals("add")) {
@@ -40,6 +46,16 @@ public class AuctionHouseCommand implements CommandExecutor {
                         BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, (int) (Math.random() * (100 - 5 + 1) + 5));
                     }
                     player.sendMessage(ChatColor.GREEN + "41 grass blocks priced randomly have been added to the auction house!");
+                } else if (args[0].equals("stash")) {
+                    for (ItemStack item : BaseAuctionHouseMenu.stashes.get(player)) {
+                        BaseAuctionHouseMenu.giveItemToPlayer(item, player);
+                    }
+                } else if (args[0].equals("eco")) {
+                    if (!BaseAuctionHouseMenu.banks.containsKey(player)) {
+                        BaseAuctionHouseMenu.banks.put(player, 0L);
+                    }
+
+                    player.sendMessage(String.valueOf(BaseAuctionHouseMenu.banks.get(player)));
                 }
 
                 if (args[0].equals("clear")) {

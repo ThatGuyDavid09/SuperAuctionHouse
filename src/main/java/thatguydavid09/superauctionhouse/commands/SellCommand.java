@@ -21,9 +21,9 @@ public class SellCommand {
         BaseAuctionHouseMenu.addItem(player.getInventory().getItemInMainHand(), player, Long.parseLong(args[1]));
 
         if (Strings.isNullOrEmpty(soldItem.getItemMeta().getDisplayName())) {
-            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + WordUtils.capitalizeFully(String.valueOf(soldItem.getType()).replace("_", " ")) + ((soldItem.getAmount() != 1) ? "s" : "") + ChatColor.GREEN + " for " + ChatColor.GOLD + args[1]);
+            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + WordUtils.capitalizeFully(String.valueOf(soldItem.getType()).replace("_", " ")) + ChatColor.GREEN + " for " + ChatColor.GOLD + args[1]);
         } else {
-            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + soldItem.getItemMeta().getDisplayName() + ((soldItem.getAmount() != 1) ? "s" : "") + ChatColor.GREEN + " for " + ChatColor.GOLD + args[1]);
+            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + soldItem.getItemMeta().getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + args[1]);
         }
 
         player.getInventory().setItemInMainHand(new ItemStack(Material.AIR, 0));
