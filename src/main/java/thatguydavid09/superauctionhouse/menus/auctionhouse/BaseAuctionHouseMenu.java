@@ -12,13 +12,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
@@ -31,16 +29,21 @@ public class BaseAuctionHouseMenu {
     public static BiMap<ItemStack, String> itemsByName;
 
     // Items
-    public static ItemStack findSign;
-    public static ItemStack sortItem;
-    public static ItemStack viewAuctions;
-    public static ItemStack viewBids;
-    public static ItemStack goBackArrow;
-    public static ItemStack goForwardArrow;
-    public static ItemStack howToSell;
+    public static ItemStack findSign = null;
+    public static ItemStack sortItem = null;
+    public static ItemStack viewAuctions = null;
+    public static ItemStack viewBids = null;
+    public static ItemStack goBackArrow = null;
+    public static ItemStack goForwardArrow = null;
+    public static ItemStack howToSell = null;
 
+    // Other necessary stuff
     public static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
     private static long auctionId = 0;
+    public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
+    public static final NamespacedKey priceKey = new NamespacedKey(plugin, "price");
+    public static final NamespacedKey sellingPlayerKey = new NamespacedKey(plugin, "sellingPlayer");
+    public static final NamespacedKey nameKey = new NamespacedKey(plugin, "name");
 
     public static void createAuctionHouse() {
         // Set variables
@@ -125,17 +128,26 @@ public class BaseAuctionHouseMenu {
     }
 
     public static void addItem(ItemStack item, Player sellingPlayer, long price) {
-        // Add ah id
+        // nbt stuff
         ItemMeta meta = item.getItemMeta();
-        NamespacedKey key = new NamespacedKey(plugin, "id");
-        meta.getPersistentDataContainer().set(key, PersistentDataType.LONG, auctionId);
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        // Add ah id
+        meta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
         auctionId++;
 
         // Add price as nbt
-        meta.getPersistentDataContainer().set(key, PersistentDataType.LONG, price);
+        container.set(priceKey, PersistentDataType.LONG, price);
 
         // Add player name as nbt
-        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, sellingPlayer.getDisplayName());
+        container.set(sellingPlayerKey, PersistentDataType.STRING, sellingPlayer.getDisplayName());
+
+        // Add name as nbt
+        if (item.getItemMeta().hasDisplayName() && !Strings.isNullOrEmpty(item.getItemMeta().getDisplayName())) {
+            container.set(nameKey, PersistentDataType.STRING, ChatColor.stripColor(item.getItemMeta().getDisplayName()) + auctionId);
+        } else {
+            container.set(nameKey, PersistentDataType.STRING, ChatColor.stripColor(item.getType().toString()) + auctionId);
+        }
 
         item.setItemMeta(meta);
 
@@ -188,10 +200,8 @@ public class BaseAuctionHouseMenu {
 
     public static void addToMenu(ItemStack item, List<Inventory> auctionHousePage) {
         if (auctionHousePage.size() == 0 || auctionHousePage.get(auctionHousePage.size() - 1).firstEmpty() == -1) {
-            plugin.getLogger().info("Detected full page");
             addPage(auctionHousePage);
         }
-        plugin.getLogger().info("Adding item");
         Inventory lastInv = auctionHousePage.get(auctionHousePage.size() - 1);
         lastInv.setItem(lastInv.firstEmpty(), item);
     }
@@ -205,7 +215,6 @@ public class BaseAuctionHouseMenu {
         inventory.setContents(baseAuctionHouse.getContents());
         auctionHousePage.add(inventory);
         updateArrows(auctionHousePage);
-        plugin.getLogger().info("Added page");
     }
 
     public static void removePage(List<Inventory> auctionHousePages) {
@@ -263,16 +272,38 @@ public class BaseAuctionHouseMenu {
         List<String> itemNames = new ArrayList<>(itemsAndNames.values());
         Collections.sort(itemNames);
 
-        clearAuctionHouseGui(auctionHousePages);
-
         ArrayList<ItemStack> items = new ArrayList<>();
         ItemStack item;
         for (String name : itemNames) {
             item = itemsAndNames.inverse().get(name);
             items.add(item);
         }
-
         return items;
+    }
+
+    public static ArrayList<ItemStack> sortItemsByPrice(ArrayList<ItemStack> items) {
+        if (items.size() == 0) {
+            return new ArrayList<>();
+        }
+        BiMap<ItemStack, String> itemsAndPrices = HashBiMap.create();
+        for (ItemStack item : items) {
+            // This is done to ensure that no 2 values will be the same in the BiMap
+            itemsAndPrices.put(item, String.valueOf(item.getItemMeta().getPersistentDataContainer().get(priceKey, PersistentDataType.LONG)) + " " + item.getItemMeta().getPersistentDataContainer().get(auctionIdKey, PersistentDataType.LONG));
+        }
+
+        List<List<Long>> prices = new ArrayList<>();
+        for (String price : itemsAndPrices.values()) {
+            prices.add(Arrays.asList(Long.parseLong(price.split(" ")[0]), Long.parseLong(price.split(" ")[1])));
+        }
+        prices.sort(Comparator.comparing(l -> l.get(0)));
+
+        ArrayList<ItemStack> itemsToSort = new ArrayList<>();
+        ItemStack item;
+        for (List<Long> price : prices) {
+            item = itemsAndPrices.inverse().get(price.get(0).toString() + " " + price.get(1).toString());
+            itemsToSort.add(item);
+        }
+        return itemsToSort;
     }
 
     public static void clearAuctionHouseGui(List<Inventory> auctionHousePage) {

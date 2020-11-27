@@ -3,7 +3,6 @@ package thatguydavid09.superauctionhouse.events.auctionhouse;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
 import java.util.List;
 
@@ -24,5 +23,15 @@ public class AuctionHouseActions {
         int currentIndexOfInv = Integer.parseInt(player.getOpenInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]);
         player.closeInventory();
         player.openInventory(auctionHousePage.get(currentIndexOfInv - 2));
+    }
+
+    // Cycle mode of sorting
+    public static void cycleSortMode(Player player) {
+        AuctionHouseCommand.auctionHousesByPlayer.get(player).sortMode++;
+
+        if (AuctionHouseCommand.auctionHousesByPlayer.get(player).sortMode > 3) {
+            AuctionHouseCommand.auctionHousesByPlayer.get(player).sortMode = 0;
+        }
+        AuctionHouseCommand.auctionHousesByPlayer.get(player).reloadAuctionHouse();
     }
 }
