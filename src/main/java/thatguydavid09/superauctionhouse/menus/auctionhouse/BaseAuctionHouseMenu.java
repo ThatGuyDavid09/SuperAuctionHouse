@@ -124,7 +124,7 @@ public class BaseAuctionHouseMenu {
         addPage(auctionHousePages);
     }
 
-    public static void addItem(ItemStack item, Player sellingPlayer, int price) {
+    public static void addItem(ItemStack item, Player sellingPlayer, long price) {
         // Add ah id
         ItemMeta meta = item.getItemMeta();
         NamespacedKey key = new NamespacedKey(plugin, "id");
@@ -132,7 +132,10 @@ public class BaseAuctionHouseMenu {
         auctionId++;
 
         // Add price as nbt
-        meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, price);
+        meta.getPersistentDataContainer().set(key, PersistentDataType.LONG, price);
+
+        // Add player name as nbt
+        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, sellingPlayer.getDisplayName());
 
         item.setItemMeta(meta);
 
@@ -159,7 +162,7 @@ public class BaseAuctionHouseMenu {
     // TODO add remove item
     // TODO add sort item feature
 
-    private static ItemStack addLore(ItemStack item, Player sellingPlayer, int price) {
+    private static ItemStack addLore(ItemStack item, Player sellingPlayer, long price) {
         ItemMeta meta = item.getItemMeta();
         if (meta.getLore() != null) {
             meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", ChatColor.GREEN, "", "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));

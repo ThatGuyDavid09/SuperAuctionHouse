@@ -9,7 +9,7 @@ import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
 public class SellCommand {
     public static boolean sell(Player player, String[] args) {
-        BaseAuctionHouseMenu.addItem(player.getInventory().getItemInMainHand(), player, Integer.parseInt(args[1]));
+        BaseAuctionHouseMenu.addItem(player.getInventory().getItemInMainHand(), player, Long.parseLong(args[1]));
 
         player.sendMessage(ChatColor.GREEN + "You have sold a " + ChatColor.GOLD + player.getInventory().getItemInMainHand().getType() + ChatColor.GREEN + " for " + ChatColor.GOLD + args[1]);
 

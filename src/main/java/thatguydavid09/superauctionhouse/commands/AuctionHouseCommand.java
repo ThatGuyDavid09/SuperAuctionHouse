@@ -17,8 +17,6 @@ public class AuctionHouseCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-        // TODO PRIORITY make the ah be separate for each player
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (args.length == 0) {
