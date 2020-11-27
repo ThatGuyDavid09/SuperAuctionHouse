@@ -27,7 +27,6 @@ public class AuctionHouseCommand implements CommandExecutor {
                 auctionHousesByPlayer.get(player).openAuctionHouse();
                 return true;
             } else if (args.length == 2) {
-                // TODO implement sell feature
                 // TODO implement buy feature
                 if (args[0].equals("sell")) {
                     SellCommand.sell((Player) sender, args);
