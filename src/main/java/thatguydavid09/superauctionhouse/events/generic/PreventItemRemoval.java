@@ -7,9 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
-import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseActions;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
@@ -47,13 +44,8 @@ public class PreventItemRemoval implements Listener {
                     AuctionHouseActions.find((Player) event.getWhoClicked());
                 } else if (event.getRawSlot() <= 44) {
                     // AH item is clicked
-                    ItemMeta meta = null;
-                    for (AuctionItem item : BaseAuctionHouseMenu.getAllItems()) {
-                        if (item.getId() == event.getCurrentItem().getItemMeta().getPersistentDataContainer().get(BaseAuctionHouseMenu.auctionIdKey, PersistentDataType.LONG)) {
-                            confirm = new BuyMenu(item, (Player) event.getWhoClicked());
-                            break;
-                        }
-                    }
+                    confirm = new BuyMenu(BaseAuctionHouseMenu.itemStackToAuctionItem(event.getCurrentItem()), (Player) event.getWhoClicked());
+
                     ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                     confirm.openBuyMenu();
                 } else {

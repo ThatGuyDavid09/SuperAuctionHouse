@@ -27,7 +27,8 @@ public class BaseAuctionHouseMenu {
     public static Inventory baseAuctionHouse;
 
     // Item to something
-    public static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create();
+    private static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create();
+    private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>();
     // Items
     public static ItemStack findSign = null;
     public static ItemStack sortItem = null;
@@ -36,11 +37,10 @@ public class BaseAuctionHouseMenu {
     public static ItemStack goBackArrow = null;
     public static ItemStack goForwardArrow = null;
     public static ItemStack howToSell = null;
+
     // Other necessary stuff
     public static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
     public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
-    public static final NamespacedKey priceKey = new NamespacedKey(plugin, "price");
-    public static final NamespacedKey nameKey = new NamespacedKey(plugin, "name");
     public static long auctionId = 0;
     public static List<Player> playersFindingStuff = new ArrayList<>();
     public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>();
@@ -154,14 +154,19 @@ public class BaseAuctionHouseMenu {
         itemsForPlayer.get(sellingPlayer).add(item);
 
         allItems.add(item);
+        itemStackToAuctionItem.put(item.getItem(), item);
     }
 
     private static void unUpdateDictionaries(AuctionItem item, Player seller) {
         itemsForPlayer.get(seller).remove(item);
+        itemStackToAuctionItem.remove(item.getItem());
     }
 
     public static void giveItemToPlayer(ItemStack item, Player player) {
         ItemStack itemToGive = removeLore(item);
+        ItemMeta meta = itemToGive.getItemMeta();
+        meta.getPersistentDataContainer().remove(auctionIdKey);
+        itemToGive.setItemMeta(meta);
 
         List<ItemStack> itemsToAddToStash = new ArrayList<>(player.getInventory().addItem(itemToGive).values());
         if (itemsToAddToStash.size() != 0) {
@@ -254,5 +259,9 @@ public class BaseAuctionHouseMenu {
 
     public static List<AuctionItem> getAllItems() {
         return allItems;
+    }
+
+    public static AuctionItem itemStackToAuctionItem(ItemStack item) {
+        return itemStackToAuctionItem.get(item);
     }
 }
