@@ -72,7 +72,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     private static ItemStack createBackArrowWithPage(int currentPage) {
         ItemStack arrow = new ItemStack(Material.ARROW, 1);
         ItemMeta meta = arrow.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Previous page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouseMenu.getNumOfItems() + ")");
+        meta.setDisplayName(ChatColor.GOLD + "Previous page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouseMenu.getNumOfItems() / 44 + ")");
         arrow.setItemMeta(meta);
         return arrow;
     }
@@ -80,7 +80,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     private static ItemStack createForwardArrowWithPage(int currentPage) {
         ItemStack arrow = new ItemStack(Material.ARROW, 1);
         ItemMeta meta = arrow.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Next page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouseMenu.getNumOfItems() + ")");
+        meta.setDisplayName(ChatColor.GOLD + "Next page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouseMenu.getNumOfItems() / 44 + ")");
         arrow.setItemMeta(meta);
         return arrow;
     }
@@ -266,7 +266,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         for (String name : allItemNames) {
             if (ChatColor.stripColor(name.toLowerCase()).startsWith(ChatColor.stripColor(query.toLowerCase()))) {
                 for (AuctionItem item : whatToFilter) {
-                    if (ChatColor.stripColor(item.getName()).toLowerCase().equals(name)) {
+                    if (item.getName().equals(name)) {
                         listToUpdate.add(item);
                     }
                 }

@@ -129,9 +129,15 @@ public class BaseAuctionHouseMenu {
         // Add correct lore
         ItemStack itemWithLore = addLore(itemToAdd, sellingPlayer, price);
 
+        ItemMeta itemMeta = itemWithLore.getItemMeta();
+        itemMeta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
+        itemWithLore.setItemMeta(itemMeta);
+
         AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer);
 
         updateDictionaries(auctionItem, sellingPlayer, price);
+
+        auctionId++;
     }
 
     // TODO add remove item
