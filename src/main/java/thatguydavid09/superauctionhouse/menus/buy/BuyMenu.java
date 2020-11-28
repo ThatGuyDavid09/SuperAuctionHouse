@@ -1,8 +1,11 @@
 package thatguydavid09.superauctionhouse.menus.buy;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -69,20 +72,31 @@ public class BuyMenu {
         }
         if (item.getPrice() > BaseAuctionHouseMenu.getMoney(player)) {
             player.sendMessage(ChatColor.RED + "You don't have enough money to do that!");
-            cancelPurchase();
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
+            cancelPurchaseNoSound();
         } else if (!BaseAuctionHouseMenu.getAllItems().contains(item)) {
             player.sendMessage(ChatColor.RED + "It seems that item has already been purchased!");
-            cancelPurchase();
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
+            cancelPurchaseNoSound();
         } else {
             BaseAuctionHouseMenu.removeMoney(player, item.getPrice());
             BaseAuctionHouseMenu.addMoney(player, item.getPrice());
             BaseAuctionHouseMenu.removeItem(item, player);
             BaseAuctionHouseMenu.giveItemToPlayer(item.getItem(), player);
+
+            player.sendMessage(ChatColor.GREEN + "You have purchased " + ChatColor.GOLD + item.getItem().getAmount() + " " + item.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + ChatColor.GREEN + " coins!");
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
         }
         player.closeInventory();
     }
 
     public void cancelPurchase() {
+        player.closeInventory();
+        AuctionHouseCommand.getAuctionHouse(player).openAuctionHouse();
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
+    }
+
+    public void cancelPurchaseNoSound() {
         player.closeInventory();
         AuctionHouseCommand.getAuctionHouse(player).openAuctionHouse();
     }

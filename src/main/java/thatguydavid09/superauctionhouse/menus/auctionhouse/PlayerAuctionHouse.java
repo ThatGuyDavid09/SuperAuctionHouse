@@ -166,7 +166,8 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     public void reloadAuctionHouse() {
         update();
-        player.updateInventory();
+        closeAuctionHouse();
+        openAuctionHouse();
     }
 
     public void update() {

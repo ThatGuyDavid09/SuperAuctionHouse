@@ -3,6 +3,7 @@ package thatguydavid09.superauctionhouse.events.auctionhouse;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
@@ -19,6 +20,8 @@ public class AuctionHouseActions {
         int currentIndexOfInv = Integer.parseInt(player.getOpenInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]);
         player.closeInventory();
         player.openInventory(auctionHousePage.get(currentIndexOfInv));
+
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
     }
 
     // Flip to previous auction house page
@@ -27,6 +30,8 @@ public class AuctionHouseActions {
         int currentIndexOfInv = Integer.parseInt(player.getOpenInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]);
         player.closeInventory();
         player.openInventory(auctionHousePage.get(currentIndexOfInv - 2));
+
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
     }
 
     // Cycle mode of sorting
@@ -37,6 +42,8 @@ public class AuctionHouseActions {
             AuctionHouseCommand.getAuctionHouse(player).sortMode = 0;
         }
         AuctionHouseCommand.getAuctionHouse(player).reloadAuctionHouse();
+
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
     }
 
     public static void find(Player player) {
@@ -44,5 +51,7 @@ public class AuctionHouseActions {
         BaseAuctionHouseMenu.playersFindingStuff.add(player);
         // Send player instructions
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the name of the item you want to find in chat!").color(ChatColor.GREEN).create());
+
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
     }
 }

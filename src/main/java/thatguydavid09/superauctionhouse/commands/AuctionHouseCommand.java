@@ -2,6 +2,7 @@ package thatguydavid09.superauctionhouse.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -39,6 +40,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                     }
 
                     BaseAuctionHouseMenu.banks.put(player, BaseAuctionHouseMenu.banks.get(player) + Long.parseLong(args[1]));
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                 }
             } else if (args.length == 1) {
                 if (args[0].equals("add")) {
@@ -46,13 +48,18 @@ public class AuctionHouseCommand implements CommandExecutor {
                         BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, (int) (Math.random() * (100 - 5 + 1) + 5));
                     }
                     player.sendMessage(ChatColor.GREEN + "41 grass blocks priced randomly have been added to the auction house!");
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                 } else if (args[0].equals("stash")) {
                     for (ItemStack item : BaseAuctionHouseMenu.stashes.get(player)) {
                         BaseAuctionHouseMenu.giveItemToPlayer(item, player);
                     }
+                    player.sendMessage(ChatColor.GREEN + "Your stash has been returned to you!");
+
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                 } else if (args[0].equals("eco")) {
                     if (!BaseAuctionHouseMenu.banks.containsKey(player)) {
                         BaseAuctionHouseMenu.banks.put(player, 0L);
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                     }
 
                     player.sendMessage(String.valueOf(BaseAuctionHouseMenu.banks.get(player)));
@@ -62,6 +69,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                     BaseAuctionHouseMenu.clearAuctionHouse();
                     player.sendMessage(ChatColor.GREEN + "Auction House has been cleared!");
                     BaseAuctionHouseMenu.auctionId = 0;
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                 }
             }
         } else {

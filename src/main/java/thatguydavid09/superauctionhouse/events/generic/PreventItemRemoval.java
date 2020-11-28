@@ -1,6 +1,7 @@
 package thatguydavid09.superauctionhouse.events.generic;
 
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -53,11 +54,12 @@ public class PreventItemRemoval implements Listener {
                             break;
                         }
                     }
+                    ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                     confirm.openBuyMenu();
                 } else {
                     event.setCancelled(true);
                 }
-            } else if (event.getInventory() == confirm.getBuyMenu()) {
+            } else if (confirm != null && event.getInventory() == confirm.getBuyMenu()) {
                 // Identify inventory as BuyMenu and restrict to buyMenu
                 if (event.getRawSlot() >= 0 || event.getRawSlot() <= 8) {
                     if (event.getRawSlot() == 2) {
