@@ -67,7 +67,7 @@ public class BuyMenu {
     }
 
     public void confirmPurchase() {
-        if (BaseAuctionHouseMenu.hasMoney(player, item.getPrice())) {
+        if (!BaseAuctionHouseMenu.hasMoney(player, item.getPrice())) {
             player.sendMessage(ChatColor.RED + "You don't have enough money to do that!");
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
             cancelPurchaseNoSound();
@@ -81,7 +81,13 @@ public class BuyMenu {
             BaseAuctionHouseMenu.removeItem(item, player);
             BaseAuctionHouseMenu.giveItemToPlayer(item.getItem(), player);
 
-            player.sendMessage(ChatColor.GREEN + "You have purchased " + ChatColor.GOLD + item.getItem().getAmount() + " " + item.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + ChatColor.GREEN + " " + SuperAuctionHouse.getEconomy().currencyNamePlural() + "!");
+            // Make name look nicer
+            String name = item.getName();
+            if (name.equals(item.getItem().getType().toString())) {
+                name = WordUtils.capitalizeFully(name.replace("_", " "));
+            }
+
+            player.sendMessage(ChatColor.GREEN + "You have purchased " + ChatColor.GOLD + item.getItem().getAmount() + " " + name + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + ChatColor.GREEN + " " + ((item.getPrice() == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
         }
         player.closeInventory();

@@ -48,6 +48,8 @@ public class AuctionHouseCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "Your stash has been returned to you!");
 
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
+                } else if (args[0].equals("eco")) {
+                    player.sendMessage(String.valueOf(BaseAuctionHouseMenu.getMoney(player)));
                 }
 
                 if (args[0].equals("clear")) {
