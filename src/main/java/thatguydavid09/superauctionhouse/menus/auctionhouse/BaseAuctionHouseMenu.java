@@ -140,7 +140,6 @@ public class BaseAuctionHouseMenu {
         auctionId++;
     }
 
-    // TODO add remove item
     public static void removeItem(AuctionItem item, Player seller) {
         unUpdateDictionaries(item, seller);
         allItems.remove(item);

@@ -31,7 +31,6 @@ public class AuctionHouseCommand implements CommandExecutor {
 
                 return true;
             } else if (args.length == 2) {
-                // TODO implement buy feature
                 if (args[0].equals("sell")) {
                     SellCommand.sell((Player) sender, args);
                 } else if (args[0].equals("eco")) {
