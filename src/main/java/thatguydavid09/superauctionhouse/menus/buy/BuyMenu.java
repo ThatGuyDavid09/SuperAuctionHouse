@@ -1,6 +1,5 @@
 package thatguydavid09.superauctionhouse.menus.buy;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,20 +9,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
 public class BuyMenu {
-    public static ItemStack confirm;
-    public static ItemStack cancel;
-    public static Inventory buyMenuTemplate = null;
-    private Inventory buyMenu;
-
+    private static ItemStack confirm;
+    private static ItemStack cancel;
+    private static Inventory buyMenuTemplate = null;
     private final AuctionItem item;
     private final Player player;
+    private Inventory buyMenu;
 
 
     public BuyMenu(AuctionItem item, Player player) {

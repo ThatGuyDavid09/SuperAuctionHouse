@@ -2,14 +2,8 @@ package thatguydavid09.superauctionhouse;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.Permission;
@@ -25,20 +19,27 @@ import java.util.Collections;
 import java.util.logging.Logger;
 
 public final class SuperAuctionHouse extends JavaPlugin {
-    public static ItemStack placeholder;
-    private static SuperAuctionHouse instance;
-
     // For vault
     private static final Logger log = Logger.getLogger("Minecraft");
+    public static ItemStack placeholder;
+    private static SuperAuctionHouse instance;
     private static Economy econ = null;
     private static Permission perms = null;
     private static Chat chat = null;
     // End vault stuff
 
+    public static SuperAuctionHouse getInstance() {
+        return instance;
+    }
+
+    public static Economy getEconomy() {
+        return econ;
+    }
+
     @Override
     public void onEnable() {
         // Vault stuff
-        if (!setupEconomy() ) {
+        if (!setupEconomy()) {
             log.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
             return;
@@ -79,10 +80,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
         BaseAuctionHouseMenu.createAuctionHouse();
     }
 
-    public static SuperAuctionHouse getInstance() {
-        return instance;
-    }
-
     // Vault stuff
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
@@ -94,10 +91,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
         }
         econ = rsp.getProvider();
         return econ != null;
-    }
-
-    public static Economy getEconomy() {
-        return econ;
     }
     // End vault stuff
 }

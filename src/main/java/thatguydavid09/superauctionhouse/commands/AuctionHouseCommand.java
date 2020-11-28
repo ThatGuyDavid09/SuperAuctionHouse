@@ -55,7 +55,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                 if (args[0].equals("clear")) {
                     BaseAuctionHouseMenu.clearAuctionHouse();
                     player.sendMessage(ChatColor.GREEN + "Auction House has been cleared!");
-                    BaseAuctionHouseMenu.auctionId = 0;
+                    BaseAuctionHouseMenu.resetAuctionId();
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                 }
             }

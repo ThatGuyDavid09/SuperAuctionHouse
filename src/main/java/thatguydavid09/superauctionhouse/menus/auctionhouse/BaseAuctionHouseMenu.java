@@ -25,20 +25,20 @@ import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class BaseAuctionHouseMenu {
-    public static Inventory baseAuctionHouse;
-    // Items
-    public static ItemStack findSign = null;
-    public static ItemStack sortItem = null;
-    public static ItemStack viewAuctions = null;
-    public static ItemStack viewBids = null;
-    public static ItemStack goBackArrow = null;
-    public static ItemStack goForwardArrow = null;
-    public static ItemStack howToSell = null;
-    // Other necessary stuff
-    public static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
-    public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
-    public static long auctionId = 0;
     public static List<Player> playersFindingStuff = new ArrayList<>();
+    private static Inventory baseAuctionHouse;
+    // Items
+    private static ItemStack findSign = null;
+    private static ItemStack sortItem = null;
+    private static ItemStack viewAuctions = null;
+    private static ItemStack viewBids = null;
+    private static ItemStack goBackArrow = null;
+    private static ItemStack goForwardArrow = null;
+    private static ItemStack howToSell = null;
+    // Other necessary stuff
+    private static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
+    public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
+    private static long auctionId = 0;
     public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>();
     // Item to something
     private static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create();
@@ -248,5 +248,17 @@ public class BaseAuctionHouseMenu {
 
     public static AuctionItem itemStackToAuctionItem(ItemStack item) {
         return itemStackToAuctionItem.get(item);
+    }
+
+    public static Inventory getBaseAuctionHouse() {
+        return baseAuctionHouse;
+    }
+
+    public static ItemStack getFindSign() {
+        return findSign;
+    }
+
+    public static void resetAuctionId() {
+        auctionId = 0;
     }
 }

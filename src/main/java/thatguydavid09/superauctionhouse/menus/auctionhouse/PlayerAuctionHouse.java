@@ -34,7 +34,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     public static void addPage(List<Inventory> auctionHousePage) {
         Inventory inventory = Bukkit.getServer().createInventory(null, 54, "Auction House");
-        inventory.setContents(baseAuctionHouse.getContents());
+        inventory.setContents(BaseAuctionHouseMenu.getBaseAuctionHouse().getContents());
         auctionHousePage.add(inventory);
         updateArrows(auctionHousePage);
     }
@@ -227,7 +227,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         }
 
         // Update the sorting sunflower
-        ItemStack newSortItem = sortItem.clone();
+        ItemStack newSortItem = BaseAuctionHouseMenu.getFindSign().clone();
         switch (sortMode) {
             case 0:
                 ItemMeta meta = newSortItem.getItemMeta();

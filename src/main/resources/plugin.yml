@@ -3,13 +3,13 @@ version: 1.0-ALPHA
 main: thatguydavid09.superauctionhouse.SuperAuctionHouse
 api-version: 1.16
 prefix: SuperAuctionHouse
-authors: [ThatGuyDavid09]
+authors: [ ThatGuyDavid09 ]
 description: An auction house plugin for Minecraft.
-depend: [Vault]
+depend: [ Vault ]
 
 commands:
   superauctionhouse:
     description: The main command for this plugin.
     usage: /<command>
-    aliases: [sah, ah, auctionhouse]
+    aliases: [ sah, ah, auctionhouse ]
     permission: superauctionhouse.general
