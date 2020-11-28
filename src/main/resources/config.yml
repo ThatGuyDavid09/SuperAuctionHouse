@@ -5,4 +5,4 @@ databases:
   auctionhouse:
     database: "auctionhouse"
     username: "user"
-    password: ""
+    password: "pass"
