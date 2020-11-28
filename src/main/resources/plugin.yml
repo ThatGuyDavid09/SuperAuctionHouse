@@ -5,6 +5,7 @@ api-version: 1.16
 prefix: SuperAuctionHouse
 authors: [ThatGuyDavid09]
 description: An auction house plugin for Minecraft.
+depend: [Vault]
 
 commands:
   superauctionhouse:

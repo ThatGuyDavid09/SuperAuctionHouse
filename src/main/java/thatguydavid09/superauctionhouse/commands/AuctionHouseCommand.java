@@ -33,13 +33,6 @@ public class AuctionHouseCommand implements CommandExecutor {
             } else if (args.length == 2) {
                 if (args[0].equals("sell")) {
                     SellCommand.sell((Player) sender, args);
-                } else if (args[0].equals("eco")) {
-                    if (!BaseAuctionHouseMenu.banks.containsKey(player)) {
-                        BaseAuctionHouseMenu.banks.put(player, 0L);
-                    }
-
-                    BaseAuctionHouseMenu.banks.put(player, BaseAuctionHouseMenu.banks.get(player) + Long.parseLong(args[1]));
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                 }
             } else if (args.length == 1) {
                 if (args[0].equals("add")) {
@@ -55,13 +48,6 @@ public class AuctionHouseCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "Your stash has been returned to you!");
 
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                } else if (args[0].equals("eco")) {
-                    if (!BaseAuctionHouseMenu.banks.containsKey(player)) {
-                        BaseAuctionHouseMenu.banks.put(player, 0L);
-                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                    }
-
-                    player.sendMessage(String.valueOf(BaseAuctionHouseMenu.banks.get(player)));
                 }
 
                 if (args[0].equals("clear")) {

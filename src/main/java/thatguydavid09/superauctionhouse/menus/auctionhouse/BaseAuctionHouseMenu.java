@@ -21,14 +21,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class BaseAuctionHouseMenu {
     public static Inventory baseAuctionHouse;
-
-    // Item to something
-    private static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create();
-    private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>();
     // Items
     public static ItemStack findSign = null;
     public static ItemStack sortItem = null;
@@ -37,14 +34,15 @@ public class BaseAuctionHouseMenu {
     public static ItemStack goBackArrow = null;
     public static ItemStack goForwardArrow = null;
     public static ItemStack howToSell = null;
-
     // Other necessary stuff
     public static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
     public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
     public static long auctionId = 0;
     public static List<Player> playersFindingStuff = new ArrayList<>();
     public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>();
-    public static HashMap<Player, Long> banks = new HashMap<>();
+    // Item to something
+    private static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create();
+    private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>();
     // List of all items
     private static List<AuctionItem> allItems = new ArrayList<>();
 
@@ -217,32 +215,20 @@ public class BaseAuctionHouseMenu {
 
     // The following deals with money
     public static void addMoney(Player player, Long amount) {
-        if (!banks.containsKey(player)) {
-            banks.put(player, amount);
-            return;
-        }
-        banks.put(player, banks.get(player) + amount);
+        getEconomy().depositPlayer(player, amount);
     }
 
     public static void removeMoney(Player player, Long amount) {
-        if (!banks.containsKey(player)) {
-            banks.put(player, -1 * amount);
-            return;
-        }
-        banks.put(player, banks.get(player) - amount);
-    }
-
-    public static void setMoney(Player player, Long amount) {
-        banks.put(player, amount);
+        getEconomy().withdrawPlayer(player, amount);
     }
 
     public static long getMoney(Player player) {
-        if (!banks.containsKey(player)) {
-            banks.put(player, 0L);
-        }
-        return banks.get(player);
+        return (long) getEconomy().getBalance(player);
     }
 
+    public static boolean hasMoney(Player player, long amount) {
+        return getEconomy().has(player, amount);
+    }
 
     public static String deriveName(ItemStack item) {
         if (item.getItemMeta().hasDisplayName() && !Strings.isNullOrEmpty(item.getItemMeta().getDisplayName())) {
