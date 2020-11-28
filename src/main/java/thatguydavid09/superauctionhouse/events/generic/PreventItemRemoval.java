@@ -49,11 +49,11 @@ public class PreventItemRemoval implements Listener {
                 }
             } else if (event.getInventory() == BuyMenu.buyMenu) {
                 // Identify inventory as BuyMenu
-                if (event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Confirm purchase")) {
+                if (event.getRawSlot() == 2) {
                     getLogger().info("Confirm pressed");
                     confirm.confirmPurchase();
                     event.setCancelled(true);
-                } else if (event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.RED + "Cancel purchase")) {
+                } else if (event.getRawSlot() == 6) {
                     getLogger().info("Cancel pressed");
                     confirm.cancelPurchase();
                     event.setCancelled(true);

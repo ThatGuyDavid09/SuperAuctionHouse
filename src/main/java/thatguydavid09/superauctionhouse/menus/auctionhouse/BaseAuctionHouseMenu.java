@@ -43,7 +43,6 @@ public class BaseAuctionHouseMenu {
     public static long auctionId = 0;
     public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
     public static final NamespacedKey priceKey = new NamespacedKey(plugin, "price");
-    public static final NamespacedKey sellingPlayerKey = new NamespacedKey(plugin, "sellingPlayer");
     public static final NamespacedKey nameKey = new NamespacedKey(plugin, "name");
     public static List<Player> playersFindingStuff = new ArrayList<>();
     public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>();
@@ -133,7 +132,7 @@ public class BaseAuctionHouseMenu {
     }
 
     public static void addItem(ItemStack item, Player sellingPlayer, long price) {
-        addNBT(item, auctionId, price);
+        item = addNBT(item, auctionId, price);
         // Update dictionaries
         if (!itemsForPlayer.containsKey(sellingPlayer)) {
             itemsForPlayer.put(sellingPlayer, new ArrayList<>());
@@ -155,9 +154,9 @@ public class BaseAuctionHouseMenu {
     }
 
     // TODO add remove item
-    public static void removeItem(ItemStack item) {
+    public static void removeItem(ItemStack item, Player player) {
         itemsByName.remove(item);
-        itemsForPlayer.get(itemsForPlayer.get(item)).remove(item);
+        itemsForPlayer.get(player).remove(item);
         itemsByPlayer.remove(item);
     }
 
@@ -352,5 +351,30 @@ public class BaseAuctionHouseMenu {
         itemsForPlayer = HashBiMap.create();
         itemsByName = HashBiMap.create();
         auctionId = 0;
+    }
+
+    // The following deals with money
+    public static void addMoney(Player player, Long amount) {
+        if (!banks.containsKey(player)) {
+            banks.put(player, amount);
+            return;
+        }
+        banks.put(player, banks.get(player) + amount);
+    }
+
+    public static void removeMoney(Player player, Long amount) {
+        if (!banks.containsKey(player)) {
+            banks.put(player, -1 * amount);
+            return;
+        }
+        banks.put(player, banks.get(player) - amount);
+    }
+
+    public static void setMoney(Player player, Long amount) {
+        banks.put(player, amount);
+    }
+
+    public static long getMoney(Player player) {
+        return BaseAuctionHouseMenu.banks.get(player);
     }
 }

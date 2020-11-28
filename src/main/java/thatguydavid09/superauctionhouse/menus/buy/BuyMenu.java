@@ -57,14 +57,19 @@ public class BuyMenu {
     }
 
     public void confirmPurchase() {
-        if (item.getItemMeta().getPersistentDataContainer().get(BaseAuctionHouseMenu.priceKey, PersistentDataType.LONG) > BaseAuctionHouseMenu.banks.get(player)) {
+        if (BaseAuctionHouseMenu.banks.get(player) == null) {
+            BaseAuctionHouseMenu.setMoney(player, 0L);
+        }
+        if (item.getItemMeta().getPersistentDataContainer().get(BaseAuctionHouseMenu.priceKey, PersistentDataType.LONG) > BaseAuctionHouseMenu.getMoney(player)) {
             player.sendMessage(ChatColor.RED + "You don't have enough money to do that!");
             cancelPurchase();
         } else {
-            BaseAuctionHouseMenu.removeItem(item);
+            BaseAuctionHouseMenu.removeMoney(player, item.getItemMeta().getPersistentDataContainer().get(BaseAuctionHouseMenu.priceKey, PersistentDataType.LONG));
+            BaseAuctionHouseMenu.addMoney(player, item.getItemMeta().getPersistentDataContainer().get(BaseAuctionHouseMenu.priceKey, PersistentDataType.LONG));
+            BaseAuctionHouseMenu.removeItem(item, player);
             BaseAuctionHouseMenu.giveItemToPlayer(item, player);
-            BaseAuctionHouseMenu.banks.put(player, BaseAuctionHouseMenu.banks.get(player) - item.getItemMeta().getPersistentDataContainer().get(BaseAuctionHouseMenu.priceKey, PersistentDataType.LONG));
         }
+        player.closeInventory();
     }
 
     public void cancelPurchase() {
