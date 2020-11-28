@@ -1,12 +1,11 @@
 package thatguydavid09.superauctionhouse;
 
-import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
@@ -15,6 +14,9 @@ import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHousePlayerFr
 import thatguydavid09.superauctionhouse.events.generic.PreventItemRemoval;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.logging.Logger;
 
@@ -24,9 +26,12 @@ public final class SuperAuctionHouse extends JavaPlugin {
     public static ItemStack placeholder;
     private static SuperAuctionHouse instance;
     private static Economy econ = null;
-    private static Permission perms = null;
-    private static Chat chat = null;
     // End vault stuff
+    // Config
+    private static FileConfiguration config;
+    // Database stuff
+    private static String host, port, database, username, password;
+    private static Connection connection;
 
     public static SuperAuctionHouse getInstance() {
         return instance;
@@ -34,6 +39,25 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     public static Economy getEconomy() {
         return econ;
+    }
+
+    // Database stuff
+    public static Connection openConnection() throws SQLException,
+            ClassNotFoundException {
+
+        Class.forName("com.mysql.jdbc.Driver");
+        connection = DriverManager.getConnection("jdbc:mysql://"
+                        + host + ":" + port + "/" + database,
+                username, password);
+        if (connection != null && !connection.isClosed()) {
+            return connection;
+        } else {
+            return null;
+        }
+    }
+
+    public static Connection getConnection() {
+        return connection;
     }
 
     @Override
@@ -67,6 +91,22 @@ public final class SuperAuctionHouse extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PreventItemRemoval(), this);
         getServer().getPluginManager().registerEvents(new AuctionHouseChat(), this);
         getServer().getPluginManager().registerEvents(new AuctionHousePlayerFreeze(), this);
+
+        // Load config
+        config();
+
+        // Init database
+        host = config.getString("databases.host");
+        port = config.getString("databases.port");
+        database = config.getString("databases.auctionhouse.database");
+        username = config.getString("databases.auctionhouse.user");
+        password = config.getString("databases.auctionhouse.pass");
+
+        try {
+            openConnection();
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -74,7 +114,26 @@ public final class SuperAuctionHouse extends JavaPlugin {
         // Vault stuff
         log.info(String.format("[%s] Disabled Version %s", getDescription().getName(), getDescription().getVersion()));
         // End vault stuff
+
+        // Database stuff
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
+    private void config() {
+        if (!getDataFolder().exists()) {
+            getLogger().info("Data folder not found, creating...");
+            getDataFolder().mkdir();
+        }
+
+        saveDefaultConfig();
+        getLogger().info("Loading config.yml...");
+        config = getConfig();
+    }
+    // End vault stuff
 
     private void initMenus() {
         BaseAuctionHouseMenu.createAuctionHouse();
@@ -92,5 +151,4 @@ public final class SuperAuctionHouse extends JavaPlugin {
         econ = rsp.getProvider();
         return econ != null;
     }
-    // End vault stuff
 }

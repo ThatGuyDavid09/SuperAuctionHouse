@@ -1,13 +1,11 @@
 package thatguydavid09.superauctionhouse;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 
-import java.util.List;
+import java.io.Serializable;
 
-public class AuctionItem {
+public class AuctionItem implements Serializable {
     private final long id;
     private final long price;
     private final String name;

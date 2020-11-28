@@ -1,0 +1,8 @@
+# These are for the databases, unless you know what you are doing, don't change them!
+databases:
+  host: "localhost"
+  port: "3306"
+  auctionhouse:
+    database: "AuctionHouse"
+    username: "user"
+    password: ""

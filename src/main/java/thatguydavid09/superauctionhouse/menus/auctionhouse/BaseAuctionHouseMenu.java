@@ -16,6 +16,9 @@ import org.bukkit.persistence.PersistentDataType;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,12 +42,12 @@ public class BaseAuctionHouseMenu {
     private static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
     public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
     private static long auctionId = 0;
-    public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>();
+    public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>(); // This needs to be backed up
     // Item to something
-    private static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create();
-    private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>();
+    private static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create(); // This needs to be backed up
+    private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>(); // This needs to be backed up
     // List of all items
-    private static List<AuctionItem> allItems = new ArrayList<>();
+    private static List<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
 
     // TODO add way to back up ah
     public static void createAuctionHouse() {
@@ -260,5 +263,10 @@ public class BaseAuctionHouseMenu {
 
     public static void resetAuctionId() {
         auctionId = 0;
+    }
+
+    public static void backUp() throws SQLException {
+        Connection connection = SuperAuctionHouse.getConnection();
+        connection.createStatement();
     }
 }
