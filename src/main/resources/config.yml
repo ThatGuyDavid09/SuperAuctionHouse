@@ -3,6 +3,6 @@ databases:
   host: "localhost"
   port: "3306"
   auctionhouse:
-    database: "AuctionHouse"
+    database: "auctionhouse"
     username: "user"
     password: ""
