@@ -1,14 +1,15 @@
 package thatguydavid09.superauctionhouse.events.generic;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseActions;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 import thatguydavid09.superauctionhouse.menus.buy.BuyMenu;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import static org.bukkit.Bukkit.getLogger;
 
 public class PreventItemRemoval implements Listener {
     private static BuyMenu confirm = null;
+
     @EventHandler
     public void onItemClick(InventoryClickEvent event) {
 
@@ -26,7 +28,7 @@ public class PreventItemRemoval implements Listener {
         List<String> forbiddenTitles = new ArrayList<>(Arrays.asList("Auction House", "Confirm purchase"));
         if (event.getClickedInventory() != null && forbiddenTitles.contains(event.getView().getTitle())) {
             // Identify inventory as ah
-            List<Inventory> auctionHousePage = AuctionHouseCommand.auctionHousesByPlayer.get(event.getWhoClicked()).auctionHouse;
+            List<Inventory> auctionHousePage = AuctionHouseCommand.getAuctionHouse((Player) event.getWhoClicked()).getAuctionHouse();
             if (auctionHousePage.contains(event.getClickedInventory())) {
                 if (event.getRawSlot() == 50 && event.getCurrentItem().getType() == Material.ARROW) {
                     AuctionHouseActions.nextPage((Player) event.getWhoClicked());
@@ -42,23 +44,30 @@ public class PreventItemRemoval implements Listener {
                     AuctionHouseActions.find((Player) event.getWhoClicked());
                 } else if (event.getRawSlot() <= 44) {
                     // AH item is clicked
-                    confirm = new BuyMenu(event.getCurrentItem(), (Player) event.getWhoClicked());
+                    for (AuctionItem item : BaseAuctionHouseMenu.getAllItems()) {
+                        if (item.getItem() == event.getCurrentItem()) {
+                            confirm = new BuyMenu(item, (Player) event.getWhoClicked());
+                            break;
+                        }
+                    }
                     confirm.openBuyMenu();
                 } else {
                     event.setCancelled(true);
                 }
-            } else if (event.getInventory() == BuyMenu.buyMenu) {
-                // Identify inventory as BuyMenu
-                if (event.getRawSlot() == 2) {
-                    getLogger().info("Confirm pressed");
-                    confirm.confirmPurchase();
-                    event.setCancelled(true);
-                } else if (event.getRawSlot() == 6) {
-                    getLogger().info("Cancel pressed");
-                    confirm.cancelPurchase();
-                    event.setCancelled(true);
-                } else {
-                    event.setCancelled(true);
+            } else if (event.getInventory() == confirm.getBuyMenu()) {
+                // Identify inventory as BuyMenu and restrict to buyMenu
+                if (event.getRawSlot() >= 0 || event.getRawSlot() <= 8) {
+                    if (event.getRawSlot() == 2) {
+                        getLogger().info("Confirm pressed");
+                        confirm.confirmPurchase();
+                        event.setCancelled(true);
+                    } else if (event.getRawSlot() == 6) {
+                        getLogger().info("Cancel pressed");
+                        confirm.cancelPurchase();
+                        event.setCancelled(true);
+                    } else {
+                        event.setCancelled(true);
+                    }
                 }
             }
         }

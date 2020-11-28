@@ -13,7 +13,7 @@ import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 import java.util.HashMap;
 
 public class AuctionHouseCommand implements CommandExecutor {
-    public static HashMap<Player, PlayerAuctionHouse> auctionHousesByPlayer = new HashMap<>();
+    private static HashMap<Player, PlayerAuctionHouse> auctionHousesByPlayer = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -69,5 +69,9 @@ public class AuctionHouseCommand implements CommandExecutor {
             return true;
         }
         return true;
+    }
+
+    public static PlayerAuctionHouse getAuctionHouse(Player player) {
+        return auctionHousesByPlayer.get(player);
     }
 }

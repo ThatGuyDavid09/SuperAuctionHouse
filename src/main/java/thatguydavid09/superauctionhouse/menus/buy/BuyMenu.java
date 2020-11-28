@@ -8,6 +8,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
@@ -15,25 +16,31 @@ import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 public class BuyMenu {
     public static ItemStack confirm;
     public static ItemStack cancel;
-    public static Inventory buyMenu = null;
+    public static Inventory buyMenuTemplate = null;
+    private Inventory buyMenu;
 
-    private final ItemStack item;
+    private final AuctionItem item;
     private final Player player;
 
 
-    public BuyMenu(ItemStack item, Player player) {
+    public BuyMenu(AuctionItem item, Player player) {
         this.item = item;
         this.player = player;
 
-        if (buyMenu == null) {
+        if (buyMenuTemplate == null) {
             createBuyMenuTemplate();
         }
+
+        this.buyMenu = Bukkit.createInventory(null, 9, "Confirm purchase");
+        this.buyMenu.setContents(buyMenuTemplate.getContents());
+        buyMenu.setItem(4, item.getItem());
+
     }
 
     private void createBuyMenuTemplate() {
-        buyMenu = Bukkit.createInventory(null, 9, "Confirm purchase");
+        buyMenuTemplate = Bukkit.createInventory(null, 9, "Confirm purchase");
         for (int i = 0; i < 9; i++) {
-            buyMenu.setItem(i, SuperAuctionHouse.placeholder);
+            buyMenuTemplate.setItem(i, SuperAuctionHouse.placeholder);
         }
 
         // Create confirm item
@@ -41,14 +48,14 @@ public class BuyMenu {
         ItemMeta meta = confirm.getItemMeta();
         meta.setDisplayName(ChatColor.GREEN + "Confirm purchase");
         confirm.setItemMeta(meta);
-        buyMenu.setItem(2, confirm);
+        buyMenuTemplate.setItem(2, confirm);
 
         // Create cancel item
         cancel = new ItemStack(Material.RED_CONCRETE, 1);
         meta = cancel.getItemMeta();
         meta.setDisplayName(ChatColor.RED + "Cancel purchase");
         cancel.setItemMeta(meta);
-        buyMenu.setItem(6, cancel);
+        buyMenuTemplate.setItem(6, cancel);
     }
 
     public void openBuyMenu() {
@@ -60,20 +67,27 @@ public class BuyMenu {
         if (BaseAuctionHouseMenu.banks.get(player) == null) {
             BaseAuctionHouseMenu.setMoney(player, 0L);
         }
-        if (item.getItemMeta().getPersistentDataContainer().get(BaseAuctionHouseMenu.priceKey, PersistentDataType.LONG) > BaseAuctionHouseMenu.getMoney(player)) {
+        if (item.getPrice() > BaseAuctionHouseMenu.getMoney(player)) {
             player.sendMessage(ChatColor.RED + "You don't have enough money to do that!");
             cancelPurchase();
+        } else if (!BaseAuctionHouseMenu.getAllItems().contains(item)) {
+            player.sendMessage(ChatColor.RED + "It seems that item has already been purchased!");
+            cancelPurchase();
         } else {
-            BaseAuctionHouseMenu.removeMoney(player, item.getItemMeta().getPersistentDataContainer().get(BaseAuctionHouseMenu.priceKey, PersistentDataType.LONG));
-            BaseAuctionHouseMenu.addMoney(player, item.getItemMeta().getPersistentDataContainer().get(BaseAuctionHouseMenu.priceKey, PersistentDataType.LONG));
+            BaseAuctionHouseMenu.removeMoney(player, item.getPrice());
+            BaseAuctionHouseMenu.addMoney(player, item.getPrice());
             BaseAuctionHouseMenu.removeItem(item, player);
-            BaseAuctionHouseMenu.giveItemToPlayer(item, player);
+            BaseAuctionHouseMenu.giveItemToPlayer(item.getItem(), player);
         }
         player.closeInventory();
     }
 
     public void cancelPurchase() {
         player.closeInventory();
-        AuctionHouseCommand.auctionHousesByPlayer.get(player).openAuctionHouse();
+        AuctionHouseCommand.getAuctionHouse(player).openAuctionHouse();
+    }
+
+    public Inventory getBuyMenu() {
+        return buyMenu;
     }
 }

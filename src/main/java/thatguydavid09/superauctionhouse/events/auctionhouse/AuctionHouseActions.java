@@ -14,7 +14,7 @@ public class AuctionHouseActions {
     // Flip to next auction house page
     public static void nextPage(Player player) {
         // AH for this player
-        List<Inventory> auctionHousePage = AuctionHouseCommand.auctionHousesByPlayer.get(player).auctionHouse;
+        List<Inventory> auctionHousePage = AuctionHouseCommand.getAuctionHouse(player).getAuctionHouse();
         // This monster piece of crap code gets the current index of the ah we are on by getting the name of the forward and back arrows I know it is garbage
         int currentIndexOfInv = Integer.parseInt(player.getOpenInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]);
         player.closeInventory();
@@ -23,7 +23,7 @@ public class AuctionHouseActions {
 
     // Flip to previous auction house page
     public static void previousPage(Player player) {
-        List<Inventory> auctionHousePage = AuctionHouseCommand.auctionHousesByPlayer.get(player).auctionHouse;
+        List<Inventory> auctionHousePage = AuctionHouseCommand.getAuctionHouse(player).getAuctionHouse();
         int currentIndexOfInv = Integer.parseInt(player.getOpenInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]);
         player.closeInventory();
         player.openInventory(auctionHousePage.get(currentIndexOfInv - 2));
@@ -31,12 +31,12 @@ public class AuctionHouseActions {
 
     // Cycle mode of sorting
     public static void cycleSortMode(Player player) {
-        AuctionHouseCommand.auctionHousesByPlayer.get(player).sortMode++;
+        AuctionHouseCommand.getAuctionHouse(player).sortMode++;
 
-        if (AuctionHouseCommand.auctionHousesByPlayer.get(player).sortMode > 3) {
-            AuctionHouseCommand.auctionHousesByPlayer.get(player).sortMode = 0;
+        if (AuctionHouseCommand.getAuctionHouse(player).sortMode > 3) {
+            AuctionHouseCommand.getAuctionHouse(player).sortMode = 0;
         }
-        AuctionHouseCommand.auctionHousesByPlayer.get(player).reloadAuctionHouse();
+        AuctionHouseCommand.getAuctionHouse(player).reloadAuctionHouse();
     }
 
     public static void find(Player player) {
