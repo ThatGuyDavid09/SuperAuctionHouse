@@ -13,22 +13,27 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class BaseAuctionHouseMenu {
     public static List<Player> playersFindingStuff = new ArrayList<>();
+    public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>(); // This needs to be backed up
     private static Inventory baseAuctionHouse;
     // Items
     private static ItemStack findSign = null;
@@ -41,11 +46,10 @@ public class BaseAuctionHouseMenu {
     // Other necessary stuff
     private static SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
     public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
-    private static long auctionId = 0;
-    public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>(); // This needs to be backed up
+    private static long auctionId = 0; // This needs to be created from backup
     // Item to something
-    private static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create(); // This needs to be backed up
-    private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>(); // This needs to be backed up
+    private static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create(); // This needs to be created from backup
+    private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>(); // This needs to be created from backup
     // List of all items
     private static List<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
 
@@ -136,17 +140,21 @@ public class BaseAuctionHouseMenu {
 
         AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer);
 
-        updateDictionaries(auctionItem, sellingPlayer, price);
+        updateDictionaries(auctionItem, sellingPlayer);
 
         auctionId++;
+
+        backUp();
     }
 
     public static void removeItem(AuctionItem item, Player seller) {
         unUpdateDictionaries(item, seller);
         allItems.remove(item);
+
+        backUp();
     }
 
-    private static void updateDictionaries(AuctionItem item, Player sellingPlayer, Long price) {
+    private static void updateDictionaries(AuctionItem item, Player sellingPlayer) {
         // Update dictionaries
         if (!itemsForPlayer.containsKey(sellingPlayer)) {
             itemsForPlayer.put(sellingPlayer, new ArrayList<>());
@@ -265,8 +273,135 @@ public class BaseAuctionHouseMenu {
         auctionId = 0;
     }
 
-    public static void backUp() throws SQLException {
-        Connection connection = SuperAuctionHouse.getConnection();
-        connection.createStatement();
+    public static void backUp() {
+        Connection connection = null;
+        Statement statement;
+        try {
+            SuperAuctionHouse.openConnection();
+            connection = SuperAuctionHouse.getConnection();
+            statement = connection.createStatement();
+
+            statement.executeQuery("USE " + SuperAuctionHouse.database + ";");
+
+            // Bask up ah
+            for (AuctionItem item : allItems) {
+                statement.executeUpdate("INSERT IGNORE INTO `auctionhouse`" +
+                        "SET `auctionitem` = '" + toBase64(item) + "'," +
+                        "`auctionid` = " + item.getId() + ";");
+            }
+
+            // Back up AllItems
+            Iterator stashIterator = stashes.entrySet().iterator();
+            while (stashIterator.hasNext()) {
+                Map.Entry itemsInStash = (Map.Entry) stashIterator.next();
+                List<ItemStack> items = (List<ItemStack>) itemsInStash.getValue();
+
+                for (ItemStack item : items) {
+                    statement.executeUpdate("INSERT IGNORE INTO `auctionhouse`" +
+                            "SET `auctionitem` = '" + toBase64(itemsInStash.getKey()) + "'," +
+                            "`auctionid` = " + toBase64(item) + ";");
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
+            e.printStackTrace();
+        } finally {
+            // Close connection
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        plugin.getLogger().info("Auction house has been backed up!");
+    }
+
+    public static void loadFromBackup() {
+        Connection connection = null;
+        Statement statement;
+        try {
+            SuperAuctionHouse.openConnection();
+            connection = SuperAuctionHouse.getConnection();
+            statement = connection.createStatement();
+
+            statement.executeQuery("USE " + SuperAuctionHouse.database + ";");
+
+            // Get auctionid
+            ResultSet rs = statement.executeQuery("SELECT COUNT(*) FROM auctionhouse;");
+            rs.next();
+            if (rs.getInt("COUNT(*)") != 0) {
+                rs = statement.executeQuery("SELECT MAX(auctionid) FROM auctionhouse;");
+                rs.next();
+                auctionId = rs.getInt("MAX(auctionid)");
+            } else {
+                auctionId = 0;
+            }
+            // Load items
+            rs = statement.executeQuery("SELECT auctionitem FROM auctionhouse;");
+            while (rs.next()) {
+                AuctionItem item = (AuctionItem) fromBase64(rs.getString("auctionitem"));
+                addItem(item.getItem(), item.getPlayer(), item.getPrice());
+            }
+
+            // Load stashes
+            rs = statement.executeQuery("SELECT * FROM stashes;");
+            while (rs.next()) {
+                Player player = (Player) fromBase64(rs.getString("player"));
+                ItemStack item = (ItemStack) fromBase64(rs.getString("item"));
+
+                if (!stashes.containsKey(player)) {
+                    stashes.put(player, new ArrayList<>());
+                }
+                stashes.get(player).add(item);
+            }
+        } catch (SQLException | ClassNotFoundException | IOException e) {
+            plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
+            e.printStackTrace();
+        } finally {
+            // Close connection
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        plugin.getLogger().info("Auction house has been loaded!");
+    }
+
+    public static Object fromBase64(String data) throws IOException {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            Object item;
+
+            item = dataInput.readObject();
+
+            dataInput.close();
+            return item;
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Unable to decode class type.", e);
+        }
+    }
+
+    public static String toBase64(Object object) throws IllegalStateException {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+
+            dataOutput.writeInt(1);
+            dataOutput.writeObject(object);
+
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to save item stacks.", e);
+        }
     }
 }

@@ -14,10 +14,9 @@ import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHousePlayerFr
 import thatguydavid09.superauctionhouse.events.generic.PreventItemRemoval;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Collections;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class SuperAuctionHouse extends JavaPlugin {
@@ -30,7 +29,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
     // Config
     private static FileConfiguration config;
     // Database stuff
-    private static String host, port, database, username, password;
+    public static String host, port, database, username, password;
     private static Connection connection;
 
     public static SuperAuctionHouse getInstance() {
@@ -42,7 +41,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     // Database stuff
-    public static Connection openConnection() throws SQLException,
+    public static void openConnection() throws SQLException,
             ClassNotFoundException {
 
         Class.forName("com.mysql.jdbc.Driver");
@@ -50,9 +49,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
                         + host + ":" + port + "/" + database,
                 username, password);
         if (connection != null && !connection.isClosed()) {
-            return connection;
         } else {
-            return null;
         }
     }
 
@@ -62,6 +59,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        getLogger().setLevel(Level.FINEST);
         // Vault stuff
         if (!setupEconomy()) {
             log.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
@@ -95,18 +93,15 @@ public final class SuperAuctionHouse extends JavaPlugin {
         // Load config
         config();
 
-        // Init database
-        host = config.getString("databases.host");
-        port = config.getString("databases.port");
-        database = config.getString("databases.auctionhouse.database");
-        username = config.getString("databases.auctionhouse.user");
-        password = config.getString("databases.auctionhouse.pass");
+        // Init database vars
+        host = config.getString("database.host");
+        port = config.getString("database.port");
+        database = config.getString("database.database");
+        username = config.getString("database.username");
+        password = config.getString("database.password");
 
-        try {
-            openConnection();
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
+        setupDatabase();
+        BaseAuctionHouseMenu.loadFromBackup();
     }
 
     @Override
@@ -115,12 +110,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
         log.info(String.format("[%s] Disabled Version %s", getDescription().getName(), getDescription().getVersion()));
         // End vault stuff
 
-        // Database stuff
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        BaseAuctionHouseMenu.backUp();
     }
 
     private void config() {
@@ -133,7 +123,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
         getLogger().info("Loading config.yml...");
         config = getConfig();
     }
-    // End vault stuff
 
     private void initMenus() {
         BaseAuctionHouseMenu.createAuctionHouse();
@@ -150,5 +139,46 @@ public final class SuperAuctionHouse extends JavaPlugin {
         }
         econ = rsp.getProvider();
         return econ != null;
+    }
+    // End vault stuff
+
+    public void setupDatabase() {
+        try {
+            openConnection();
+            Statement statement = connection.createStatement();
+
+            statement.executeQuery("USE " + database + ";");
+
+            // Check tables existence
+            // Check existence of ah table
+            if (!statement.executeQuery("SHOW TABLES FROM `" + database + "` LIKE 'auctionhouse';").next()) {
+                statement.executeUpdate("CREATE TABLE auctionhouse (" +
+                        "auctionitem TEXT NOT NULL," +
+                        "auctionid INTEGER NOT NULL)" +
+                        "ENGINE=InnoDB;");
+            }
+
+            // Check existence of stashes table
+            if (!statement.executeQuery("SHOW TABLES FROM `" + database + "` LIKE 'stashes';").next()) {
+                statement.executeUpdate("CREATE TABLE stashes (" +
+                        "player TEXT NOT NULL," +
+                        "item TEXT NOT NULL)" +
+                        "ENGINE=InnoDB;");
+            }
+            getLogger().info("Database setup complete");
+        } catch (SQLException | ClassNotFoundException e) {
+            getLogger().warning("Something has gone wrong with the database, stack trace logged");
+            e.printStackTrace();
+        } finally {
+            // Close connection
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    getLogger().warning("Something has gone wrong with the database, stack trace logged as fine");
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

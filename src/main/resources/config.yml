@@ -1,8 +1,10 @@
-# These are for the databases, unless you know what you are doing, don't change them!
-databases:
+# These are for the database
+database:
+  # These usually don't need to be changed
   host: "localhost"
   port: "3306"
-  auctionhouse:
-    database: "auctionhouse"
-    username: "user"
-    password: "pass"
+  # The name of your mysql database
+  database: "auctionhouse"
+  # The credentials to access the database
+  username: "user"
+  password: "pass"
