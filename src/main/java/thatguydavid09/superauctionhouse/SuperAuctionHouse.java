@@ -162,7 +162,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
             if (!statement.executeQuery("SHOW TABLES FROM `" + database + "` LIKE 'stashes';").next()) {
                 statement.executeUpdate("CREATE TABLE stashes (" +
                         "player TEXT NOT NULL," +
-                        "item TEXT NOT NULL)" +
+                        "items TEXT NOT NULL)" +
                         "ENGINE=InnoDB;");
             }
             getLogger().info("Database setup complete");

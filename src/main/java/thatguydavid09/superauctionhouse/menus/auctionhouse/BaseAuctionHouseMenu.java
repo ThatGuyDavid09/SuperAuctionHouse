@@ -283,24 +283,22 @@ public class BaseAuctionHouseMenu {
 
             statement.executeQuery("USE " + SuperAuctionHouse.database + ";");
 
-            // Bask up ah
-            for (AuctionItem item : allItems) {
-                statement.executeUpdate("INSERT IGNORE INTO `auctionhouse`" +
-                        "SET `auctionitem` = '" + toBase64(item) + "'," +
-                        "`auctionid` = " + item.getId() + ";");
-            }
+            // Bask up allitems
+            statement.executeUpdate("TRUNCATE TABLE auctionhouse;");
+            statement.executeUpdate("INSERT IGNORE INTO `auctionhouse`" +
+                    "SET `auctionitem` = '" + toBase64(allItems.toArray()) + "'," +
+                    "`auctionid` = " + auctionId + ";");
 
-            // Back up AllItems
+            // Back up stashes
+            statement.executeUpdate("TRUNCATE TABLE stashes;");
             Iterator stashIterator = stashes.entrySet().iterator();
             while (stashIterator.hasNext()) {
                 Map.Entry itemsInStash = (Map.Entry) stashIterator.next();
                 List<ItemStack> items = (List<ItemStack>) itemsInStash.getValue();
 
-                for (ItemStack item : items) {
-                    statement.executeUpdate("INSERT IGNORE INTO `auctionhouse`" +
-                            "SET `auctionitem` = '" + toBase64(itemsInStash.getKey()) + "'," +
-                            "`auctionid` = " + toBase64(item) + ";");
-                }
+                statement.executeUpdate("INSERT IGNORE INTO `stashes`" +
+                        "SET `player` = '" + toBase64((Object[]) itemsInStash.getKey()) + "'," +
+                        "`items` = " + toBase64(items.toArray()) + ";");
             }
         } catch (SQLException | ClassNotFoundException e) {
             plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
@@ -341,22 +339,20 @@ public class BaseAuctionHouseMenu {
                 auctionId = 0;
             }
             // Load items
-            rs = statement.executeQuery("SELECT auctionitem FROM auctionhouse;");
+            rs = statement.executeQuery("SELECT auctionitem FROM auctionhouse LIMIT 1;");
             while (rs.next()) {
-                AuctionItem item = (AuctionItem) fromBase64(rs.getString("auctionitem"));
-                addItem(item.getItem(), item.getPlayer(), item.getPrice());
+                for (AuctionItem item : Arrays.asList((AuctionItem[]) fromBase64(rs.getString("auctionitem")))) {
+                    addItem(item.getItem(), item.getPlayer(), item.getPrice());
+                }
             }
 
             // Load stashes
             rs = statement.executeQuery("SELECT * FROM stashes;");
             while (rs.next()) {
-                Player player = (Player) fromBase64(rs.getString("player"));
-                ItemStack item = (ItemStack) fromBase64(rs.getString("item"));
+                Player player = (Player) fromBase64(rs.getString("player"))[0];
+                ItemStack[] item = (ItemStack[]) fromBase64(rs.getString("item"));
 
-                if (!stashes.containsKey(player)) {
-                    stashes.put(player, new ArrayList<>());
-                }
-                stashes.get(player).add(item);
+                stashes.put(player, Arrays.asList(item));
             }
         } catch (SQLException | ClassNotFoundException | IOException e) {
             plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
@@ -376,29 +372,39 @@ public class BaseAuctionHouseMenu {
         plugin.getLogger().info("Auction house has been loaded!");
     }
 
-    public static Object fromBase64(String data) throws IOException {
+    public static Object[] fromBase64(String data) throws IOException {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
-            Object item;
+            ItemStack[] items = new ItemStack[dataInput.readInt()];
 
-            item = dataInput.readObject();
+            // Read the serialized inventory
+            for (int i = 0; i < items.length; i++) {
+                items[i] = (ItemStack) dataInput.readObject();
+            }
 
             dataInput.close();
-            return item;
+            return items;
         } catch (ClassNotFoundException e) {
             throw new IOException("Unable to decode class type.", e);
         }
     }
 
-    public static String toBase64(Object object) throws IllegalStateException {
+    public static String toBase64(Object[] objects) throws IllegalStateException {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
 
-            dataOutput.writeInt(1);
-            dataOutput.writeObject(object);
+            // Write the size of the inventory
+            dataOutput.writeInt(objects.length);
 
+            // Save every element in the list
+            for (int i = 0; i < objects.length; i++) {
+                dataOutput.writeObject(objects[i]);
+            }
+
+            // Serialize that array
+            dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
         } catch (Exception e) {
             throw new IllegalStateException("Unable to save item stacks.", e);
