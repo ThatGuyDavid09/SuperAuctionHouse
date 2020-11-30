@@ -42,7 +42,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "41 grass blocks priced randomly have been added to the auction house!");
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                 } else if (args[0].equals("stash")) {
-                    for (ItemStack item : BaseAuctionHouseMenu.stashes.get(player)) {
+                    for (ItemStack item : BaseAuctionHouseMenu.stashes.get(player.getUniqueId())) {
                         BaseAuctionHouseMenu.giveItemToPlayer(item, player);
                     }
                     player.sendMessage(ChatColor.GREEN + "Your stash has been returned to you!");

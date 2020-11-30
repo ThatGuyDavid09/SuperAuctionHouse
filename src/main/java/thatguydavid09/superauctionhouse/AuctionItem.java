@@ -4,15 +4,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class AuctionItem implements Serializable {
     private final long id;
     private final long price;
     private final String name;
     private final ItemStack item;
-    private final Player player;
+    private final UUID player;
 
-    public AuctionItem(ItemStack item, long id, long price, Player player) {
+    public AuctionItem(ItemStack item, long id, long price, UUID player) {
         this.item = item;
         this.id = id;
         this.price = price;
@@ -40,7 +41,7 @@ public class AuctionItem implements Serializable {
         return item;
     }
 
-    public Player getPlayer() {
+    public UUID getPlayer() {
         return player;
     }
 }

@@ -34,7 +34,7 @@ import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class BaseAuctionHouseMenu {
     public static List<Player> playersFindingStuff = new ArrayList<>();
-    public static HashMap<Player, List<ItemStack>> stashes = new HashMap<>(); // This needs to be backed up
+    public static HashMap<UUID, List<ItemStack>> stashes = new HashMap<>(); // This needs to be backed up
     private static Inventory baseAuctionHouse;
     // Items
     private static ItemStack findSign = null;
@@ -139,7 +139,7 @@ public class BaseAuctionHouseMenu {
         itemMeta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
         itemWithLore.setItemMeta(itemMeta);
 
-        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer);
+        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId());
 
         updateDictionaries(auctionItem, sellingPlayer);
 
@@ -181,9 +181,9 @@ public class BaseAuctionHouseMenu {
         if (itemsToAddToStash.size() != 0) {
             player.sendMessage(ChatColor.RED + "An item couldn't be added to your inventory, so it was put into your stash. Type /ah stash to get all items in your stash!");
             if (!stashes.containsKey(player)) {
-                stashes.put(player, new ArrayList<>());
+                stashes.put(player.getUniqueId(), new ArrayList<>());
             }
-            stashes.get(player).addAll(itemsToAddToStash);
+            stashes.get(player.getUniqueId()).addAll(itemsToAddToStash);
         }
     }
 
@@ -194,11 +194,16 @@ public class BaseAuctionHouseMenu {
         NumberFormat numberFormat = NumberFormat.getInstance();
         numberFormat.setGroupingUsed(true);
 
-        if (meta.getLore() != null) {
-            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
-        } else {
-            meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural())));
+        try {
+            if (meta.getLore() != null) {
+                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
+            } else {
+                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+            }
+        } catch (Exception e) {
+            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
         }
+
         itemToRet.setItemMeta(meta);
         return itemToRet;
     }
@@ -296,12 +301,12 @@ public class BaseAuctionHouseMenu {
 
             // Back up stashes
             statement.executeUpdate("TRUNCATE TABLE stashes;");
-            for (Map.Entry<Player, List<ItemStack>> playerListEntry : stashes.entrySet()) {
+            for (Map.Entry<UUID, List<ItemStack>> playerListEntry : stashes.entrySet()) {
                 List<ItemStack> items = (List<ItemStack>) ((Map.Entry) playerListEntry).getValue();
 
                 statement.executeUpdate("INSERT IGNORE INTO `stashes`" +
-                        "SET `player` = '" + toBase64((Object[]) ((Map.Entry) playerListEntry).getKey()) + "'," +
-                        "`items` = " + toBase64(items.toArray()) + ";");
+                        "SET `player` = '" + playerListEntry.getKey().toString() + "'," +
+                        "`items` = '" + toBase64(items.toArray()) + "';");
             }
         } catch (SQLException e) {
             plugin.getLogger().warning("Something has gone wrong with the database, see error log below");
@@ -312,7 +317,7 @@ public class BaseAuctionHouseMenu {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    plugin.getLogger().warning("Something has gone wrong while closing the connection, see error log belo");
+                    plugin.getLogger().warning("Something has gone wrong while closing the connection, see error log below");
                     e.printStackTrace();
                 }
             }
@@ -344,19 +349,23 @@ public class BaseAuctionHouseMenu {
             // Load items
             rs = statement.executeQuery("SELECT auctionitem FROM auctionhouse LIMIT 1;");
             while (rs.next()) {
-                for (AuctionItem item : Arrays.asList((AuctionItem[]) fromBase64(rs.getString("auctionitem")))) {
-                    addItem(item.getItem(), item.getPlayer(), item.getPrice());
+                for (AuctionItem item : auctionItemFromBase64(rs.getString("auctionitem"))) {
+                    addItem(item.getItem(), Bukkit.getPlayer(item.getPlayer()), item.getPrice());
                 }
             }
+            plugin.getLogger().info("Auctionhouse has been loaded from database!");
 
             // Load stashes
             rs = statement.executeQuery("SELECT * FROM stashes;");
             while (rs.next()) {
-                Player player = (Player) fromBase64(rs.getString("player"))[0];
-                ItemStack[] item = (ItemStack[]) fromBase64(rs.getString("item"));
+                UUID player = UUID.fromString(rs.getString("player"));
+                ItemStack[] item = itemStackFromBase64(rs.getString("item"));
 
                 stashes.put(player, Arrays.asList(item));
             }
+
+            plugin.getLogger().info("Stashes have been loaded from database!");
+
         } catch (SQLException | IOException e) {
             plugin.getLogger().warning("Something has gone wrong with the database, see error log below");
             e.printStackTrace();
@@ -366,7 +375,7 @@ public class BaseAuctionHouseMenu {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    plugin.getLogger().warning("Something has gone wrong while closing the connection, see error log belo");
+                    plugin.getLogger().warning("Something has gone wrong while closing the connection, see error log below");
                     e.printStackTrace();
                 }
             }
@@ -375,13 +384,29 @@ public class BaseAuctionHouseMenu {
         plugin.getLogger().info("Auction house has been loaded!");
     }
 
-    public static Object[] fromBase64(String data) throws IOException {
+    public static AuctionItem[] auctionItemFromBase64(String data) throws IOException {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            AuctionItem[] items = new AuctionItem[dataInput.readInt()];
+
+            for (int i = 0; i < items.length; i++) {
+                items[i] = (AuctionItem) dataInput.readObject();
+            }
+
+            dataInput.close();
+            return items;
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Unable to decode class type.", e);
+        }
+    }
+
+    public static ItemStack[] itemStackFromBase64(String data) throws IOException {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
             ItemStack[] items = new ItemStack[dataInput.readInt()];
 
-            // Read the serialized inventory
             for (int i = 0; i < items.length; i++) {
                 items[i] = (ItemStack) dataInput.readObject();
             }
@@ -402,8 +427,8 @@ public class BaseAuctionHouseMenu {
             dataOutput.writeInt(objects.length);
 
             // Save every element in the list
-            for (int i = 0; i < objects.length; i++) {
-                dataOutput.writeObject(objects[i]);
+            for (Object object : objects) {
+                dataOutput.writeObject(object);
             }
 
             // Serialize that array
