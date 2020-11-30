@@ -14,7 +14,10 @@ import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHousePlayerFr
 import thatguydavid09.superauctionhouse.events.generic.PreventItemRemoval;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,13 +26,13 @@ public final class SuperAuctionHouse extends JavaPlugin {
     // For vault
     private static final Logger log = Logger.getLogger("Minecraft");
     public static ItemStack placeholder;
+    // Database stuff
+    public static String host, port, database, username, password;
     private static SuperAuctionHouse instance;
     private static Economy econ = null;
     // End vault stuff
     // Config
     private static FileConfiguration config;
-    // Database stuff
-    public static String host, port, database, username, password;
     private static Connection connection;
 
     public static SuperAuctionHouse getInstance() {
@@ -41,15 +44,18 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     // Database stuff
-    public static void openConnection() throws SQLException,
-            ClassNotFoundException {
-
-        Class.forName("com.mysql.jdbc.Driver");
-        connection = DriverManager.getConnection("jdbc:mysql://"
-                        + host + ":" + port + "/" + database,
-                username, password);
-        if (connection != null && !connection.isClosed()) {
-        } else {
+    public static void openConnection() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://"
+                            + host + ":" + port + "/" + database,
+                    username, password);
+            if (connection != null && !connection.isClosed()) {
+            } else {
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            getInstance().getLogger().warning("Something went wrong while connecting to the database, are your credentials correct? View a detailed log below");
+            e.printStackTrace();
         }
     }
 
@@ -166,8 +172,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
                         "ENGINE=InnoDB;");
             }
             getLogger().info("Database setup complete");
-        } catch (SQLException | ClassNotFoundException e) {
-            getLogger().warning("Something has gone wrong with the database, stack trace logged");
+        } catch (SQLException e) {
+            getLogger().warning("Something has gone wrong with the database, see error log below");
             e.printStackTrace();
         } finally {
             // Close connection
@@ -175,7 +181,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    getLogger().warning("Something has gone wrong with the database, stack trace logged as fine");
+                    getLogger().warning("Something has gone wrong while closing the connection, see error log belo");
                     e.printStackTrace();
                 }
             }

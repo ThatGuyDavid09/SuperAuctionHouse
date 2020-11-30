@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.NumberFormat;
 import java.util.*;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
@@ -189,10 +190,14 @@ public class BaseAuctionHouseMenu {
     private static ItemStack addLore(ItemStack item, Player sellingPlayer, long price) {
         ItemStack itemToRet = item.clone();
         ItemMeta meta = itemToRet.getItemMeta();
+
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(true);
+
         if (meta.getLore() != null) {
-            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price)));
+            meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
         } else {
-            meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + price));
+            meta.setLore(Arrays.asList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural())));
         }
         itemToRet.setItemMeta(meta);
         return itemToRet;
@@ -291,17 +296,15 @@ public class BaseAuctionHouseMenu {
 
             // Back up stashes
             statement.executeUpdate("TRUNCATE TABLE stashes;");
-            Iterator stashIterator = stashes.entrySet().iterator();
-            while (stashIterator.hasNext()) {
-                Map.Entry itemsInStash = (Map.Entry) stashIterator.next();
-                List<ItemStack> items = (List<ItemStack>) itemsInStash.getValue();
+            for (Map.Entry<Player, List<ItemStack>> playerListEntry : stashes.entrySet()) {
+                List<ItemStack> items = (List<ItemStack>) ((Map.Entry) playerListEntry).getValue();
 
                 statement.executeUpdate("INSERT IGNORE INTO `stashes`" +
-                        "SET `player` = '" + toBase64((Object[]) itemsInStash.getKey()) + "'," +
+                        "SET `player` = '" + toBase64((Object[]) ((Map.Entry) playerListEntry).getKey()) + "'," +
                         "`items` = " + toBase64(items.toArray()) + ";");
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
+        } catch (SQLException e) {
+            plugin.getLogger().warning("Something has gone wrong with the database, see error log below");
             e.printStackTrace();
         } finally {
             // Close connection
@@ -309,7 +312,7 @@ public class BaseAuctionHouseMenu {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
+                    plugin.getLogger().warning("Something has gone wrong while closing the connection, see error log belo");
                     e.printStackTrace();
                 }
             }
@@ -354,8 +357,8 @@ public class BaseAuctionHouseMenu {
 
                 stashes.put(player, Arrays.asList(item));
             }
-        } catch (SQLException | ClassNotFoundException | IOException e) {
-            plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
+        } catch (SQLException | IOException e) {
+            plugin.getLogger().warning("Something has gone wrong with the database, see error log below");
             e.printStackTrace();
         } finally {
             // Close connection
@@ -363,7 +366,7 @@ public class BaseAuctionHouseMenu {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    plugin.getLogger().warning("Something has gone wrong with the database, stack trace logged as error");
+                    plugin.getLogger().warning("Something has gone wrong while closing the connection, see error log belo");
                     e.printStackTrace();
                 }
             }
