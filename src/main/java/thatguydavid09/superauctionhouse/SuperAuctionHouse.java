@@ -51,7 +51,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
                             + host + ":" + port + "/" + database,
                     username, password);
             if (connection != null && !connection.isClosed()) {
-            } else {
+                connection.createStatement().executeQuery("USE " + SuperAuctionHouse.database + ";");
             }
         } catch (SQLException | ClassNotFoundException e) {
             getInstance().getLogger().warning("Something went wrong while connecting to the database, are your credentials correct? View a detailed log below");
@@ -84,7 +84,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
         itemMeta.setLore(Collections.emptyList());
         placeholder.setItemMeta(itemMeta);
 
-        initMenus();
 
         this.getCommand("superauctionhouse").setExecutor(new AuctionHouseCommand());
 
@@ -128,10 +127,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
         saveDefaultConfig();
         getLogger().info("Loading config.yml...");
         config = getConfig();
-    }
-
-    private void initMenus() {
-        BaseAuctionHouseMenu.createAuctionHouse();
     }
 
     // Vault stuff

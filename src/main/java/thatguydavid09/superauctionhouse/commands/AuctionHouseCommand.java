@@ -35,21 +35,25 @@ public class AuctionHouseCommand implements CommandExecutor {
                     SellCommand.sell((Player) sender, args);
                 }
             } else if (args.length == 1) {
-                if (args[0].equals("add")) {
-                    for (int i = 0; i <= 41; i++) {
-                        BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, (int) (Math.random() * (100 - 5 + 1) + 5));
-                    }
-                    player.sendMessage(ChatColor.GREEN + "41 grass blocks priced randomly have been added to the auction house!");
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                } else if (args[0].equals("stash")) {
-                    for (ItemStack item : BaseAuctionHouseMenu.stashes.get(player.getUniqueId())) {
-                        BaseAuctionHouseMenu.giveItemToPlayer(item, player);
-                    }
-                    player.sendMessage(ChatColor.GREEN + "Your stash has been returned to you!");
+                switch (args[0]) {
+                    case "add":
+                        for (int i = 0; i <= 41; i++) {
+                            BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, (int) (Math.random() * (100 - 5 + 1) + 5));
+                        }
+                        player.sendMessage(ChatColor.GREEN + "41 grass blocks priced randomly have been added to the auction house!");
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
+                        break;
+                    case "stash":
+                        for (ItemStack item : BaseAuctionHouseMenu.stashes.get(player.getUniqueId())) {
+                            BaseAuctionHouseMenu.giveItemToPlayer(item, player);
+                        }
+                        player.sendMessage(ChatColor.GREEN + "Your stash has been returned to you!");
 
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                } else if (args[0].equals("eco")) {
-                    player.sendMessage(String.valueOf(BaseAuctionHouseMenu.getMoney(player)));
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
+                        break;
+                    case "eco":
+                        player.sendMessage(String.valueOf(BaseAuctionHouseMenu.getMoney(player)));
+                        break;
                 }
 
                 if (args[0].equals("clear")) {

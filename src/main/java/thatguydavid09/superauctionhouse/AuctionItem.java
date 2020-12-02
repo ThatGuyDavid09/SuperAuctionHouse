@@ -1,6 +1,5 @@
 package thatguydavid09.superauctionhouse;
 
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;

@@ -7,7 +7,10 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
+
+import java.text.NumberFormat;
 
 public class SellCommand {
     public static boolean sell(Player player, String[] args) {
@@ -34,10 +37,13 @@ public class SellCommand {
 
             BaseAuctionHouseMenu.addItem(player.getInventory().getItemInMainHand(), player, Long.parseLong(args[1]));
 
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(true);
+
         if (Strings.isNullOrEmpty(soldItem.getItemMeta().getDisplayName())) {
-            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + WordUtils.capitalizeFully(String.valueOf(soldItem.getType()).replace("_", " ")) + ChatColor.GREEN + " for " + ChatColor.GOLD + args[1]);
+            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + WordUtils.capitalizeFully(String.valueOf(soldItem.getType()).replace("_", " ")) + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(args[1]) + ChatColor.GREEN + ((Long.parseLong(args[1]) == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
         } else {
-            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + soldItem.getItemMeta().getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + args[1]);
+            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + soldItem.getItemMeta().getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(args[1]) + ChatColor.GREEN + ((Long.parseLong(args[1]) == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
         }
 
         player.getInventory().setItemInMainHand(new ItemStack(Material.AIR, 0));
