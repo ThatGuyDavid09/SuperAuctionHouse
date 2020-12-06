@@ -36,9 +36,10 @@ public class BaseAuctionHouseMenu {
     public static List<Player> playersFindingStuff = new ArrayList<>();
     public static HashMap<UUID, List<ItemStack>> stashes = new HashMap<>(); // This needs to be backed up
     private static Inventory baseAuctionHouse;
-    // Items
-    private static ItemStack findSign = null;
     private static long auctionId = 0; // This needs to be created from backup
+
+    private static ItemStack sortItem;
+
     // Item to something
     private static HashMap<UUID, List<AuctionItem>> itemsForPlayer = new HashMap<>(); // This needs to be created from backup
     private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>(); // This needs to be created from backup
@@ -76,7 +77,7 @@ public class BaseAuctionHouseMenu {
         baseAuctionHouse.setItem(46, viewBids);
 
         // Set the sort item
-        ItemStack sortItem = new ItemStack(Material.SUNFLOWER, 1);
+        sortItem = new ItemStack(Material.SUNFLOWER, 1);
         itemMeta = sortItem.getItemMeta();
         itemMeta.setDisplayName(ChatColor.GOLD + "Sort by:");
         itemMeta.setLore(Collections.singletonList(ChatColor.BLUE + "Alphabetically, A-Z"));
@@ -101,7 +102,8 @@ public class BaseAuctionHouseMenu {
         baseAuctionHouse.setItem(50, placeholder); // For forward arrow
 
         // Set the search sign
-        findSign = new ItemStack(Material.OAK_SIGN, 1);
+        // Items
+        ItemStack findSign = new ItemStack(Material.OAK_SIGN, 1);
         itemMeta = findSign.getItemMeta();
         itemMeta.setDisplayName(ChatColor.GOLD + "Find an item");
         findSign.setItemMeta(itemMeta);
@@ -297,8 +299,8 @@ public class BaseAuctionHouseMenu {
         return baseAuctionHouse;
     }
 
-    public static ItemStack getFindSign() {
-        return findSign;
+    public static ItemStack getSortItem() {
+        return sortItem;
     }
 
     public static void resetAuctionId() {
@@ -452,9 +454,7 @@ public class BaseAuctionHouseMenu {
             }
             if (meta.hasEnchants()) {
                 JsonArray enchants = new JsonArray();
-                meta.getEnchants().forEach((enchantment, integer) -> {
-                    enchants.add(new JsonPrimitive(enchantment.getName() + ":" + integer));
-                });
+                meta.getEnchants().forEach((enchantment, integer) -> enchants.add(new JsonPrimitive(enchantment.getKey() + ":" + integer)));
                 metaJson.add("enchants", enchants);
             }
             if (!meta.getItemFlags().isEmpty()) {
@@ -474,13 +474,12 @@ public class BaseAuctionHouseMenu {
                 SkullMeta skullMeta = (SkullMeta) meta;
                 if (skullMeta.hasOwner()) {
                     JsonObject extraMeta = new JsonObject();
-                    extraMeta.addProperty("owner", skullMeta.getOwner());
+                    extraMeta.addProperty("owner", skullMeta.getOwningPlayer().getName());
                     metaJson.add("extra-meta", extraMeta);
                 }
             } else if (meta instanceof BannerMeta) {
                 BannerMeta bannerMeta = (BannerMeta) meta;
                 JsonObject extraMeta = new JsonObject();
-                extraMeta.addProperty("base-color", bannerMeta.getBaseColor().name());
 
                 if (bannerMeta.numberOfPatterns() > 0) {
                     JsonArray patterns = new JsonArray();
@@ -498,9 +497,7 @@ public class BaseAuctionHouseMenu {
                 if (esmeta.hasStoredEnchants()) {
                     JsonObject extraMeta = new JsonObject();
                     JsonArray storedEnchants = new JsonArray();
-                    esmeta.getStoredEnchants().forEach((enchantment, integer) -> {
-                        storedEnchants.add(new JsonPrimitive(enchantment.getName() + ":" + integer));
-                    });
+                    esmeta.getStoredEnchants().forEach((enchantment, integer) -> storedEnchants.add(new JsonPrimitive(enchantment.getKey() + ":" + integer)));
                     extraMeta.add("stored-enchants", storedEnchants);
                     metaJson.add("extra-meta", extraMeta);
                 }
@@ -532,11 +529,9 @@ public class BaseAuctionHouseMenu {
                     JsonObject extraMeta = new JsonObject();
 
                     JsonArray customEffects = new JsonArray();
-                    pmeta.getCustomEffects().forEach(potionEffect -> {
-                        customEffects.add(new JsonPrimitive(potionEffect.getType().getName()
-                                + ":" + potionEffect.getAmplifier()
-                                + ":" + potionEffect.getDuration() / 20));
-                    });
+                    pmeta.getCustomEffects().forEach(potionEffect -> customEffects.add(new JsonPrimitive(potionEffect.getType().getName()
+                            + ":" + potionEffect.getAmplifier()
+                            + ":" + potionEffect.getDuration() / 20)));
                     extraMeta.add("custom-effects", customEffects);
 
                     metaJson.add("extra-meta", extraMeta);
@@ -683,12 +678,12 @@ public class BaseAuctionHouseMenu {
                                 if (enchantString.contains(":")) {
                                     try {
                                         String[] splitEnchant = enchantString.split(":");
-                                        Enchantment enchantment = Enchantment.getByName(splitEnchant[0]);
+                                        Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(splitEnchant[0]));
                                         int level = Integer.parseInt(splitEnchant[1]);
                                         if (enchantment != null && level > 0) {
                                             meta.addEnchant(enchantment, level, true);
                                         }
-                                    } catch (NumberFormatException ex) {
+                                    } catch (NumberFormatException ignored) {
                                     }
                                 }
                             }
@@ -734,10 +729,7 @@ public class BaseAuctionHouseMenu {
                                         Optional<DyeColor> color = Arrays.stream(DyeColor.values())
                                                 .filter(dyeColor -> dyeColor.name().equalsIgnoreCase(baseColorElement.getAsString()))
                                                 .findFirst();
-                                        if (color.isPresent()) {
-                                            bmeta.setBaseColor(color.get());
-                                        }
-                                    } catch (NumberFormatException ex) {
+                                    } catch (NumberFormatException ignored) {
                                     }
                                 }
                                 if (patternsElement != null && patternsElement.isJsonArray()) {
@@ -769,12 +761,12 @@ public class BaseAuctionHouseMenu {
                                             if (enchantString.contains(":")) {
                                                 try {
                                                     String[] splitEnchant = enchantString.split(":");
-                                                    Enchantment enchantment = Enchantment.getByName(splitEnchant[0]);
+                                                    Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(splitEnchant[0]));
                                                     int level = Integer.parseInt(splitEnchant[1]);
                                                     if (enchantment != null && level > 0) {
                                                         esmeta.addStoredEnchant(enchantment, level, true);
                                                     }
-                                                } catch (NumberFormatException ex) {
+                                                } catch (NumberFormatException ignored) {
                                                 }
                                             }
                                         }
@@ -786,7 +778,7 @@ public class BaseAuctionHouseMenu {
                                     LeatherArmorMeta lameta = (LeatherArmorMeta) meta;
                                     try {
                                         lameta.setColor(Color.fromRGB(Integer.parseInt(colorElement.getAsString(), 16)));
-                                    } catch (NumberFormatException ex) {
+                                    } catch (NumberFormatException ignored) {
                                     }
                                 }
                             } else if (meta instanceof BookMeta) {
@@ -827,7 +819,7 @@ public class BaseAuctionHouseMenu {
                                                     if (potionType != null) {
                                                         pmeta.addCustomEffect(new PotionEffect(potionType, amplifier, duration), true);
                                                     }
-                                                } catch (NumberFormatException ex) {
+                                                } catch (NumberFormatException ignored) {
                                                 }
                                             }
                                         }
@@ -845,33 +837,31 @@ public class BaseAuctionHouseMenu {
 
                                     FireworkEffect.Type effectType = FireworkEffect.Type.valueOf(effectTypeElement.getAsString());
 
-                                    if (effectType != null) {
-                                        List<Color> colors = new ArrayList<>();
-                                        if (colorsElement != null && colorsElement.isJsonArray())
-                                            colorsElement.getAsJsonArray().forEach(colorElement -> {
-                                                if (colorElement.isJsonPrimitive())
-                                                    colors.add(Color.fromRGB(Integer.parseInt(colorElement.getAsString(), 16)));
-                                            });
+                                    List<Color> colors = new ArrayList<>();
+                                    if (colorsElement != null && colorsElement.isJsonArray())
+                                        colorsElement.getAsJsonArray().forEach(colorElement -> {
+                                            if (colorElement.isJsonPrimitive())
+                                                colors.add(Color.fromRGB(Integer.parseInt(colorElement.getAsString(), 16)));
+                                        });
 
-                                        List<Color> fadeColors = new ArrayList<>();
-                                        if (fadeColorsElement != null && fadeColorsElement.isJsonArray())
-                                            fadeColorsElement.getAsJsonArray().forEach(colorElement -> {
-                                                if (colorElement.isJsonPrimitive())
-                                                    fadeColors.add(Color.fromRGB(Integer.parseInt(colorElement.getAsString(), 16)));
-                                            });
+                                    List<Color> fadeColors = new ArrayList<>();
+                                    if (fadeColorsElement != null && fadeColorsElement.isJsonArray())
+                                        fadeColorsElement.getAsJsonArray().forEach(colorElement -> {
+                                            if (colorElement.isJsonPrimitive())
+                                                fadeColors.add(Color.fromRGB(Integer.parseInt(colorElement.getAsString(), 16)));
+                                        });
 
-                                        FireworkEffect.Builder builder = FireworkEffect.builder().with(effectType);
+                                    FireworkEffect.Builder builder = FireworkEffect.builder().with(effectType);
 
-                                        if (flickerElement != null && flickerElement.isJsonPrimitive())
-                                            builder.flicker(flickerElement.getAsBoolean());
-                                        if (trailElement != null && trailElement.isJsonPrimitive())
-                                            builder.trail(trailElement.getAsBoolean());
+                                    if (flickerElement != null && flickerElement.isJsonPrimitive())
+                                        builder.flicker(flickerElement.getAsBoolean());
+                                    if (trailElement != null && trailElement.isJsonPrimitive())
+                                        builder.trail(trailElement.getAsBoolean());
 
-                                        if (!colors.isEmpty()) builder.withColor(colors);
-                                        if (!fadeColors.isEmpty()) builder.withFade(fadeColors);
+                                    if (!colors.isEmpty()) builder.withColor(colors);
+                                    if (!fadeColors.isEmpty()) builder.withFade(fadeColors);
 
-                                        femeta.setEffect(builder.build());
-                                    }
+                                    femeta.setEffect(builder.build());
                                 }
                             } else if (meta instanceof FireworkMeta) {
                                 FireworkMeta fmeta = (FireworkMeta) meta;
@@ -900,33 +890,31 @@ public class BaseAuctionHouseMenu {
 
                                                 FireworkEffect.Type effectType = FireworkEffect.Type.valueOf(effectTypeElement.getAsString());
 
-                                                if (effectType != null) {
-                                                    List<Color> colors = new ArrayList<>();
-                                                    if (colorsElement != null && colorsElement.isJsonArray())
-                                                        colorsElement.getAsJsonArray().forEach(colorElement -> {
-                                                            if (colorElement.isJsonPrimitive())
-                                                                colors.add(Color.fromRGB(Integer.parseInt(colorElement.getAsString(), 16)));
-                                                        });
+                                                List<Color> colors = new ArrayList<>();
+                                                if (colorsElement != null && colorsElement.isJsonArray())
+                                                    colorsElement.getAsJsonArray().forEach(colorElement -> {
+                                                        if (colorElement.isJsonPrimitive())
+                                                            colors.add(Color.fromRGB(Integer.parseInt(colorElement.getAsString(), 16)));
+                                                    });
 
-                                                    List<Color> fadeColors = new ArrayList<>();
-                                                    if (fadeColorsElement != null && fadeColorsElement.isJsonArray())
-                                                        fadeColorsElement.getAsJsonArray().forEach(colorElement -> {
-                                                            if (colorElement.isJsonPrimitive())
-                                                                fadeColors.add(Color.fromRGB(Integer.parseInt(colorElement.getAsString(), 16)));
-                                                        });
+                                                List<Color> fadeColors = new ArrayList<>();
+                                                if (fadeColorsElement != null && fadeColorsElement.isJsonArray())
+                                                    fadeColorsElement.getAsJsonArray().forEach(colorElement -> {
+                                                        if (colorElement.isJsonPrimitive())
+                                                            fadeColors.add(Color.fromRGB(Integer.parseInt(colorElement.getAsString(), 16)));
+                                                    });
 
-                                                    FireworkEffect.Builder builder = FireworkEffect.builder().with(effectType);
+                                                FireworkEffect.Builder builder = FireworkEffect.builder().with(effectType);
 
-                                                    if (flickerElement != null && flickerElement.isJsonPrimitive())
-                                                        builder.flicker(flickerElement.getAsBoolean());
-                                                    if (trailElement != null && trailElement.isJsonPrimitive())
-                                                        builder.trail(trailElement.getAsBoolean());
+                                                if (flickerElement != null && flickerElement.isJsonPrimitive())
+                                                    builder.flicker(flickerElement.getAsBoolean());
+                                                if (trailElement != null && trailElement.isJsonPrimitive())
+                                                    builder.trail(trailElement.getAsBoolean());
 
-                                                    if (!colors.isEmpty()) builder.withColor(colors);
-                                                    if (!fadeColors.isEmpty()) builder.withFade(fadeColors);
+                                                if (!colors.isEmpty()) builder.withColor(colors);
+                                                if (!fadeColors.isEmpty()) builder.withFade(fadeColors);
 
-                                                    fmeta.addEffect(builder.build());
-                                                }
+                                                fmeta.addEffect(builder.build());
                                             }
                                         }
                                     });

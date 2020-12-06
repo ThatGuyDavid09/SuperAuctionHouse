@@ -227,7 +227,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         }
 
         // Update the sorting sunflower
-        ItemStack newSortItem = BaseAuctionHouseMenu.getFindSign().clone();
+        ItemStack newSortItem = BaseAuctionHouseMenu.getSortItem().clone();
         switch (sortMode) {
             case 0:
                 ItemMeta meta = newSortItem.getItemMeta();
