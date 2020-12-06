@@ -1,7 +1,5 @@
 package thatguydavid09.superauctionhouse.menus.auctionhouse;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.gson.*;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -42,7 +40,7 @@ public class BaseAuctionHouseMenu {
     private static ItemStack findSign = null;
     private static long auctionId = 0; // This needs to be created from backup
     // Item to something
-    private static BiMap<Player, List<AuctionItem>> itemsForPlayer = HashBiMap.create(); // This needs to be created from backup
+    private static HashMap<UUID, List<AuctionItem>> itemsForPlayer = new HashMap<>(); // This needs to be created from backup
     private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>(); // This needs to be created from backup
     // List of all items
     private static List<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
@@ -134,7 +132,26 @@ public class BaseAuctionHouseMenu {
 
         AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId());
 
-        updateDictionaries(auctionItem, sellingPlayer);
+        updateDictionaries(auctionItem, sellingPlayer.getUniqueId());
+
+        auctionId++;
+
+        backUp();
+    }
+
+    public static void addItem(ItemStack item, OfflinePlayer sellingPlayer, long price) {
+        ItemStack itemToAdd = item.clone();
+
+        // Add correct lore
+        ItemStack itemWithLore = addLore(itemToAdd, sellingPlayer, price);
+
+        ItemMeta itemMeta = itemWithLore.getItemMeta();
+        itemMeta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
+        itemWithLore.setItemMeta(itemMeta);
+
+        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId());
+
+        updateDictionaries(auctionItem, sellingPlayer.getUniqueId());
 
         auctionId++;
 
@@ -142,13 +159,13 @@ public class BaseAuctionHouseMenu {
     }
 
     public static void removeItem(AuctionItem item, Player seller) {
-        unUpdateDictionaries(item, seller);
+        unUpdateDictionaries(item, seller.getUniqueId());
         allItems.remove(item);
 
         backUp();
     }
 
-    private static void updateDictionaries(AuctionItem item, Player sellingPlayer) {
+    private static void updateDictionaries(AuctionItem item, UUID sellingPlayer) {
         // Update dictionaries
         if (!itemsForPlayer.containsKey(sellingPlayer)) {
             itemsForPlayer.put(sellingPlayer, new ArrayList<>());
@@ -159,7 +176,7 @@ public class BaseAuctionHouseMenu {
         itemStackToAuctionItem.put(item.getItem(), item);
     }
 
-    private static void unUpdateDictionaries(AuctionItem item, Player seller) {
+    private static void unUpdateDictionaries(AuctionItem item, UUID seller) {
         itemsForPlayer.get(seller).remove(item);
         itemStackToAuctionItem.remove(item.getItem());
     }
@@ -189,12 +206,33 @@ public class BaseAuctionHouseMenu {
 
         try {
             if (meta.getLore() != null) {
-                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
+                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
             } else {
-                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+        }
+
+        itemToRet.setItemMeta(meta);
+        return itemToRet;
+    }
+
+    private static ItemStack addLore(ItemStack item, OfflinePlayer sellingPlayer, long price) {
+        ItemStack itemToRet = item.clone();
+        ItemMeta meta = itemToRet.getItemMeta();
+
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(true);
+
+        try {
+            if (meta.getLore() != null) {
+                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
+            } else {
+                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+            }
+        } catch (NullPointerException e) {
+            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
         }
 
         itemToRet.setItemMeta(meta);
@@ -223,7 +261,6 @@ public class BaseAuctionHouseMenu {
     // This removes all items from ah
     public static void clearAuctionHouse() {
         allItems.clear();
-        itemsForPlayer = HashBiMap.create();
         auctionId = 0;
     }
 
@@ -280,7 +317,11 @@ public class BaseAuctionHouseMenu {
             statement.executeUpdate("TRUNCATE TABLE auctionhouse;");
             for (AuctionItem item : allItems) {
                 statement.executeUpdate("INSERT IGNORE INTO `auctionhouse`" +
-                        "SET `auctionitem` = \"" + StringEscapeUtils.escapeSql(auctionItemToJson(item)) + "\"," +
+                        "SET `auctionitem` = '" + auctionItemToJson(item).replaceAll("\"", "\\\\\"") + "'," +
+                        "`auctionid` = " + item.getId() + ";");
+
+                plugin.getLogger().info("\"INSERT IGNORE INTO `auctionhouse`\" +\n" +
+                        "SET `auctionitem` = '" + auctionItemToJson(item).replaceAll("\"", "\\\\\"") + "'," +
                         "`auctionid` = " + item.getId() + ";");
             }
 
@@ -292,7 +333,7 @@ public class BaseAuctionHouseMenu {
                 for (ItemStack item : items) {
                     statement.executeUpdate("INSERT IGNORE INTO `stashes`" +
                             "SET `player` = '" + playerListEntry.getKey().toString() + "'," +
-                            "`items` = \"" + StringEscapeUtils.escapeSql(itemStackToJson(item)) + "\";");
+                            "`items` = '" + itemStackToJson(item).replaceAll("\"","\\\\\"") + "';");
                 }
             }
         } catch (SQLException e) {
@@ -337,7 +378,7 @@ public class BaseAuctionHouseMenu {
             rs = statement.executeQuery("SELECT auctionitem FROM auctionhouse;");
             while (rs.next()) {
                 AuctionItem item = auctionItemFromJson(rs.getString("auctionitem"));
-                addItem(item.getItem(), Bukkit.getPlayer(item.getPlayer()), item.getPrice());
+                addItem(item.getItem(), Bukkit.getOfflinePlayer(item.getPlayer()), item.getPrice());
             }
             plugin.getLogger().info("Auctionhouse has been loaded from database!");
 
@@ -375,12 +416,12 @@ public class BaseAuctionHouseMenu {
     }
 
     public static String auctionItemToJson(AuctionItem item) throws IllegalStateException {
-        return new JSONObject()
+        return StringEscapeUtils.escapeSql(new JSONObject()
                 .put("id", item.getId())
                 .put("price", item.getPrice())
                 .put("item", StringEscapeUtils.escapeSql(itemStackToJson(item.getItem())))
                 .put("player", StringEscapeUtils.escapeSql(item.getPlayer().toString()))
-                .toString();
+                .toString());
     }
 
     public static String itemStackToJson(ItemStack item) {
@@ -583,13 +624,16 @@ public class BaseAuctionHouseMenu {
     }
 
     public static AuctionItem auctionItemFromJson(String string) throws IllegalStateException {
-        JSONObject json = new JSONObject(string);
+        plugin.getLogger().info(string.replaceAll("\"", "\\\""));
+        JSONObject json = new JSONObject(string.replaceAll("\"", "\\\""));
         return new AuctionItem(itemStackFromJson(json.getString("item")), json.getLong("id"), json.getLong("price"), UUID.fromString(json.getString("player")));
     }
 
     public static ItemStack itemStackFromJson(String string) {
         String[] BYPASS_CLASS = {"CraftMetaBlockState", "CraftMetaItem"
                 /*Glowstone Support*/, "GlowMetaItem"};
+
+        string = string.replaceAll("\"", "\\\"");
 
         JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(string);

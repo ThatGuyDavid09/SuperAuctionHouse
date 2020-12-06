@@ -41,9 +41,9 @@ public class SellCommand {
         numberFormat.setGroupingUsed(true);
 
         if (Strings.isNullOrEmpty(soldItem.getItemMeta().getDisplayName())) {
-            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + WordUtils.capitalizeFully(String.valueOf(soldItem.getType()).replace("_", " ")) + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(args[1]) + ChatColor.GREEN + ((Long.parseLong(args[1]) == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
+            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + WordUtils.capitalizeFully(String.valueOf(soldItem.getType()).replace("_", " ")) + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(Long.parseLong(args[1])) + " " + ChatColor.GREEN + ((Long.parseLong(args[1]) == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
         } else {
-            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + soldItem.getItemMeta().getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(args[1]) + ChatColor.GREEN + ((Long.parseLong(args[1]) == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
+            player.sendMessage(ChatColor.GREEN + "You have sold " + ChatColor.GOLD + soldItem.getAmount() + " " + soldItem.getItemMeta().getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(Long.parseLong(args[1])) + " " + ChatColor.GREEN + ((Long.parseLong(args[1]) == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
         }
 
         player.getInventory().setItemInMainHand(new ItemStack(Material.AIR, 0));
