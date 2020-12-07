@@ -184,15 +184,15 @@ public class BaseAuctionHouseMenu {
     }
 
     public static void giveItemToPlayer(ItemStack item, Player player) {
-        ItemStack itemToGive = removeLore(item);
-        ItemMeta meta = itemToGive.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().remove(auctionIdKey);
-        itemToGive.setItemMeta(meta);
+        item.setItemMeta(meta);
 
-        List<ItemStack> itemsToAddToStash = new ArrayList<>(player.getInventory().addItem(itemToGive).values());
+        List<ItemStack> itemsToAddToStash = new ArrayList<>(player.getInventory().addItem(item).values());
         if (itemsToAddToStash.size() != 0) {
             player.sendMessage(ChatColor.RED + "An item couldn't be added to your inventory, so it was put into your stash. Type /ah stash to get all items in your stash!");
-            if (!stashes.containsKey(player.getUniqueId())) {
+            if (stashes.containsKey(player.getUniqueId())) {
+            } else {
                 stashes.put(player.getUniqueId(), new ArrayList<>());
             }
             stashes.get(player.getUniqueId()).addAll(itemsToAddToStash);
@@ -335,7 +335,7 @@ public class BaseAuctionHouseMenu {
                 for (ItemStack item : items) {
                     statement.executeUpdate("INSERT IGNORE INTO `stashes`" +
                             "SET `player` = '" + playerListEntry.getKey().toString() + "'," +
-                            "`items` = '" + itemStackToJson(item).replaceAll("\"","\\\\\"") + "';");
+                            "`items` = '" + itemStackToJson(item).replaceAll("\"","\\\"") + "';");
                 }
             }
         } catch (SQLException e) {
@@ -387,13 +387,13 @@ public class BaseAuctionHouseMenu {
             // Load stashes
             rs = statement.executeQuery("SELECT * FROM stashes;");
             while (rs.next()) {
-                UUID player = UUID.fromString(rs.getString("player"));
-                ItemStack item = itemStackFromJson(rs.getString("item"));
+                UUID uuid = UUID.fromString(rs.getString("player"));
+                ItemStack item = itemStackFromJson(rs.getString("items"));
 
-                if (!stashes.containsKey(player)) {
-                    stashes.put(player, Collections.singletonList(item));
+                if (stashes.containsKey(uuid)) {
+                    stashes.get(uuid).add(item);
                 } else {
-                    stashes.get(player).add(item);
+                    stashes.put(uuid, Collections.singletonList(item));
                 }
             }
 
