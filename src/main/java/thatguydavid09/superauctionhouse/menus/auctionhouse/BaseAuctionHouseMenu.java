@@ -121,6 +121,7 @@ public class BaseAuctionHouseMenu {
         baseAuctionHouse.setItem(53, howToSell);
     }
 
+    // Used for most external applications
     public static void addItem(ItemStack item, Player sellingPlayer, long price) {
         ItemStack itemToAdd = item.clone();
 
@@ -140,7 +141,28 @@ public class BaseAuctionHouseMenu {
         backUp(auctionItem, true);
     }
 
-    public static void addItem(ItemStack item, OfflinePlayer sellingPlayer, long price) {
+    // Used to add item with a special player name
+    public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName) {
+        ItemStack itemToAdd = item.clone();
+
+        // Add correct lore
+        ItemStack itemWithLore = addLore(itemToAdd, playerName, price);
+
+        ItemMeta itemMeta = itemWithLore.getItemMeta();
+        itemMeta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
+        itemWithLore.setItemMeta(itemMeta);
+
+        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId());
+
+        updateDictionaries(auctionItem, sellingPlayer.getUniqueId());
+
+        auctionId++;
+
+        backUp(auctionItem, true);
+    }
+
+    // Used for adding items from backup
+    private static void addItem(ItemStack item, OfflinePlayer sellingPlayer, long price) {
         ItemStack itemToAdd = item.clone();
 
         // Add correct lore
@@ -207,6 +229,28 @@ public class BaseAuctionHouseMenu {
             }
         } catch (NullPointerException e) {
             meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+        }
+
+        itemToRet.setItemMeta(meta);
+        return itemToRet;
+    }
+
+    // Used with a special player name
+    private static ItemStack addLore(ItemStack item, String sellingPlayer, long price) {
+        ItemStack itemToRet = item.clone();
+        ItemMeta meta = itemToRet.getItemMeta();
+
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(true);
+
+        try {
+            if (meta.getLore() != null) {
+                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
+            } else {
+                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+            }
+        } catch (NullPointerException e) {
+            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
         }
 
         itemToRet.setItemMeta(meta);

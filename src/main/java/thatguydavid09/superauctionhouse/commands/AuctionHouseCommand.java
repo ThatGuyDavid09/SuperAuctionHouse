@@ -16,8 +16,8 @@ public class AuctionHouseCommand implements CommandExecutor {
         return auctionHousesByPlayer.get(player);
     }
 
-    private static void permissionError(String message) {
-
+    private static void permissionError(Player player) {
+        player.sendMessage(ChatColor.RED + "You don't have permission to do that!");
     }
 
     @Override
@@ -40,36 +40,28 @@ public class AuctionHouseCommand implements CommandExecutor {
             switch (args[0]) {
                 // Dev commands
                 case "add":
-                    return DevCommands.add(player);
+                    if (!DevCommands.add(player)) {
+                        permissionError(player);
+                    }
                 case "eco":
-                    return DevCommands.eco(player);
+                    if (!DevCommands.eco(player)) {
+                        permissionError(player);
+                    }
 
                 // Player commands
                 case "sell":
-                    return PlayerCommands.sell(player, args);
+                    if (!PlayerCommands.sell(player, args)) {
+                        permissionError(player);
+                    }
 
                 // Admin commands
                 case "clear":
-                    return AdminCommands.clear(player);
-            }
-
-            switch (args.length) {
-                case 1:
-                    switch (args[0]) {
-                        case "add":
-
-                            break;
-                        case "eco":
-
-                            break;
-                        case "clear":
-
-                            break;
+                    if (!AdminCommands.clear(player)) {
+                        permissionError(player);
                     }
             }
         } else {
             sender.sendMessage(ChatColor.RED + "This command can only be used by a player!");
-            return true;
         }
         return true;
     }

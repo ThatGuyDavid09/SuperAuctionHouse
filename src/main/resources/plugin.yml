@@ -2,6 +2,7 @@ name: SuperAuctionHouse
 version: 1.0-ALPHA
 main: thatguydavid09.superauctionhouse.SuperAuctionHouse
 api-version: 1.16
+database: true
 prefix: SuperAuctionHouse
 authors: [ ThatGuyDavid09 ]
 description: An auction house plugin for Minecraft.
@@ -10,6 +11,52 @@ depend: [ Vault ]
 commands:
   superauctionhouse:
     description: The main command for this plugin.
-    usage: /<command>
     aliases: [ sah, ah, auctionhouse ]
-    permission: superauctionhouse.general
+
+permissions:
+  superauctionhouse.*:
+    description: Gives access to all SuperAuctionHouse commands
+    default: op
+    children:
+      superauctionhouse.admin: true
+      superauctionhouse.player: true
+
+  superauctionhouse.admin:
+    description: Gives access to all SuperAuctionHouse admin commands
+    default: op
+    children:
+      superauctionhouse.sell.asothers: true
+      superauctionhouse.clear: true
+
+  superauctionhouse.player:
+    description: Gives access to all SuperAuctionHouse player commands
+    default: true
+    children:
+      superauctionhouse.open: true
+      superauctionhouse.sell: true
+      superauctionhouse.viewplayerah: true
+      superauctionhouse.help: true
+
+  superauctionhouse.open:
+    description: Allows a player to open the auction house
+    default: true
+
+  superauctionhouse.viewplayerah:
+    description: Views all items a player has up for sale
+    default: true
+
+  superauctionhouse.sell:
+    description: Allows a player to sell items for a specific price.
+    default: op
+
+  superauctionhouse.sell.asothers:
+    description: Allows a player to sell items for a specific price as another username.
+    default: op
+
+  superauctionhouse.help:
+    description: Allows a aplyer to view all available commands.
+    default: true
+
+  superauctionhouse.clear:
+    description: Allows a player to clear the Auction House.
+    default: op

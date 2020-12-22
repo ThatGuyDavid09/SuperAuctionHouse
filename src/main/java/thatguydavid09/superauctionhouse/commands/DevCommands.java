@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class DevCommands {
     public static boolean add(Player player) {
-        if (player.getUniqueId() == UUID.fromString("72644f06-45ae-44b8-80cd-aa96e1e1a873")) {
+        if (player.getUniqueId().equals(UUID.fromString("72644f06-45ae-44b8-80cd-aa96e1e1a873"))) {
             for (int i = 0; i <= 41; i++) {
                 BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), player, (int) (Math.random() * (100 - 5 + 1) + 5));
             }
