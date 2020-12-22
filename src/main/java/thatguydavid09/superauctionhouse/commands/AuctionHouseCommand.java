@@ -1,14 +1,10 @@
 package thatguydavid09.superauctionhouse.commands;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 
 import java.util.HashMap;
@@ -16,10 +12,19 @@ import java.util.HashMap;
 public class AuctionHouseCommand implements CommandExecutor {
     private static HashMap<Player, PlayerAuctionHouse> auctionHousesByPlayer = new HashMap<>();
 
+    public static PlayerAuctionHouse getAuctionHouse(Player player) {
+        return auctionHousesByPlayer.get(player);
+    }
+
+    private static void permissionError(String message) {
+
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
+
             if (args.length == 0) {
                 // Open ah
                 if (!auctionHousesByPlayer.containsKey(player)) {
@@ -30,47 +35,42 @@ public class AuctionHouseCommand implements CommandExecutor {
                 auctionHousesByPlayer.get(player).openAuctionHouse();
 
                 return true;
-            } else if (args.length == 2) {
-                if (args[0].equals("sell")) {
-                    SellCommand.sell((Player) sender, args);
-                }
-            } else if (args.length == 1) {
-                switch (args[0]) {
-                    case "add":
-                        for (int i = 0; i <= 41; i++) {
-                            BaseAuctionHouseMenu.addItem(new ItemStack(Material.GRASS_BLOCK, 1), (Player) sender, (int) (Math.random() * (100 - 5 + 1) + 5));
-                        }
-                        player.sendMessage(ChatColor.GREEN + "41 grass blocks priced randomly have been added to the auction house!");
-                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                        break;
-                    case "stash":
-                        for (ItemStack item : BaseAuctionHouseMenu.stashes.get(player.getUniqueId())) {
-                            BaseAuctionHouseMenu.giveItemToPlayer(item, player);
-                        }
-                        player.sendMessage(ChatColor.GREEN + "Your stash has been returned to you!");
+            }
 
-                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                        break;
-                    case "eco":
-                        player.sendMessage(String.valueOf(BaseAuctionHouseMenu.getMoney(player)));
-                        break;
-                }
+            switch (args[0]) {
+                // Dev commands
+                case "add":
+                    return DevCommands.add(player);
+                case "eco":
+                    return DevCommands.eco(player);
 
-                if (args[0].equals("clear")) {
-                    BaseAuctionHouseMenu.clearAuctionHouse();
-                    player.sendMessage(ChatColor.GREEN + "Auction House has been cleared!");
-                    BaseAuctionHouseMenu.resetAuctionId();
-                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                }
+                // Player commands
+                case "sell":
+                    return PlayerCommands.sell(player, args);
+
+                // Admin commands
+                case "clear":
+                    return AdminCommands.clear(player);
+            }
+
+            switch (args.length) {
+                case 1:
+                    switch (args[0]) {
+                        case "add":
+
+                            break;
+                        case "eco":
+
+                            break;
+                        case "clear":
+
+                            break;
+                    }
             }
         } else {
             sender.sendMessage(ChatColor.RED + "This command can only be used by a player!");
             return true;
         }
         return true;
-    }
-
-    public static PlayerAuctionHouse getAuctionHouse(Player player) {
-        return auctionHousesByPlayer.get(player);
     }
 }

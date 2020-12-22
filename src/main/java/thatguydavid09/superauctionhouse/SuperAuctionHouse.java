@@ -115,7 +115,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
         log.info(String.format("[%s] Disabled Version %s", getDescription().getName(), getDescription().getVersion()));
         // End vault stuff
 
-        BaseAuctionHouseMenu.backUp();
     }
 
     private void config() {
@@ -156,14 +155,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
                 statement.executeUpdate("CREATE TABLE auctionhouse (" +
                         "auctionitem TEXT NOT NULL," +
                         "auctionid INTEGER NOT NULL)" +
-                        "ENGINE=InnoDB;");
-            }
-
-            // Check existence of stashes table
-            if (!statement.executeQuery("SHOW TABLES FROM `" + database + "` LIKE 'stashes';").next()) {
-                statement.executeUpdate("CREATE TABLE stashes (" +
-                        "player TEXT NOT NULL," +
-                        "items TEXT NOT NULL)" +
                         "ENGINE=InnoDB;");
             }
             getLogger().info("Database setup complete");

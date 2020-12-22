@@ -34,7 +34,6 @@ public class BaseAuctionHouseMenu {
     private static final SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
     public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
     public static List<Player> playersFindingStuff = new ArrayList<>();
-    public static HashMap<UUID, List<ItemStack>> stashes = new HashMap<>(); // This needs to be backed up
     private static Inventory baseAuctionHouse;
     private static long auctionId = 0; // This needs to be created from backup
 
@@ -138,7 +137,7 @@ public class BaseAuctionHouseMenu {
 
         auctionId++;
 
-        backUp();
+        backUp(auctionItem, true);
     }
 
     public static void addItem(ItemStack item, OfflinePlayer sellingPlayer, long price) {
@@ -156,15 +155,13 @@ public class BaseAuctionHouseMenu {
         updateDictionaries(auctionItem, sellingPlayer.getUniqueId());
 
         auctionId++;
-
-        backUp();
     }
 
-    public static void removeItem(AuctionItem item, Player seller) {
-        unUpdateDictionaries(item, seller.getUniqueId());
-        allItems.remove(item);
+    public static void removeItem(AuctionItem auctionItem, Player seller) {
+        unUpdateDictionaries(auctionItem, seller.getUniqueId());
+        allItems.remove(auctionItem);
 
-        backUp();
+        backUp(auctionItem, false);
     }
 
     private static void updateDictionaries(AuctionItem item, UUID sellingPlayer) {
@@ -188,14 +185,10 @@ public class BaseAuctionHouseMenu {
         meta.getPersistentDataContainer().remove(auctionIdKey);
         item.setItemMeta(meta);
 
-        List<ItemStack> itemsToAddToStash = new ArrayList<>(player.getInventory().addItem(item).values());
-        if (itemsToAddToStash.size() != 0) {
-            player.sendMessage(ChatColor.RED + "An item couldn't be added to your inventory, so it was put into your stash. Type /ah stash to get all items in your stash!");
-            if (stashes.containsKey(player.getUniqueId())) {
-            } else {
-                stashes.put(player.getUniqueId(), new ArrayList<>());
-            }
-            stashes.get(player.getUniqueId()).addAll(itemsToAddToStash);
+        List<ItemStack> itemsToDrop = new ArrayList<>(player.getInventory().addItem(item).values());
+
+        for (ItemStack itemStack : itemsToDrop) {
+            player.getWorld().dropItem(player.getLocation().add(0,1,0), itemStack);
         }
     }
 
@@ -307,7 +300,8 @@ public class BaseAuctionHouseMenu {
         auctionId = 0;
     }
 
-    public static void backUp() {
+    public static void backUp(AuctionItem item, boolean addOrRemove) {
+        // addOrRemove should be true if an item is being added, false if it is being removed
         Connection connection = null;
         Statement statement;
         try {
@@ -315,29 +309,16 @@ public class BaseAuctionHouseMenu {
             connection = SuperAuctionHouse.getConnection();
             statement = connection.createStatement();
 
-            // Bask up allitems
-            statement.executeUpdate("TRUNCATE TABLE auctionhouse;");
-            for (AuctionItem item : allItems) {
+            // Add item
+            if (addOrRemove) {
                 statement.executeUpdate("INSERT IGNORE INTO `auctionhouse`" +
                         "SET `auctionitem` = '" + auctionItemToJson(item).replaceAll("\"", "\\\\\"") + "'," +
                         "`auctionid` = " + item.getId() + ";");
-
-                plugin.getLogger().info("\"INSERT IGNORE INTO `auctionhouse`\" +\n" +
-                        "SET `auctionitem` = '" + auctionItemToJson(item).replaceAll("\"", "\\\\\"") + "'," +
-                        "`auctionid` = " + item.getId() + ";");
+            } else {
+                statement.executeUpdate("DELETE FROM `auctionhouse`" +
+                        "WHERE `auctionid` = + " + item.getId() + ";");
             }
 
-            // Back up stashes
-            statement.executeUpdate("TRUNCATE TABLE stashes;");
-            for (Map.Entry<UUID, List<ItemStack>> playerListEntry : stashes.entrySet()) {
-                List<ItemStack> items = (List<ItemStack>) ((Map.Entry) playerListEntry).getValue();
-
-                for (ItemStack item : items) {
-                    statement.executeUpdate("INSERT IGNORE INTO `stashes`" +
-                            "SET `player` = '" + playerListEntry.getKey().toString() + "'," +
-                            "`items` = '" + itemStackToJson(item).replaceAll("\"","\\\"") + "';");
-                }
-            }
         } catch (SQLException e) {
             plugin.getLogger().warning("Something has gone wrong with the database, see error log below");
             e.printStackTrace();
@@ -383,21 +364,6 @@ public class BaseAuctionHouseMenu {
                 addItem(item.getItem(), Bukkit.getOfflinePlayer(item.getPlayer()), item.getPrice());
             }
             plugin.getLogger().info("Auctionhouse has been loaded from database!");
-
-            // Load stashes
-            rs = statement.executeQuery("SELECT * FROM stashes;");
-            while (rs.next()) {
-                UUID uuid = UUID.fromString(rs.getString("player"));
-                ItemStack item = itemStackFromJson(rs.getString("items"));
-
-                if (stashes.containsKey(uuid)) {
-                    stashes.get(uuid).add(item);
-                } else {
-                    stashes.put(uuid, Collections.singletonList(item));
-                }
-            }
-
-            plugin.getLogger().info("Stashes have been loaded from database!");
 
         } catch (SQLException e) {
             plugin.getLogger().warning("Something has gone wrong with the database, see error log below");

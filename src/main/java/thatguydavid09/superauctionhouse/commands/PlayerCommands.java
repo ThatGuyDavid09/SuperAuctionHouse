@@ -12,7 +12,7 @@ import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
 import java.text.NumberFormat;
 
-public class SellCommand {
+public class PlayerCommands {
     public static boolean sell(Player player, String[] args) {
         ItemStack soldItem = player.getInventory().getItemInMainHand();
 
@@ -35,7 +35,7 @@ public class SellCommand {
             return true;
         }
 
-            BaseAuctionHouseMenu.addItem(player.getInventory().getItemInMainHand(), player, Long.parseLong(args[1]));
+        BaseAuctionHouseMenu.addItem(player.getInventory().getItemInMainHand(), player, Long.parseLong(args[1]));
 
         NumberFormat numberFormat = NumberFormat.getInstance();
         numberFormat.setGroupingUsed(true);
