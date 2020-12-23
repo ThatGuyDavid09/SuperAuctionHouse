@@ -10,7 +10,7 @@ import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 import java.util.HashMap;
 
 public class AuctionHouseCommand implements CommandExecutor {
-    private static HashMap<Player, PlayerAuctionHouse> auctionHousesByPlayer = new HashMap<>();
+    public static HashMap<Player, PlayerAuctionHouse> auctionHousesByPlayer = new HashMap<>();
 
     public static PlayerAuctionHouse getAuctionHouse(Player player) {
         return auctionHousesByPlayer.get(player);

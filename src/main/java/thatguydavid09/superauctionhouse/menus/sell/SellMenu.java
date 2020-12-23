@@ -8,19 +8,32 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class SellMenu {
-    private static ItemStack priceItem = null;
-    private static ItemStack confirmItem = null;
-    private static ItemStack cancelItem = null;
-    private static ItemStack playerNameItem = null;
-    private static ItemStack insbuyItem = null;
-    private static ItemStack auctionItem = null;
-    private static ItemStack timeItem = null;
+    public static HashMap<Player, Long> playersEnteringPrice = new HashMap<>();
+    public static HashMap<Player, Long> playersEnteringTime = new HashMap<>();
+    public static HashMap<Player, String> playersEnteringName = new HashMap<>();
+
+    public static ItemStack priceItem = null;
+    public static ItemStack confirmItem = null;
+    public static ItemStack cancelItem = null;
+    public static ItemStack playerNameItem = null;
+    public static ItemStack insbuyItem = null;
+    public static ItemStack auctionItem = null;
+    public static ItemStack timeItem = null;
+
     public final Player player;
     public final ItemStack item;
     public Inventory menu;
+
+    public long price = -1;
+    public long time = -1;
+    public String displayName = "";
+    public boolean mode = false; // False for instabuy, true for auction
 
     public boolean auctionMode = false;
 

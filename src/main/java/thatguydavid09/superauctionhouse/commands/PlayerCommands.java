@@ -1,6 +1,8 @@
 package thatguydavid09.superauctionhouse.commands;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -14,11 +16,14 @@ import thatguydavid09.superauctionhouse.menus.sell.SellMenu;
 import java.text.NumberFormat;
 
 public class PlayerCommands {
+    public static BiMap<Player, SellMenu> sellMenuByPlayer = HashBiMap.create();
+
     public static boolean sell(Player player, String[] args) {
         if (player.hasPermission("superauctionhouse.sell")) {
             ItemStack soldItem = player.getInventory().getItemInMainHand();
 
             SellMenu menu = new SellMenu(player, soldItem);
+            sellMenuByPlayer.put(player, menu);
             player.openInventory(menu.getInventory());
             return true;
 
