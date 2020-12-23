@@ -3,9 +3,12 @@ package thatguydavid09.superauctionhouse.events.sell;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import thatguydavid09.superauctionhouse.SuperAuctionHouse;
+import thatguydavid09.superauctionhouse.commands.PlayerCommands;
 import thatguydavid09.superauctionhouse.menus.sell.SellMenu;
 
 public class SellTimeChatEvent implements Listener {
@@ -29,7 +32,16 @@ public class SellTimeChatEvent implements Listener {
             }
 
             SellMenu.playersEnteringTime.replace(event.getPlayer(), -1L, time);
-            event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("").color(ChatColor.GREEN).create());
+
+            SellMenu menu = PlayerCommands.sellMenuByPlayer.get(event.getPlayer());
+
+            Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {
+                event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("").color(ChatColor.GREEN).create());
+                menu.time = SellMenu.playersEnteringTime.get(event.getPlayer());
+                SellMenu.playersEnteringTime.remove(event.getPlayer());
+                event.getPlayer().openInventory(PlayerCommands.sellMenuByPlayer.get(event.getPlayer()).getInventory());
+            });
+
             event.setCancelled(true);
         }
     }

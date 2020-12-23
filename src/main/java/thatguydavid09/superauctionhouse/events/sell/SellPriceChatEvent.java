@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
-import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.commands.PlayerCommands;
 import thatguydavid09.superauctionhouse.menus.sell.SellMenu;
 
@@ -33,7 +32,16 @@ public class SellPriceChatEvent implements Listener {
             }
 
             SellMenu.playersEnteringPrice.replace(event.getPlayer(), -1L, price);
-            event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("").color(ChatColor.GREEN).create());
+
+            SellMenu menu = PlayerCommands.sellMenuByPlayer.get(event.getPlayer());
+
+            Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {
+                event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("").color(ChatColor.GREEN).create());
+                menu.price = SellMenu.playersEnteringPrice.get(event.getPlayer());
+                SellMenu.playersEnteringPrice.remove(event.getPlayer());
+                event.getPlayer().openInventory(PlayerCommands.sellMenuByPlayer.get(event.getPlayer()).getInventory());
+            });
+
             event.setCancelled(true);
         }
     }

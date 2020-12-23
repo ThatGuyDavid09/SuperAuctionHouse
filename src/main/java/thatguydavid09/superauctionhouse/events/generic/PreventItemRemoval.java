@@ -77,16 +77,6 @@ public class PreventItemRemoval implements Listener {
                     event.getWhoClicked().closeInventory();
                     SellMenu.playersEnteringPrice.put((Player) event.getWhoClicked(), -1L);
                     ((Player) event.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired price of the item in chat! (Not negative and no decimals)").color(ChatColor.GREEN).create());
-
-                    // Wait for price
-                    long timesRun = 0;
-                    while ((SellMenu.playersEnteringPrice.get(event.getWhoClicked()) < 0 && ((Player) event.getWhoClicked()).isOnline()) || timesRun > 1000) {
-                        timesRun++;
-                    }
-
-                    menu.price = SellMenu.playersEnteringPrice.get(event.getWhoClicked());
-                    SellMenu.playersEnteringPrice.remove(event.getWhoClicked());
-                    event.getWhoClicked().openInventory(PlayerCommands.sellMenuByPlayer.get(event.getWhoClicked()).getInventory());
                     event.setCancelled(true);
                 }
 
@@ -95,16 +85,6 @@ public class PreventItemRemoval implements Listener {
                     event.getWhoClicked().closeInventory();
                     SellMenu.playersEnteringName.put((Player) event.getWhoClicked(), "");
                     ((Player) event.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired name to sell as in chat (Color codes work)").color(ChatColor.GREEN).create());
-
-                    // Wait for price
-                    long timesRun = 0;
-                    while ((SellMenu.playersEnteringName.get(event.getWhoClicked()).equals("") && ((Player) event.getWhoClicked()).isOnline()) || timesRun > 1000) {
-                        timesRun++;
-                    }
-
-                    menu.displayName = SellMenu.playersEnteringName.get(event.getWhoClicked());
-                    SellMenu.playersEnteringName.remove(event.getWhoClicked());
-                    event.getWhoClicked().openInventory(PlayerCommands.sellMenuByPlayer.get(event.getWhoClicked()).getInventory());
                     event.setCancelled(true);
                 }
 
@@ -113,16 +93,6 @@ public class PreventItemRemoval implements Listener {
                     event.getWhoClicked().closeInventory();
                     SellMenu.playersEnteringTime.put((Player) event.getWhoClicked(), -1L);
                     ((Player) event.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired auction time (in minutes)").color(ChatColor.GREEN).create());
-
-                    // Wait for price
-                    long timesRun = 0;
-                    while ((SellMenu.playersEnteringTime.get(event.getWhoClicked()) < 0 && ((Player) event.getWhoClicked()).isOnline()) || timesRun > 1000) {
-                        timesRun++;
-                    }
-
-                    menu.time = SellMenu.playersEnteringTime.get(event.getWhoClicked());
-                    SellMenu.playersEnteringTime.remove(event.getWhoClicked());
-                    event.getWhoClicked().openInventory(PlayerCommands.sellMenuByPlayer.get(event.getWhoClicked()).getInventory());
                     event.setCancelled(true);
                 }
 

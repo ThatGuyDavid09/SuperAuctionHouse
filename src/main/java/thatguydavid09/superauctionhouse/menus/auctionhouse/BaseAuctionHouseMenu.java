@@ -45,7 +45,6 @@ public class BaseAuctionHouseMenu {
     // List of all items
     private static List<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
 
-    // TODO add way to back up ah
     public static void createAuctionHouse() {
         // Sets base auction house inventory
         // Make auction house inventory
