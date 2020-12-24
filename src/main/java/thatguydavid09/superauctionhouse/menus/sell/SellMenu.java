@@ -8,7 +8,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
@@ -24,6 +23,7 @@ public class SellMenu {
     public static ItemStack playerNameItem = null;
     public static ItemStack insbuyItem = null;
     public static ItemStack auctionItem = null;
+    public static ItemStack infSellItem = null;
     public static ItemStack timeItem = null;
 
     public final Player player;
@@ -33,9 +33,7 @@ public class SellMenu {
     public long price = -1;
     public long time = -1;
     public String displayName = "";
-    public boolean mode = false; // False for instabuy, true for auction
-
-    public boolean auctionMode = false;
+    public int mode = 0; // 0 for instabuy, 1 for auction, 2 for infSell
 
     public SellMenu(Player player, ItemStack item) {
         this.player = player;
@@ -44,7 +42,14 @@ public class SellMenu {
         createMenu();
     }
 
+    public void refreshInventory() {
+        player.closeInventory();
+        createMenu();
+        player.openInventory(menu);
+    }
+
     private void createMenu() {
+        menu = null;
         menu = Bukkit.createInventory(null, 54, "Sell item");
 
         if (priceItem == null) {
@@ -83,22 +88,44 @@ public class SellMenu {
             meta = timeItem.getItemMeta();
             meta.setDisplayName(ChatColor.GREEN + "Set time");
             timeItem.setItemMeta(meta);
+
+            infSellItem = new ItemStack(Material.GOLD_BLOCK);
+            meta = infSellItem.getItemMeta();
+            meta.setDisplayName(ChatColor.GREEN + "Infinite Sell");
+            infSellItem.setItemMeta(meta);
         }
 
         // Set items
         menu.setItem(13, item);
 
         menu.setItem(29, priceItem);
-        menu.setItem(31, confirmItem);
+        menu.setItem(31, placeholder);
 
         menu.setItem(49, cancelItem);
 
-        if (auctionMode) {
-            menu.setItem(28, timeItem);
-            menu.setItem(33, auctionItem);
-        } else {
-            menu.setItem(33, insbuyItem);
-            menu.setItem(28, placeholder);
+        if (price > 0) {
+            if (mode == 1) {
+                if (time > 0) {
+                    menu.setItem(31, confirmItem);
+                }
+            } else {
+                menu.setItem(31, confirmItem);
+            }
+        }
+
+        // Set correct item for mode
+        switch (mode) {
+            case 0:
+                menu.setItem(33, insbuyItem);
+                menu.setItem(28, timeItem);
+                break;
+            case 1:
+                menu.setItem(33, auctionItem);
+                menu.setItem(28, placeholder);
+                break;
+            case 2:
+                menu.setItem(33, infSellItem);
+                menu.setItem(28, placeholder);
         }
 
         if (player.hasPermission("superauctionhouse.sell.asothers")) {
@@ -106,7 +133,7 @@ public class SellMenu {
         }
 
         ItemStack[] contents = menu.getContents();
-       int index = 0;
+        int index = 0;
         for (ItemStack item : contents) {
             if (item == null) {
                 contents[index] = placeholder;
@@ -119,5 +146,21 @@ public class SellMenu {
 
     public Inventory getInventory() {
         return menu;
+    }
+
+    public void incrementMode() {
+        if (mode > 1) {
+            mode = 0;
+        }
+
+        if (mode == 1) {
+            if (player.hasPermission("superauctionhouse.sell.infsell")) {
+                mode++;
+            } else {
+                mode = 0;
+            }
+        } else {
+            mode++;
+        }
     }
 }

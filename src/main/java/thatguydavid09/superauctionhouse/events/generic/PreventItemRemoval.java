@@ -3,7 +3,6 @@ package thatguydavid09.superauctionhouse.events.generic;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -93,6 +92,13 @@ public class PreventItemRemoval implements Listener {
                     event.getWhoClicked().closeInventory();
                     SellMenu.playersEnteringTime.put((Player) event.getWhoClicked(), -1L);
                     ((Player) event.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired auction time (in minutes)").color(ChatColor.GREEN).create());
+                    event.setCancelled(true);
+                }
+
+                // InsBuy item clicked, change mode
+                if (event.getRawSlot() == 28 && event.getInventory().getItem(33).getType() == Material.GOLD_INGOT) {
+                    menu.incrementMode();
+                    menu.refreshInventory();
                     event.setCancelled(true);
                 }
 

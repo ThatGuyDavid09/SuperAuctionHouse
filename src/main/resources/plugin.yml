@@ -27,6 +27,7 @@ permissions:
     children:
       superauctionhouse.sell.asothers: true
       superauctionhouse.clear: true
+      superauctionhouse.sell.infsell: true
 
   superauctionhouse.player:
     description: Gives access to all SuperAuctionHouse player commands
@@ -51,6 +52,10 @@ permissions:
 
   superauctionhouse.sell.asothers:
     description: Allows a player to sell items for a specific price as another username.
+    default: op
+
+  superauctionhouse.sell.infsell:
+    description: Allows a player to list an item for sale infinitely. When the item is bought, it will immediately be resold.
     default: op
 
   superauctionhouse.help:
