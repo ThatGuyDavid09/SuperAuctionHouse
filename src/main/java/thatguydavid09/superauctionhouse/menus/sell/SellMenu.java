@@ -112,35 +112,29 @@ public class SellMenu {
     }
 
     private void updateItems() {
+        ItemMeta meta = priceItem.getItemMeta();
         if (price > 0) {
-            ItemMeta meta = priceItem.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + "Set price: " + ChatColor.GREEN + price + ChatColor.GOLD + " " + (price == 1 ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()));
-            priceItem.setItemMeta(meta);
         } else {
-            ItemMeta meta = priceItem.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + "Set price");
-            priceItem.setItemMeta(meta);
         }
+        priceItem.setItemMeta(meta);
 
+        meta = timeItem.getItemMeta();
         if (time > 0) {
-            ItemMeta meta = timeItem.getItemMeta();
             meta.setDisplayName(ChatColor.GREEN + "Set time: " + ChatColor.GOLD + time + ChatColor.GOLD + " " + (time == 1 ? "minute" : "minutes"));
-            timeItem.setItemMeta(meta);
         } else {
-            ItemMeta meta = timeItem.getItemMeta();
             meta.setDisplayName(ChatColor.GREEN + "Set time");
-            timeItem.setItemMeta(meta);
         }
+        timeItem.setItemMeta(meta);
 
+        meta = playerNameItem.getItemMeta();
         if (!Strings.isNullOrEmpty(displayName)) {
-            ItemMeta meta = playerNameItem.getItemMeta();
             meta.setDisplayName(ChatColor.GREEN + "Change selling name: " + ChatColor.GRAY + displayName);
-            playerNameItem.setItemMeta(meta);
         } else {
-            ItemMeta meta = playerNameItem.getItemMeta();
             meta.setDisplayName(ChatColor.GREEN + "Change selling name");
-            playerNameItem.setItemMeta(meta);
         }
+        playerNameItem.setItemMeta(meta);
     }
 
     private void createItems() {
