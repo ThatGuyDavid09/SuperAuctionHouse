@@ -6,13 +6,17 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class AuctionItem implements Serializable {
+    private final String playerName;
+    private final boolean infsell;
+    private final boolean auction;
+    private final long time;
     private final long id;
     private final long price;
     private final String name;
     private final ItemStack item;
-    private final UUID player;
+    private final UUID playerId;
 
-    public AuctionItem(ItemStack item, long id, long price, UUID player) {
+    public AuctionItem(ItemStack item, long id, long price, UUID playerId, long time, boolean infsell, String playerName) {
         this.item = item;
         this.id = id;
         this.price = price;
@@ -21,7 +25,13 @@ public class AuctionItem implements Serializable {
         } else {
             name = item.getType().toString();
         }
-        this.player = player;
+        this.playerId = playerId;
+
+        this.time = time < 0 ? -1 : time;
+        this.infsell = infsell;
+        this.auction = time > 0;
+
+        this.playerName = playerName;
     }
 
     public long getPrice() {
@@ -40,7 +50,15 @@ public class AuctionItem implements Serializable {
         return item;
     }
 
-    public UUID getPlayer() {
-        return player;
+    public UUID getPlayerId() {
+        return playerId;
     }
+
+    public String getPlayerName() { return playerName; }
+
+    public boolean isInfsell() { return infsell; }
+
+    public boolean isAuction() { return auction; }
+
+    public long getTime() { return time; }
 }

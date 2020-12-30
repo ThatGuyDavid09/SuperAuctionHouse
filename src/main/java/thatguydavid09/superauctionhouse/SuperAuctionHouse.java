@@ -15,6 +15,7 @@ import thatguydavid09.superauctionhouse.events.generic.PlayerFreeze;
 import thatguydavid09.superauctionhouse.events.generic.PreventItemRemoval;
 import thatguydavid09.superauctionhouse.events.sell.SellNameChatEvent;
 import thatguydavid09.superauctionhouse.events.sell.SellPriceChatEvent;
+import thatguydavid09.superauctionhouse.events.sell.SellTimeChatEvent;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
 import java.sql.Connection;
@@ -98,6 +99,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AuctionHouseChat(), this);
         getServer().getPluginManager().registerEvents(new SellPriceChatEvent(), this);
         getServer().getPluginManager().registerEvents(new SellNameChatEvent(), this);
+        getServer().getPluginManager().registerEvents(new SellTimeChatEvent(), this);
         getServer().getPluginManager().registerEvents(new PlayerFreeze(), this);
         getServer().getPluginManager().registerEvents(new AuctionHouseRegister(), this);
 

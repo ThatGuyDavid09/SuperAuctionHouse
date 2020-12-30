@@ -8,6 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
@@ -26,84 +27,106 @@ public class PreventItemRemoval implements Listener {
 
     @EventHandler
     public void onItemClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
 
         // List of forbidden inventory titles
         List<String> forbiddenTitles = new ArrayList<>(Arrays.asList("Auction House", "Confirm purchase", "Sell item"));
-        if (event.getClickedInventory() != null && forbiddenTitles.contains(event.getView().getTitle())) {
-            // Identify inventory as ah
-            List<Inventory> auctionHousePage = AuctionHouseCommand.getAuctionHouse((Player) event.getWhoClicked()).getAuctionHouse();
-            if (auctionHousePage.contains(event.getClickedInventory())) {
-                if (event.getRawSlot() == 50 && event.getCurrentItem().getType() == Material.ARROW) {
-                    AuctionHouseActions.nextPage((Player) event.getWhoClicked());
-                    event.setCancelled(true);
-                } else if (event.getRawSlot() == 48 && event.getCurrentItem().getType() == Material.ARROW) {
-                    AuctionHouseActions.previousPage((Player) event.getWhoClicked());
-                    event.setCancelled(true);
-                } else if (event.getRawSlot() == 49 && event.getCurrentItem().getType() == Material.SUNFLOWER) {
-                    AuctionHouseActions.cycleSortMode((Player) event.getWhoClicked());
-                    event.setCancelled(true);
-                } else if (event.getRawSlot() == 52 && event.getCurrentItem().getType() == Material.OAK_SIGN) {
-                    event.setCancelled(true);
-                    AuctionHouseActions.find((Player) event.getWhoClicked());
-                } else if (event.getRawSlot() <= 44) {
-                    // AH item is clicked
-                    confirm = new BuyMenu(BaseAuctionHouseMenu.itemStackToAuctionItem(event.getCurrentItem()), (Player) event.getWhoClicked());
 
-                    ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                    confirm.openBuyMenu();
-                } else {
-                    event.setCancelled(true);
-                }
-            } else if (confirm != null && event.getInventory() == confirm.getBuyMenu()) {
-                // Identify inventory as BuyMenu and restrict to buyMenu
-                if (event.getRawSlot() >= 0 || event.getRawSlot() <= 8) {
-                    if (event.getRawSlot() == 2) {
-                        confirm.confirmPurchase();
+        if (event.getClick() == ClickType.LEFT) {
+
+            if (event.getClickedInventory() != null && forbiddenTitles.contains(event.getView().getTitle())) {
+                // Identify inventory as ah
+                List<Inventory> auctionHousePage = AuctionHouseCommand.getAuctionHouse(player).getAuctionHouse();
+                if (auctionHousePage.contains(event.getClickedInventory())) {
+                    if (event.getRawSlot() == 50 && event.getCurrentItem().getType() == Material.ARROW) {
+                        AuctionHouseActions.nextPage(player);
                         event.setCancelled(true);
-                    } else if (event.getRawSlot() == 6) {
-                        confirm.cancelPurchase();
+                    } else if (event.getRawSlot() == 48 && event.getCurrentItem().getType() == Material.ARROW) {
+                        AuctionHouseActions.previousPage(player);
                         event.setCancelled(true);
+                    } else if (event.getRawSlot() == 49 && event.getCurrentItem().getType() == Material.SUNFLOWER) {
+                        AuctionHouseActions.cycleSortMode(player);
+                        event.setCancelled(true);
+                    } else if (event.getRawSlot() == 52 && event.getCurrentItem().getType() == Material.OAK_SIGN) {
+                        event.setCancelled(true);
+                        AuctionHouseActions.find(player);
+                    } else if (event.getRawSlot() <= 44) {
+                        // AH item is clicked
+                        if (event.getCurrentItem() != null) {
+                            confirm = new BuyMenu(BaseAuctionHouseMenu.itemStackToAuctionItem(event.getCurrentItem()), player);
+                            (player).playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
+                            confirm.openBuyMenu();
+                        } else {
+                            event.setCancelled(true);
+                        }
                     } else {
                         event.setCancelled(true);
                     }
-                }
-                // Identify as sell menu inventory
-            } else if (event.getInventory().getItem(29).getType() == Material.SUNFLOWER) {
-                SellMenu menu = PlayerCommands.sellMenuByPlayer.get(event.getWhoClicked());
+                } else if (confirm != null && event.getInventory() == confirm.getBuyMenu()) {
+                    // Identify inventory as BuyMenu and restrict to buyMenu
+                    if (event.getRawSlot() >= 0 || event.getRawSlot() <= 8) {
+                        if (event.getRawSlot() == 2) {
+                            confirm.confirmPurchase();
+                            event.setCancelled(true);
+                        } else if (event.getRawSlot() == 6) {
+                            confirm.cancelPurchase();
+                            event.setCancelled(true);
+                        } else {
+                            event.setCancelled(true);
+                        }
+                    }
+                    // Identify as sell menu inventory
+                } else if (event.getInventory().getItem(29).getType() == Material.SUNFLOWER) {
+                    SellMenu menu = PlayerCommands.sellMenuByPlayer.get(player);
 
-                // Handle price
-                if (event.getRawSlot() == 29 && event.getInventory().getItem(29).getType() == Material.SUNFLOWER) {
-                    event.getWhoClicked().closeInventory();
-                    SellMenu.playersEnteringPrice.put((Player) event.getWhoClicked(), -1L);
-                    ((Player) event.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired price of the item in chat! (Not negative and no decimals)").color(ChatColor.GREEN).create());
+                    // Handle price
+                    if (event.getRawSlot() == 29 && event.getInventory().getItem(29).getType() == Material.SUNFLOWER) {
+                        player.closeInventory();
+                        SellMenu.playersEnteringPrice.put(player, -1L);
+                        (player).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired price of the item in chat! (Not negative and no decimals)").color(ChatColor.GREEN).create());
+                        event.setCancelled(true);
+                    }
+
+                    // Handle setting custom name
+                    if (event.getRawSlot() == 40 && event.getInventory().getItem(40).getType() == Material.PLAYER_HEAD) {
+                        player.closeInventory();
+                        SellMenu.playersEnteringName.put(player, "");
+                        (player).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired name to sell as in chat (Color codes work)").color(ChatColor.GREEN).create());
+                        event.setCancelled(true);
+                    }
+
+                    // Handle setting time
+                    if (event.getRawSlot() == 28 && menu.mode == 1) {
+                        player.closeInventory();
+                        SellMenu.playersEnteringTime.put(player, -1L);
+                        (player).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired auction time (in minutes)").color(ChatColor.GREEN).create());
+                        event.setCancelled(true);
+                    }
+
+                    if (event.getRawSlot() == 31 && event.getInventory().getItem(31).getType() == Material.GREEN_CONCRETE) {
+                        PlayerCommands.confirmSell(menu);
+                        player.closeInventory();
+                        player.getInventory().setItemInMainHand(null);
+                        PlayerCommands.sellMenuByPlayer.remove(player);
+                    }
+
+                    if (event.getRawSlot() == 49) {
+                        player.closeInventory();
+                        PlayerCommands.sellMenuByPlayer.remove(player);
+                    }
+
+                    // mode item clicked, change mode
+                    if (event.getRawSlot() == 33) {
+                        menu.incrementMode();
+                        menu.refreshInventory();
+                        event.setCancelled(true);
+                    }
+
                     event.setCancelled(true);
                 }
-
-                // Handle setting custom name
-                if (event.getRawSlot() == 40 && event.getInventory().getItem(40).getType() == Material.PLAYER_HEAD) {
-                    event.getWhoClicked().closeInventory();
-                    SellMenu.playersEnteringName.put((Player) event.getWhoClicked(), "");
-                    ((Player) event.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired name to sell as in chat (Color codes work)").color(ChatColor.GREEN).create());
-                    event.setCancelled(true);
-                }
-
-                // Handle setting time
-                if (event.getRawSlot() == 28 && event.getInventory().getItem(40).getType() == Material.CLOCK) {
-                    event.getWhoClicked().closeInventory();
-                    SellMenu.playersEnteringTime.put((Player) event.getWhoClicked(), -1L);
-                    ((Player) event.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the desired auction time (in minutes)").color(ChatColor.GREEN).create());
-                    event.setCancelled(true);
-                }
-
-                // InsBuy item clicked, change mode
-                if (event.getRawSlot() == 28 && event.getInventory().getItem(33).getType() == Material.GOLD_INGOT) {
-                    menu.incrementMode();
-                    menu.refreshInventory();
-                    event.setCancelled(true);
-                }
-
-                event.setCancelled(true);
             }
+        } else {
+            event.setCancelled(true);
         }
     }
 }

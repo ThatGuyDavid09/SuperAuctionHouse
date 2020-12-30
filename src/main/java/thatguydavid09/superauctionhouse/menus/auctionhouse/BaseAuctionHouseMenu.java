@@ -12,7 +12,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.json.JSONObject;
@@ -32,7 +31,6 @@ import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 public class BaseAuctionHouseMenu {
     // Other necessary stuff
     private static final SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
-    public static final NamespacedKey auctionIdKey = new NamespacedKey(plugin, "id");
     public static List<Player> playersFindingStuff = new ArrayList<>();
     private static Inventory baseAuctionHouse;
     private static long auctionId = 0; // This needs to be created from backup
@@ -121,17 +119,13 @@ public class BaseAuctionHouseMenu {
     }
 
     // Used for most external applications
-    public static void addItem(ItemStack item, Player sellingPlayer, long price) {
+    public static void addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell) {
         ItemStack itemToAdd = item.clone();
 
         // Add correct lore
         ItemStack itemWithLore = addLore(itemToAdd, sellingPlayer, price);
 
-        ItemMeta itemMeta = itemWithLore.getItemMeta();
-        itemMeta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
-        itemWithLore.setItemMeta(itemMeta);
-
-        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId());
+        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId(), time, infsell, sellingPlayer.getDisplayName());
 
         updateDictionaries(auctionItem, sellingPlayer.getUniqueId());
 
@@ -141,17 +135,13 @@ public class BaseAuctionHouseMenu {
     }
 
     // Used to add item with a special player name
-    public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName) {
+    public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell) {
         ItemStack itemToAdd = item.clone();
 
         // Add correct lore
         ItemStack itemWithLore = addLore(itemToAdd, playerName, price);
 
-        ItemMeta itemMeta = itemWithLore.getItemMeta();
-        itemMeta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
-        itemWithLore.setItemMeta(itemMeta);
-
-        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId());
+        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId(), time, infsell, playerName);
 
         updateDictionaries(auctionItem, sellingPlayer.getUniqueId());
 
@@ -160,22 +150,21 @@ public class BaseAuctionHouseMenu {
         backUp(auctionItem, true);
     }
 
-    // Used for adding items from backup
-    private static void addItem(ItemStack item, OfflinePlayer sellingPlayer, long price) {
-        ItemStack itemToAdd = item.clone();
+    // This is for infSell and other things
+    private static void addItem(AuctionItem item, boolean backup) {
+        ItemStack itemToAdd = item.getItem();
 
-        // Add correct lore
-        ItemStack itemWithLore = addLore(itemToAdd, sellingPlayer, price);
+        ItemStack itemWithLore = addLore(item.getItem(), item.getPlayerName(), item.getPrice());
 
-        ItemMeta itemMeta = itemWithLore.getItemMeta();
-        itemMeta.getPersistentDataContainer().set(auctionIdKey, PersistentDataType.LONG, auctionId);
-        itemWithLore.setItemMeta(itemMeta);
+        AuctionItem auctionItem = new AuctionItem(itemWithLore, item.getId(), item.getPrice(), item.getPlayerId(), item.getTime(), item.isInfsell(), item.getPlayerName());
 
-        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId());
-
-        updateDictionaries(auctionItem, sellingPlayer.getUniqueId());
+        updateDictionaries(auctionItem, item.getPlayerId());
 
         auctionId++;
+
+        if (backup) {
+            backUp(item, true);
+        }
     }
 
     public static void removeItem(AuctionItem auctionItem, Player seller) {
@@ -183,6 +172,11 @@ public class BaseAuctionHouseMenu {
         allItems.remove(auctionItem);
 
         backUp(auctionItem, false);
+
+        if (auctionItem.isInfsell()) {
+            AuctionItem item = new AuctionItem(removeLore(auctionItem.getItem()), auctionItem.getId(), auctionItem.getPrice(), auctionItem.getPlayerId(), auctionItem.getTime(), auctionItem.isInfsell(), auctionItem.getPlayerName());
+            addItem(item, true);
+        }
     }
 
     private static void updateDictionaries(AuctionItem item, UUID sellingPlayer) {
@@ -203,13 +197,12 @@ public class BaseAuctionHouseMenu {
 
     public static void giveItemToPlayer(ItemStack item, Player player) {
         ItemMeta meta = item.getItemMeta();
-        meta.getPersistentDataContainer().remove(auctionIdKey);
         item.setItemMeta(meta);
 
         List<ItemStack> itemsToDrop = new ArrayList<>(player.getInventory().addItem(item).values());
 
         for (ItemStack itemStack : itemsToDrop) {
-            player.getWorld().dropItem(player.getLocation().add(0,1,0), itemStack);
+            player.getWorld().dropItem(player.getLocation().add(0, 1, 0), itemStack);
         }
     }
 
@@ -222,12 +215,12 @@ public class BaseAuctionHouseMenu {
 
         try {
             if (meta.getLore() != null) {
-                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
+                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
             } else {
-                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
             }
         } catch (NullPointerException e) {
-            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + ChatColor.GRAY + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
         }
 
         itemToRet.setItemMeta(meta);
@@ -244,12 +237,12 @@ public class BaseAuctionHouseMenu {
 
         try {
             if (meta.getLore() != null) {
-                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
+                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
             } else {
-                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
             }
         } catch (NullPointerException e) {
-            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
         }
 
         itemToRet.setItemMeta(meta);
@@ -267,17 +260,17 @@ public class BaseAuctionHouseMenu {
             if (meta.getLore() != null) {
                 meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
             } else {
-                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
             }
         } catch (NullPointerException e) {
-            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + ChatColor.GRAY + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
         }
 
         itemToRet.setItemMeta(meta);
         return itemToRet;
     }
 
-    private static ItemStack removeLore(ItemStack item) {
+    public static ItemStack removeLore(ItemStack item) {
         ItemStack itemToRet = item.clone();
         ItemMeta meta = itemToRet.getItemMeta();
         List<String> lore = meta.getLore();
@@ -404,7 +397,7 @@ public class BaseAuctionHouseMenu {
             rs = statement.executeQuery("SELECT auctionitem FROM auctionhouse;");
             while (rs.next()) {
                 AuctionItem item = auctionItemFromJson(rs.getString("auctionitem"));
-                addItem(item.getItem(), Bukkit.getOfflinePlayer(item.getPlayer()), item.getPrice());
+                addItem(item, false);
             }
             plugin.getLogger().info("Auctionhouse has been loaded from database!");
 
@@ -431,7 +424,10 @@ public class BaseAuctionHouseMenu {
                 .put("id", item.getId())
                 .put("price", item.getPrice())
                 .put("item", StringEscapeUtils.escapeSql(itemStackToJson(item.getItem())))
-                .put("player", StringEscapeUtils.escapeSql(item.getPlayer().toString()))
+                .put("player", StringEscapeUtils.escapeSql(item.getPlayerId().toString()))
+                .put("time", item.getTime())
+                .put("infsell", item.isInfsell())
+                .put("playerName", item.getPlayerName())
                 .toString());
     }
 
@@ -630,7 +626,7 @@ public class BaseAuctionHouseMenu {
     public static AuctionItem auctionItemFromJson(String string) throws IllegalStateException {
         plugin.getLogger().info(string.replaceAll("\"", "\\\""));
         JSONObject json = new JSONObject(string.replaceAll("\"", "\\\""));
-        return new AuctionItem(itemStackFromJson(json.getString("item")), json.getLong("id"), json.getLong("price"), UUID.fromString(json.getString("player")));
+        return new AuctionItem(itemStackFromJson(json.getString("item")), json.getLong("id"), json.getLong("price"), UUID.fromString(json.getString("player")), json.getLong("time"), json.getBoolean("infsell"), json.getString("playerName"));
     }
 
     public static ItemStack itemStackFromJson(String string) {

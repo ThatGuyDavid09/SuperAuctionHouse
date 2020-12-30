@@ -30,9 +30,10 @@ public class SellNameChatEvent implements Listener {
 
             Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {
                 event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("").color(ChatColor.GREEN).create());
-                menu.displayName = SellMenu.playersEnteringName.get(event.getPlayer());
+                menu.displayName = SellMenu.playersEnteringName.get(event.getPlayer()).replace("&", "§");
                 SellMenu.playersEnteringName.remove(event.getPlayer());
                 event.getPlayer().openInventory(PlayerCommands.sellMenuByPlayer.get(event.getPlayer()).getInventory());
+                menu.refreshInventory();
             });
 
             event.setCancelled(true);

@@ -23,7 +23,7 @@ public class SellTimeChatEvent implements Listener {
                 return;
             }
 
-            Long time = Long.parseLong(event.getMessage());
+            long time = Long.parseLong(event.getMessage());
 
             if (time < 0) {
                 event.getPlayer().sendMessage(ChatColor.RED + "The time must be greater than 0!");
@@ -40,6 +40,7 @@ public class SellTimeChatEvent implements Listener {
                 menu.time = SellMenu.playersEnteringTime.get(event.getPlayer());
                 SellMenu.playersEnteringTime.remove(event.getPlayer());
                 event.getPlayer().openInventory(PlayerCommands.sellMenuByPlayer.get(event.getPlayer()).getInventory());
+                menu.refreshInventory();
             });
 
             event.setCancelled(true);

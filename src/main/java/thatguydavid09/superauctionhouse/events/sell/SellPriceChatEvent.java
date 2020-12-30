@@ -23,7 +23,7 @@ public class SellPriceChatEvent implements Listener {
                 return;
             }
 
-            Long price = Long.parseLong(event.getMessage());
+            long price = Long.parseLong(event.getMessage());
 
             if (price < 0) {
                 event.getPlayer().sendMessage(ChatColor.RED + "The price must be greater than 0!");
@@ -40,6 +40,7 @@ public class SellPriceChatEvent implements Listener {
                 menu.price = SellMenu.playersEnteringPrice.get(event.getPlayer());
                 SellMenu.playersEnteringPrice.remove(event.getPlayer());
                 event.getPlayer().openInventory(PlayerCommands.sellMenuByPlayer.get(event.getPlayer()).getInventory());
+                menu.refreshInventory();
             });
 
             event.setCancelled(true);

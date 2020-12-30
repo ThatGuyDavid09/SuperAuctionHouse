@@ -76,7 +76,7 @@ public class BuyMenu {
             BaseAuctionHouseMenu.removeMoney(player, item.getPrice());
             BaseAuctionHouseMenu.addMoney(player, item.getPrice());
             BaseAuctionHouseMenu.removeItem(item, player);
-            BaseAuctionHouseMenu.giveItemToPlayer(item.getItem(), player);
+            BaseAuctionHouseMenu.giveItemToPlayer(BaseAuctionHouseMenu.removeLore(item.getItem()), player);
 
             // Make name look nicer
             String name = item.getName();

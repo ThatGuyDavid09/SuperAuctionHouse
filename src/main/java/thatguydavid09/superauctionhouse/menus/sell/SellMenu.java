@@ -1,5 +1,6 @@
 package thatguydavid09.superauctionhouse.menus.sell;
 
+import com.google.common.base.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -7,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
 import java.util.HashMap;
 
@@ -21,7 +23,7 @@ public class SellMenu {
     public static ItemStack confirmItem = null;
     public static ItemStack cancelItem = null;
     public static ItemStack playerNameItem = null;
-    public static ItemStack insbuyItem = null;
+    public static ItemStack instaBuyItem = null;
     public static ItemStack auctionItem = null;
     public static ItemStack infSellItem = null;
     public static ItemStack timeItem = null;
@@ -39,61 +41,26 @@ public class SellMenu {
         this.player = player;
         this.item = item;
 
+        if (priceItem == null) {
+            createItems();
+        }
+
         createMenu();
     }
 
     public void refreshInventory() {
         player.closeInventory();
+
         createMenu();
+
         player.openInventory(menu);
     }
 
     private void createMenu() {
+        updateItems();
+
         menu = null;
         menu = Bukkit.createInventory(null, 54, "Sell item");
-
-        if (priceItem == null) {
-            // Create items
-            priceItem = new ItemStack(Material.SUNFLOWER);
-            ItemMeta meta = priceItem.getItemMeta();
-            meta.setDisplayName(ChatColor.GOLD + "Set price");
-            priceItem.setItemMeta(meta);
-
-            confirmItem = new ItemStack(Material.GREEN_CONCRETE);
-            meta = confirmItem.getItemMeta();
-            meta.setDisplayName(ChatColor.GREEN + "Confirm purchase");
-            confirmItem.setItemMeta(meta);
-
-            cancelItem = new ItemStack(Material.BARRIER);
-            meta = cancelItem.getItemMeta();
-            meta.setDisplayName(ChatColor.RED + "Cancel purchase");
-            cancelItem.setItemMeta(meta);
-
-            playerNameItem = new ItemStack(Material.PLAYER_HEAD);
-            meta = playerNameItem.getItemMeta();
-            meta.setDisplayName(ChatColor.GREEN + "Change selling name");
-            playerNameItem.setItemMeta(meta);
-
-            insbuyItem = new ItemStack(Material.GOLD_INGOT);
-            meta = insbuyItem.getItemMeta();
-            meta.setDisplayName(ChatColor.GOLD + "Instant buy");
-            insbuyItem.setItemMeta(meta);
-
-            auctionItem = new ItemStack(Material.CLOCK);
-            meta = auctionItem.getItemMeta();
-            meta.setDisplayName(ChatColor.GOLD + "Auction");
-            auctionItem.setItemMeta(meta);
-
-            timeItem = new ItemStack(Material.CLOCK);
-            meta = timeItem.getItemMeta();
-            meta.setDisplayName(ChatColor.GREEN + "Set time");
-            timeItem.setItemMeta(meta);
-
-            infSellItem = new ItemStack(Material.GOLD_BLOCK);
-            meta = infSellItem.getItemMeta();
-            meta.setDisplayName(ChatColor.GREEN + "Infinite Sell");
-            infSellItem.setItemMeta(meta);
-        }
 
         // Set items
         menu.setItem(13, item);
@@ -116,12 +83,12 @@ public class SellMenu {
         // Set correct item for mode
         switch (mode) {
             case 0:
-                menu.setItem(33, insbuyItem);
-                menu.setItem(28, timeItem);
+                menu.setItem(33, instaBuyItem);
+                menu.setItem(28, placeholder);
                 break;
             case 1:
                 menu.setItem(33, auctionItem);
-                menu.setItem(28, placeholder);
+                menu.setItem(28, timeItem);
                 break;
             case 2:
                 menu.setItem(33, infSellItem);
@@ -144,6 +111,81 @@ public class SellMenu {
         menu.setContents(contents);
     }
 
+    private void updateItems() {
+        if (price > 0) {
+            ItemMeta meta = priceItem.getItemMeta();
+            meta.setDisplayName(ChatColor.GOLD + "Set price: " + ChatColor.GREEN + price + ChatColor.GOLD + " " + (price == 1 ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()));
+            priceItem.setItemMeta(meta);
+        } else {
+            ItemMeta meta = priceItem.getItemMeta();
+            meta.setDisplayName(ChatColor.GOLD + "Set price");
+            priceItem.setItemMeta(meta);
+        }
+
+        if (time > 0) {
+            ItemMeta meta = timeItem.getItemMeta();
+            meta.setDisplayName(ChatColor.GREEN + "Set time: " + ChatColor.GOLD + time + ChatColor.GOLD + " " + (time == 1 ? "minute" : "minutes"));
+            timeItem.setItemMeta(meta);
+        } else {
+            ItemMeta meta = timeItem.getItemMeta();
+            meta.setDisplayName(ChatColor.GREEN + "Set time");
+            timeItem.setItemMeta(meta);
+        }
+
+        if (!Strings.isNullOrEmpty(displayName)) {
+            ItemMeta meta = playerNameItem.getItemMeta();
+            meta.setDisplayName(ChatColor.GREEN + "Change selling name: " + ChatColor.GRAY + displayName);
+            playerNameItem.setItemMeta(meta);
+        } else {
+            ItemMeta meta = playerNameItem.getItemMeta();
+            meta.setDisplayName(ChatColor.GREEN + "Change selling name");
+            playerNameItem.setItemMeta(meta);
+        }
+    }
+
+    private void createItems() {
+        // Create items
+        priceItem = new ItemStack(Material.SUNFLOWER);
+        ItemMeta meta = priceItem.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "Set price");
+        priceItem.setItemMeta(meta);
+
+        confirmItem = new ItemStack(Material.GREEN_CONCRETE);
+        meta = confirmItem.getItemMeta();
+        meta.setDisplayName(ChatColor.GREEN + "Confirm purchase");
+        confirmItem.setItemMeta(meta);
+
+        cancelItem = new ItemStack(Material.BARRIER);
+        meta = cancelItem.getItemMeta();
+        meta.setDisplayName(ChatColor.RED + "Cancel purchase");
+        cancelItem.setItemMeta(meta);
+
+        playerNameItem = new ItemStack(Material.PLAYER_HEAD);
+        meta = playerNameItem.getItemMeta();
+        meta.setDisplayName(ChatColor.GREEN + "Change selling name");
+        playerNameItem.setItemMeta(meta);
+
+        instaBuyItem = new ItemStack(Material.GOLD_INGOT);
+        meta = instaBuyItem.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "Instant buy");
+        instaBuyItem.setItemMeta(meta);
+
+        auctionItem = new ItemStack(Material.CLOCK);
+        meta = auctionItem.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "Auction");
+        auctionItem.setItemMeta(meta);
+
+        timeItem = new ItemStack(Material.CLOCK);
+        meta = timeItem.getItemMeta();
+        meta.setDisplayName(ChatColor.GREEN + "Set time");
+        timeItem.setItemMeta(meta);
+
+        infSellItem = new ItemStack(Material.GOLD_BLOCK);
+        meta = infSellItem.getItemMeta();
+        meta.setDisplayName(ChatColor.GREEN + "Infinite Sell");
+        infSellItem.setItemMeta(meta);
+    }
+
     public Inventory getInventory() {
         return menu;
     }
@@ -151,6 +193,7 @@ public class SellMenu {
     public void incrementMode() {
         if (mode > 1) {
             mode = 0;
+            return;
         }
 
         if (mode == 1) {
