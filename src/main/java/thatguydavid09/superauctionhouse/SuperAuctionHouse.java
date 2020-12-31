@@ -31,7 +31,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
     private static final Logger log = Logger.getLogger("Minecraft");
     public static ItemStack placeholder;
     // Database stuff
-    public static String host, port, database, username, password;
+    private static String host, port, database, username, password;
     private static SuperAuctionHouse instance;
     private static Economy econ = null;
     // End vault stuff
@@ -39,15 +39,27 @@ public final class SuperAuctionHouse extends JavaPlugin {
     private static FileConfiguration config;
     private static Connection connection;
 
+    /**
+     * This returns an instance of the plugin
+     * @return An instance of the plugin
+     */
     public static SuperAuctionHouse getInstance() {
         return instance;
     }
 
+    /**
+     * This returns an instance of the economy
+     * @return An instance of the economy
+     */
     public static Economy getEconomy() {
         return econ;
     }
 
     // Database stuff
+
+    /**
+     * This opens a connection to the database
+     */
     public static void openConnection() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -63,10 +75,17 @@ public final class SuperAuctionHouse extends JavaPlugin {
         }
     }
 
+    /**
+     * This gets an available connection to the database
+     * @return A <a href="#{@link}"{@link Connection}> to the database
+     */
     public static Connection getConnection() {
         return connection;
     }
 
+    /**
+     * This is the method called when the plugin is enabled
+     */
     @Override
     public void onEnable() {
         getLogger().setLevel(Level.FINEST);
@@ -117,6 +136,9 @@ public final class SuperAuctionHouse extends JavaPlugin {
         BaseAuctionHouseMenu.loadFromBackup();
     }
 
+    /**
+     * This is the method called when the plugin is disabled
+     */
     @Override
     public void onDisable() {
         // Vault stuff
@@ -125,6 +147,9 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     }
 
+    /**
+     * This loads the config
+     */
     private void config() {
         if (!getDataFolder().exists()) {
             getLogger().info("Data folder not found, creating...");
@@ -137,6 +162,11 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     // Vault stuff
+
+    /**
+     * This sets up the economy
+     * @return Whether the economy was set up correctly
+     */
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
@@ -150,6 +180,9 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
     // End vault stuff
 
+    /**
+     * This sets up the database
+     */
     public void setupDatabase() {
         try {
             openConnection();
@@ -181,4 +214,22 @@ public final class SuperAuctionHouse extends JavaPlugin {
             }
         }
     }
+
+    /**
+     * This gets the host of the database
+     * @return The host of the database
+     */
+    public static String getHost() { return host; }
+
+    /**
+     * This gets the port of the database
+     * @return The port of the database
+     */
+    public static String getPort() { return port; }
+
+    /**
+     * This gets the name of the database
+     * @return The name of the database
+     */
+    public static String getDatabase() { return database; }
 }

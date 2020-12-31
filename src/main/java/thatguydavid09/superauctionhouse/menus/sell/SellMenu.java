@@ -19,14 +19,14 @@ public class SellMenu {
     public static HashMap<Player, Long> playersEnteringTime = new HashMap<>();
     public static HashMap<Player, String> playersEnteringName = new HashMap<>();
 
-    public static ItemStack priceItem = null;
-    public static ItemStack confirmItem = null;
-    public static ItemStack cancelItem = null;
-    public static ItemStack playerNameItem = null;
-    public static ItemStack instaBuyItem = null;
-    public static ItemStack auctionItem = null;
-    public static ItemStack infSellItem = null;
-    public static ItemStack timeItem = null;
+    public ItemStack priceItem = null;
+    public ItemStack confirmItem = null;
+    public ItemStack cancelItem = null;
+    public ItemStack playerNameItem = null;
+    public ItemStack instaBuyItem = null;
+    public ItemStack auctionItem = null;
+    public ItemStack infSellItem = null;
+    public ItemStack timeItem = null;
 
     public final Player player;
     public final ItemStack item;
@@ -49,8 +49,6 @@ public class SellMenu {
     }
 
     public void refreshInventory() {
-        player.closeInventory();
-
         createMenu();
 
         player.openInventory(menu);

@@ -43,6 +43,9 @@ public class BaseAuctionHouseMenu {
     // List of all items
     private static List<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
 
+    /**
+     * This creates all items for the auction house and creates the menu
+     */
     public static void createAuctionHouse() {
         // Sets base auction house inventory
         // Make auction house inventory
@@ -118,7 +121,14 @@ public class BaseAuctionHouseMenu {
         baseAuctionHouse.setItem(53, howToSell);
     }
 
-    // Used for most external applications
+    /**
+     * This adds an item to the auction house
+     * @param item The <a href="#{@link}"{@link ItemStack}> to be added
+     * @param sellingPlayer The <a href="#{@link}"{@link Player}> selling the item
+     * @param price The price of the item
+     * @param time The time the auction should last, -1 if it is not an auction
+     * @param infsell Whether the item should be removed from the auction house upon being bought
+     */
     public static void addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell) {
         ItemStack itemToAdd = item.clone();
 
@@ -127,14 +137,22 @@ public class BaseAuctionHouseMenu {
 
         AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId(), time, infsell, sellingPlayer.getDisplayName());
 
-        updateDictionaries(auctionItem, sellingPlayer.getUniqueId());
+        updateDictionaries(auctionItem);
 
         auctionId++;
 
         backUp(auctionItem, true);
     }
 
-    // Used to add item with a special player name
+    /**
+     * Adds an item to the auction house with a custom selling player name
+     * @param item The <a href="#{@link}"{@link ItemStack}> to be added
+     * @param sellingPlayer The <a href="#{@link}"{@link Player}> selling the item
+     * @param price The price of the item
+     * @param playerName The custom name of the player
+     * @param time The time the auction should last, -1 if it is not an auction
+     * @param infsell Whether the item should be removed from the auction house upon being bought
+     */
     public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell) {
         ItemStack itemToAdd = item.clone();
 
@@ -143,14 +161,18 @@ public class BaseAuctionHouseMenu {
 
         AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId(), time, infsell, playerName);
 
-        updateDictionaries(auctionItem, sellingPlayer.getUniqueId());
+        updateDictionaries(auctionItem);
 
         auctionId++;
 
         backUp(auctionItem, true);
     }
 
-    // This is for infSell and other things
+    /**
+     * This adds an item to the auction house, but from its AuctionItem
+     * @param item The <a href="#{@link}"{@link AuctionItem}> to add
+     * @param backup Whether to back up the item
+     */
     private static void addItem(AuctionItem item, boolean backup) {
         ItemStack itemToAdd = item.getItem();
 
@@ -158,7 +180,7 @@ public class BaseAuctionHouseMenu {
 
         AuctionItem auctionItem = new AuctionItem(itemWithLore, item.getId(), item.getPrice(), item.getPlayerId(), item.getTime(), item.isInfsell(), item.getPlayerName());
 
-        updateDictionaries(auctionItem, item.getPlayerId());
+        updateDictionaries(auctionItem);
 
         auctionId++;
 
@@ -167,8 +189,12 @@ public class BaseAuctionHouseMenu {
         }
     }
 
-    public static void removeItem(AuctionItem auctionItem, Player seller) {
-        unUpdateDictionaries(auctionItem, seller.getUniqueId());
+    /**
+     * This removes an item from the auction house
+     * @param auctionItem The <a href="#{@link}"{@link AuctionItem}> to remove
+     */
+    public static void removeItem(AuctionItem auctionItem) {
+        unUpdateDictionaries(auctionItem);
         allItems.remove(auctionItem);
 
         backUp(auctionItem, false);
@@ -179,22 +205,35 @@ public class BaseAuctionHouseMenu {
         }
     }
 
-    private static void updateDictionaries(AuctionItem item, UUID sellingPlayer) {
+    /**
+     * This updates various dictionaries about the current items
+     * @param item The <a href="#{@link}"{@link AuctionItem}> to update dictionaries with
+     */
+    private static void updateDictionaries(AuctionItem item) {
         // Update dictionaries
-        if (!itemsForPlayer.containsKey(sellingPlayer)) {
-            itemsForPlayer.put(sellingPlayer, new ArrayList<>());
+        if (!itemsForPlayer.containsKey(item.getPlayerId())) {
+            itemsForPlayer.put(item.getPlayerId(), new ArrayList<>());
         }
-        itemsForPlayer.get(sellingPlayer).add(item);
+        itemsForPlayer.get(item.getPlayerId()).add(item);
 
         allItems.add(item);
         itemStackToAuctionItem.put(item.getItem(), item);
     }
 
-    private static void unUpdateDictionaries(AuctionItem item, UUID seller) {
-        itemsForPlayer.get(seller).remove(item);
+    /**
+     * This removes an AuctionItem from various dictionaries
+     * @param item The AuctionItem to remove
+     */
+    private static void unUpdateDictionaries(AuctionItem item) {
+        itemsForPlayer.get(item.getPlayerId()).remove(item);
         itemStackToAuctionItem.remove(item.getItem());
     }
 
+    /**
+     * This gives an <a href="#{@link}"{@link ItemStack}> to the Player
+     * @param item The <a href="#{@link}"{@link ItemStack}> to give
+     * @param player The <a href="#{@link}"{@link Player}> to give it to
+     */
     public static void giveItemToPlayer(ItemStack item, Player player) {
         ItemMeta meta = item.getItemMeta();
         item.setItemMeta(meta);
@@ -206,6 +245,13 @@ public class BaseAuctionHouseMenu {
         }
     }
 
+    /**
+     * This adds the correct lore to an <a href="#{@link}"{@link ItemStack}>
+     * @param item The <a href="#{@link}"{@link ItemStack}> to add the lore to
+     * @param sellingPlayer The <a href="#{@link}"{@link Player}> selling the item
+     * @param price The price of the item
+     * @return The <a href="#{@link}"{@link ItemStack}> with the correct lore
+     */
     private static ItemStack addLore(ItemStack item, Player sellingPlayer, long price) {
         ItemStack itemToRet = item.clone();
         ItemMeta meta = itemToRet.getItemMeta();
@@ -227,8 +273,14 @@ public class BaseAuctionHouseMenu {
         return itemToRet;
     }
 
-    // Used with a special player name
-    private static ItemStack addLore(ItemStack item, String sellingPlayer, long price) {
+    /**
+     * This adds the correct lore to an <a href="#{@link}"{@link ItemStack}> with a custom selling player name
+     * @param item The <a href="#{@link}"{@link ItemStack}> to add the lore to
+     * @param sellingPlayerName The custom name of the player selling the item
+     * @param price The price of the item
+     * @return The <a href="#{@link}"{@link ItemStack}> with the correct lore
+     */
+    private static ItemStack addLore(ItemStack item, String sellingPlayerName, long price) {
         ItemStack itemToRet = item.clone();
         ItemMeta meta = itemToRet.getItemMeta();
 
@@ -237,39 +289,23 @@ public class BaseAuctionHouseMenu {
 
         try {
             if (meta.getLore() != null) {
-                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
+                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayerName + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
             } else {
-                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayerName + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
             }
         } catch (NullPointerException e) {
-            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
+            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayerName + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
         }
 
         itemToRet.setItemMeta(meta);
         return itemToRet;
     }
 
-    private static ItemStack addLore(ItemStack item, OfflinePlayer sellingPlayer, long price) {
-        ItemStack itemToRet = item.clone();
-        ItemMeta meta = itemToRet.getItemMeta();
-
-        NumberFormat numberFormat = NumberFormat.getInstance();
-        numberFormat.setGroupingUsed(true);
-
-        try {
-            if (meta.getLore() != null) {
-                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
-            } else {
-                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
-            }
-        } catch (NullPointerException e) {
-            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + ChatColor.GRAY + sellingPlayer.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
-        }
-
-        itemToRet.setItemMeta(meta);
-        return itemToRet;
-    }
-
+    /**
+     * This removes the added lore from an <a href="#{@link}"{@link ItemStack}>
+     * @param item The <a href="#{@link}"{@link ItemStack}> to remove lore from
+     * @return The <a href="#{@link}"{@link ItemStack}> with the lore removed
+     */
     public static ItemStack removeLore(ItemStack item) {
         ItemStack itemToRet = item.clone();
         ItemMeta meta = itemToRet.getItemMeta();
@@ -289,53 +325,108 @@ public class BaseAuctionHouseMenu {
     }
 
 
-    // This removes all items from ah
+    /**
+     * This removes all items from the auction house
+     */
     public static void clearAuctionHouse() {
-        allItems.clear();
+        for (AuctionItem item : allItems) {
+            backUp(item, false);
+        }
         auctionId = 0;
     }
 
     // The following deals with money
+
+    /**
+     * This gives a <a href="#{@link}"{@link Player}> money
+     * @param player The <a href="#{@link}"{@link Player}> to give money to
+     * @param amount How much money to give
+     */
     public static void addMoney(Player player, Long amount) {
         getEconomy().depositPlayer(player, amount);
     }
 
+    /**
+     * This removes money from a <a href="#{@link}"{@link Player}>
+     * @param player The <a href="#{@link}"{@link Player}> to remove money from
+     * @param amount How much money to remove
+     */
     public static void removeMoney(Player player, Long amount) {
         getEconomy().withdrawPlayer(player, amount);
     }
 
+    /**
+     * This returns how much money a <a href="#{@link}"{@link Player}> has
+     * @param player The <a href="#{@link}"{@link Player}> in question
+     * @return The amount of money the player has
+     */
     public static long getMoney(Player player) {
         return (long) getEconomy().getBalance(player);
     }
 
+    /**
+     * This checks if a <a href="#{@link}"{@link Player}> has above a certain amount of money
+     * @param player The <a href="#{@link}"{@link Player}> in question
+     * @param amount The amount of money to check for
+     * @return Whether the player has the amount of money specified
+     */
     public static boolean hasMoney(Player player, long amount) {
         return getEconomy().has(player, amount);
     }
 
+    /**
+     * This returns the total number of items
+     * @return The number of items
+     */
     public static long getNumOfItems() {
         return allItems.size();
     }
 
+    /**
+     * Returns a list of all the items currently in the auction house
+     * @return A list of all the items in the auction house
+     */
     public static List<AuctionItem> getAllItems() {
         return allItems;
     }
 
+    /**
+     * Converts a given <a href="#{@link}"{@link ItemStack}> to its corresponding <a href="#{@link}"{@link AuctionItem}>
+     * @param item The <a href="#{@link}"{@link ItemStack}> in question
+     * @return Its corresponding <a href="#{@link}"{@link AuctionItem}>
+     */
     public static AuctionItem itemStackToAuctionItem(ItemStack item) {
         return itemStackToAuctionItem.get(item);
     }
 
+    /**
+     * Returns an <a href="#{@link}"{@link Inventory}> of the auction house template
+     * @return The auction house template
+     */
     public static Inventory getBaseAuctionHouse() {
         return baseAuctionHouse;
     }
 
+    /**
+     * Returns the <a href="#{@link}"{@link ItemStack}> corresponding to the sort item
+     * @return The <a href="#{@link}"{@link ItemStack}> corresponding to the sort item
+     */
     public static ItemStack getSortItem() {
         return sortItem;
     }
 
+    /**
+     * This resets the auction id to 0
+     */
     public static void resetAuctionId() {
         auctionId = 0;
     }
 
+    /**
+     * This backs up an item, either adding or removing it from the database
+     * @param item The <a href="#{@link}"{@link AuctionItem}> to be backed up
+     * @param addOrRemove Whether to add or to remove. True if add, false if remove
+     */
     public static void backUp(AuctionItem item, boolean addOrRemove) {
         // addOrRemove should be true if an item is being added, false if it is being removed
         Connection connection = null;
@@ -373,6 +464,9 @@ public class BaseAuctionHouseMenu {
         plugin.getLogger().info("Auction house has been backed up!");
     }
 
+    /**
+     * This creates the auction house from a backup
+     */
     public static void loadFromBackup() {
         createAuctionHouse();
 
@@ -384,6 +478,7 @@ public class BaseAuctionHouseMenu {
             statement = connection.createStatement();
 
             // Get auctionid
+            statement.execute("USE " + SuperAuctionHouse.getDatabase() + ";");
             ResultSet rs = statement.executeQuery("SELECT COUNT(*) FROM auctionhouse;");
             rs.next();
             if (rs.getInt("COUNT(*)") != 0) {
@@ -419,7 +514,12 @@ public class BaseAuctionHouseMenu {
         plugin.getLogger().info("Auction house has been loaded!");
     }
 
-    public static String auctionItemToJson(AuctionItem item) throws IllegalStateException {
+    /**
+     * This encodes an <a href="#{@link}"{@link AuctionItem}> to a json string
+     * @param item The <a href="#{@link}"{@link AuctionItem}> to be converted
+     * @return The json string representing the item
+     */
+    public static String auctionItemToJson(AuctionItem item) {
         return StringEscapeUtils.escapeSql(new JSONObject()
                 .put("id", item.getId())
                 .put("price", item.getPrice())
@@ -431,6 +531,11 @@ public class BaseAuctionHouseMenu {
                 .toString());
     }
 
+    /**
+     * This converts an <a href="#{@link}"{@link ItemStack}> to a json string
+     * @param item The <a href="#{@link}"{@link ItemStack}> to be converted
+     * @return The json string representing the item
+     */
     public static String itemStackToJson(ItemStack item) {
         String[] BYPASS_CLASS = {"CraftMetaBlockState", "CraftMetaItem"
                 /*Glowstone Support*/, "GlowMetaItem"};
@@ -623,12 +728,22 @@ public class BaseAuctionHouseMenu {
         return gson.toJson(itemJson);
     }
 
-    public static AuctionItem auctionItemFromJson(String string) throws IllegalStateException {
+    /**
+     * This converts a json string to an <a href="#{@link}"{@link AuctionItem}>
+     * @param string The json string
+     * @return The <a href="#{@link}"{@link AuctionItem}> the json represents
+     */
+    public static AuctionItem auctionItemFromJson(String string) {
         plugin.getLogger().info(string.replaceAll("\"", "\\\""));
         JSONObject json = new JSONObject(string.replaceAll("\"", "\\\""));
         return new AuctionItem(itemStackFromJson(json.getString("item")), json.getLong("id"), json.getLong("price"), UUID.fromString(json.getString("player")), json.getLong("time"), json.getBoolean("infsell"), json.getString("playerName"));
     }
 
+    /**
+     * This converts a json string to an <a href="#{@link}"{@link ItemStack}>
+     * @param string The json string
+     * @return The <a href="#{@link}"{@link ItemStack}> the json represents
+     */
     public static ItemStack itemStackFromJson(String string) {
         String[] BYPASS_CLASS = {"CraftMetaBlockState", "CraftMetaItem"
                 /*Glowstone Support*/, "GlowMetaItem"};
