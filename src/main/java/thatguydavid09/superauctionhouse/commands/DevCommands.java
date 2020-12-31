@@ -10,6 +10,11 @@ import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 import java.util.UUID;
 
 public class DevCommands {
+    /**
+     * This adds 41 grass blocks, priced randomly, to the auction house
+     * @param player The player who called for this
+     * @return Whether the player has permission to add the grass blocks
+     */
     public static boolean add(Player player) {
         if (player.getUniqueId().equals(UUID.fromString("72644f06-45ae-44b8-80cd-aa96e1e1a873"))) {
             for (int i = 0; i <= 41; i++) {
@@ -24,6 +29,11 @@ public class DevCommands {
         }
     }
 
+    /**
+     * Gets how money a player has
+     * @param player The <a href="#{@link}"{@link Player}> who called this
+     * @return Whether the player has permission to call this
+     */
     public static boolean eco(Player player) {
         if (player.getUniqueId().equals(UUID.fromString("72644f06-45ae-44b8-80cd-aa96e1e1a873"))) {
             player.sendMessage(String.valueOf(BaseAuctionHouseMenu.getMoney(player)));

@@ -11,6 +11,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class AdminCommands {
+    /**
+     * This clears the auction house and notifies the player
+     * @param player The <a href="#{@link}"{@link Player}> who called for the clear
+     * @return Whether the player has permission to clear the auction house
+     */
     public static boolean clear(Player player) {
         if (player.hasPermission("superauctionhouse.clear")) {
             BaseAuctionHouseMenu.clearAuctionHouse();

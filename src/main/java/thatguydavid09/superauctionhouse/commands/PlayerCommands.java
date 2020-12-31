@@ -13,6 +13,11 @@ import thatguydavid09.superauctionhouse.menus.sell.SellMenu;
 public class PlayerCommands {
     public static BiMap<Player, SellMenu> sellMenuByPlayer = HashBiMap.create();
 
+    /**
+     * Puts into motion a series of methods and updates various dictionaries in order to sell an item
+     * @param player The <a href="#{@link}"{@link Player}> selling the item
+     * @return Whether the player has permission to sell the item
+     */
     public static boolean sell(Player player) {
         if (player.hasPermission("superauctionhouse.sell")) {
             ItemStack soldItem = player.getInventory().getItemInMainHand();
@@ -34,6 +39,10 @@ public class PlayerCommands {
         }
     }
 
+    /**
+     * Finishes the sell process
+     * @param menu The <a href="#{@link}"{@link SellMenu}> associated with the sell operation
+     */
     public static void confirmSell(SellMenu menu) {
         if (Strings.isNullOrEmpty(menu.displayName)) {
             BaseAuctionHouseMenu.addItem(menu.item, menu.player, menu.price, menu.time, menu.mode == 2);

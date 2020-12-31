@@ -37,6 +37,11 @@ public class SellMenu {
     public String displayName = "";
     public int mode = 0; // 0 for instabuy, 1 for auction, 2 for infSell
 
+    /**
+     * Represents the menu that players see when they try to sell an item
+     * @param player The player trying to sell an item
+     * @param item The item in question
+     */
     public SellMenu(Player player, ItemStack item) {
         this.player = player;
         this.item = item;
@@ -48,12 +53,18 @@ public class SellMenu {
         createMenu();
     }
 
+    /**
+     * Updates the menu
+     */
     public void refreshInventory() {
         createMenu();
 
         player.openInventory(menu);
     }
 
+    /**
+     * This creates the sell menu gui
+     */
     private void createMenu() {
         updateItems();
 
@@ -109,6 +120,9 @@ public class SellMenu {
         menu.setContents(contents);
     }
 
+    /**
+     * This updates the items in the gui, such as the price and the time items
+     */
     private void updateItems() {
         ItemMeta meta = priceItem.getItemMeta();
         if (price > 0) {
@@ -135,6 +149,9 @@ public class SellMenu {
         playerNameItem.setItemMeta(meta);
     }
 
+    /**
+     * This creates the items in the gui
+     */
     private void createItems() {
         // Create items
         priceItem = new ItemStack(Material.SUNFLOWER);
@@ -178,10 +195,17 @@ public class SellMenu {
         infSellItem.setItemMeta(meta);
     }
 
+    /**
+     * This returns the gui
+     * @return The <a href="#{@link}"{@link Inventory}> that this class represents
+     */
     public Inventory getInventory() {
         return menu;
     }
 
+    /**
+     * This increments the sell mode
+     */
     public void incrementMode() {
         if (mode > 1) {
             mode = 0;

@@ -13,7 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.commands.PlayerCommands;
-import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseActions;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.AuctionHouseActions;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 import thatguydavid09.superauctionhouse.menus.buy.BuyMenu;
 import thatguydavid09.superauctionhouse.menus.sell.SellMenu;
