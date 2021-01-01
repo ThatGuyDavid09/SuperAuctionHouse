@@ -5,12 +5,14 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.commands.PlayerCommands;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.AuctionHouseActions;
@@ -29,8 +31,9 @@ public class PreventItemRemoval implements Listener {
     public void onItemClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
 
+        FileConfiguration config = SuperAuctionHouse.getInstance().getConfig();
         // List of forbidden inventory titles
-        List<String> forbiddenTitles = new ArrayList<>(Arrays.asList("Auction House", "Confirm purchase", "Sell item"));
+        List<String> forbiddenTitles = new ArrayList<>(Arrays.asList(config.getString("auctionhouse.names.auctionhouse"), config.getString("auctionhouse.names.buymenu"), config.getString("auctionhouse.names.sellmenu")));
 
         if (event.getClick() == ClickType.LEFT) {
 

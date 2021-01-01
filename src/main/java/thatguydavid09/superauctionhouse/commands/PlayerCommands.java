@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 import thatguydavid09.superauctionhouse.menus.sell.SellMenu;
 
@@ -49,5 +50,8 @@ public class PlayerCommands {
         } else {
             BaseAuctionHouseMenu.addItem(menu.item, menu.player, menu.price, menu.displayName, menu.time, menu.mode == 2);
         }
+        // Make sure to withdraw fee
+        SuperAuctionHouse.getEconomy().withdrawPlayer(menu.player, menu.getFee());
+        menu.player.sendMessage(ChatColor.GREEN + "Auction has been created!");
     }
 }

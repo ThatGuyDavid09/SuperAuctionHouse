@@ -8,3 +8,30 @@ database:
   # The credentials to access the database
   username: "user"
   password: "pass"
+
+# This is for stuff related to the auction house
+auctionhouse:
+  # This is for the names of certain menus, like the auction house itself, the buy menu, or the sell menu. Use color code character §
+  names:
+    auctionhouse: "Auction House"
+    buymenu: "Confirm purchase"
+    sellmenu: "Sell item"
+
+  # This is for charging extra money fro certain things, like a fee for a certain duration or a fee for anything over a certain price. Set fee to 0 to stop charging fees
+  fees:
+    # This is for prices
+    price:
+      # The amount below or equal to no fee will by applied
+      minamount: 100
+      # Every increment above minamount another fee will be added
+      increment: 10
+      # The actual fee
+      fee: 1
+    # Fees for creating an auction (the time)
+    auction:
+      # The amount below or equal to no fee will be charged
+      minamount: 30
+      # Every increment minutes above minamount a fee will be charged
+      increment: 10
+      # The actual fee
+      fee: 1

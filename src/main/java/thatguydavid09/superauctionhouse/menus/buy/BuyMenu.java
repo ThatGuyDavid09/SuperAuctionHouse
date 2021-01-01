@@ -31,7 +31,7 @@ public class BuyMenu {
             createBuyMenuTemplate();
         }
 
-        this.buyMenu = Bukkit.createInventory(null, 9, "Confirm purchase");
+        this.buyMenu = Bukkit.createInventory(null, 9, SuperAuctionHouse.getInstance().getConfig().getString("auctionhouse.names.buymenu"));
         this.buyMenu.setContents(buyMenuTemplate.getContents());
         buyMenu.setItem(4, item.getItem());
 

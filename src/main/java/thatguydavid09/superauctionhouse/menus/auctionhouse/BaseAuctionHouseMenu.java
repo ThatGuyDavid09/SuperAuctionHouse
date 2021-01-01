@@ -49,7 +49,7 @@ public class BaseAuctionHouseMenu {
     public static void createAuctionHouse() {
         // Sets base auction house inventory
         // Make auction house inventory
-        baseAuctionHouse = Bukkit.getServer().createInventory(null, 54, "Auction House");
+        baseAuctionHouse = Bukkit.getServer().createInventory(null, 54, SuperAuctionHouse.getInstance().getConfig().getString("auctionhouse.names.auctionhouse"));
 
         // Set placeholder items
         baseAuctionHouse.setItem(47, placeholder);
