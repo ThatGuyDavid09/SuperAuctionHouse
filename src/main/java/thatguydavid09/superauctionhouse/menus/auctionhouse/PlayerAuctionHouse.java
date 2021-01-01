@@ -49,15 +49,6 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     }
 
     /**
-     * Removes a page from the auction house
-     * @param auctionHousePages The list of pages to remove a page from
-     */
-    public static void removePage(List<Inventory> auctionHousePages) {
-        auctionHousePages.remove(auctionHousePages.size() - 1);
-        updateArrows(auctionHousePages);
-    }
-
-    /**
      * Updates the arrows in the auction house that allow you to change pages
      * @param auctionHousePages The list of pages to update arrows on
      */
@@ -181,22 +172,6 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         }
         Inventory lastInv = auctionHousePages.get(auctionHousePages.size() - 1);
         lastInv.setItem(lastInv.firstEmpty(), item);
-    }
-
-    /**
-     * This removes an item from the auction house gui
-     * @param item The <a href="#{@link}"{@link ItemStack}> to be removed
-     * @param auctionHousePages The The list of pages it should be removed from
-     */
-    public static void removeFromMenu(ItemStack item, List<Inventory> auctionHousePages) {
-        for (Inventory inv : auctionHousePages) {
-            for (ItemStack itemToSearch : inv.getContents()) {
-                if (itemToSearch == item) {
-                    auctionHousePages.get(auctionHousePages.indexOf(inv)).remove(itemToSearch);
-                    break;
-                }
-            }
-        }
     }
 
     /**
