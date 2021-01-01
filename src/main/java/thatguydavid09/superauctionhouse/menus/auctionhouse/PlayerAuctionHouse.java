@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import thatguydavid09.superauctionhouse.AuctionItem;
+import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
 import java.util.*;
 
@@ -41,7 +42,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * @param auctionHousePages The list to which a page should be added
      */
     public static void addPage(List<Inventory> auctionHousePages) {
-        Inventory inventory = Bukkit.getServer().createInventory(null, 54, "Auction House");
+        Inventory inventory = Bukkit.getServer().createInventory(null, 54, SuperAuctionHouse.getInstance().getConfig().getString("auctionhouse.names.auctionhouse"));
         inventory.setContents(BaseAuctionHouseMenu.getBaseAuctionHouse().getContents());
         auctionHousePages.add(inventory);
         updateArrows(auctionHousePages);

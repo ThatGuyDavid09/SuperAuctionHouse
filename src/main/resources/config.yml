@@ -17,7 +17,7 @@ auctionhouse:
     buymenu: "Confirm purchase"
     sellmenu: "Sell item"
 
-  # This is for charging extra money fro certain things, like a fee for a certain duration or a fee for anything over a certain price. Set fee to 0 to stop charging fees
+  # This is for charging extra money for certain things, like a fee for a certain duration or a fee for anything over a certain price. Set fee to 0 to stop charging fees
   fees:
     # This is for prices
     price:
