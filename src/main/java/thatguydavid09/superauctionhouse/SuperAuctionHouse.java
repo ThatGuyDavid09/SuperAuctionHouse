@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import thatguydavid09.superauctionhouse.commands.AHCommandTabCompleter;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseChat;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseRegister;
@@ -113,6 +114,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
         // Register command
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "SuperAuctionHouse has been enabled!");
 
+        // Register tabcompleter
+        getCommand("superauctionhouse").setTabCompleter(new AHCommandTabCompleter());
         // Register events
         getServer().getPluginManager().registerEvents(new PreventItemRemoval(), this);
         getServer().getPluginManager().registerEvents(new AuctionHouseChat(), this);

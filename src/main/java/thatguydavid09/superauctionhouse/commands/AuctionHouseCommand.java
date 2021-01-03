@@ -63,6 +63,12 @@ public class AuctionHouseCommand implements CommandExecutor {
                         permissionError(player);
                     }
                     break;
+
+                case "help":
+                    if (!PlayerCommands.help(player)) {
+                        permissionError(player);
+                    }
+                    break;
             }
         } else {
             sender.sendMessage(ChatColor.RED + "This command can only be used by a player!");

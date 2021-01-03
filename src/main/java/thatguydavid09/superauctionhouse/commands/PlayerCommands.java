@@ -16,6 +16,7 @@ public class PlayerCommands {
 
     /**
      * Puts into motion a series of methods and updates various dictionaries in order to sell an item
+     *
      * @param player The <a href="#{@link}"{@link Player}> selling the item
      * @return Whether the player has permission to sell the item
      */
@@ -42,6 +43,7 @@ public class PlayerCommands {
 
     /**
      * Finishes the sell process
+     *
      * @param menu The <a href="#{@link}"{@link SellMenu}> associated with the sell operation
      */
     public static void confirmSell(SellMenu menu) {
@@ -53,5 +55,32 @@ public class PlayerCommands {
         // Make sure to withdraw fee
         SuperAuctionHouse.getEconomy().withdrawPlayer(menu.player, menu.getFee());
         menu.player.sendMessage(ChatColor.GREEN + "Auction has been created!");
+    }
+
+    public static boolean help(Player player) {
+        if (player.hasPermission("superauctionhouse.help")) {
+            player.sendMessage(ChatColor.GREEN + "Available commands:");
+            if (player.hasPermission("superauctionhouse.open")) {
+                player.sendMessage(ChatColor.BLUE + "- /ah " + ChatColor.GREEN + ": Opens the auction house.");
+            }
+
+            if (player.hasPermission("superauctionhouse.sell")) {
+                player.sendMessage(ChatColor.BLUE + "- /ah sell " + ChatColor.GREEN + ": Opens the sell menu for the currently held item.");
+            }
+
+            if (player.hasPermission("superauctionhouse.clear")) {
+                player.sendMessage(ChatColor.BLUE + "- /ah clear " + ChatColor.GREEN + ": Removes all items from the auction house.");
+            }
+
+            if (player.hasPermission("superauctionhouse.help")) {
+                player.sendMessage(ChatColor.BLUE + "- /ah help " + ChatColor.GREEN + ": Displays this text.");
+            }
+
+            if (player.hasPermission("superauctionhouse.viewplayerah")) {
+                player.sendMessage(ChatColor.BLUE + "- /ah <playerName> " + ChatColor.GREEN + ": Shows you all auctions for sale by the specified player.");
+            }
+            return true;
+        }
+        return false;
     }
 }
