@@ -27,6 +27,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * Creates a personal auction house for the given player
+     *
      * @param player The <a href="#{@link}"{@link Player}> to who the ah belongs
      */
     public PlayerAuctionHouse(Player player) {
@@ -39,6 +40,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * Adds a page to the auction house
+     *
      * @param auctionHousePages The list to which a page should be added
      */
     public static void addPage(List<Inventory> auctionHousePages) {
@@ -50,6 +52,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * Updates the arrows in the auction house that allow you to change pages
+     *
      * @param auctionHousePages The list of pages to update arrows on
      */
     private static void updateArrows(List<Inventory> auctionHousePages) {
@@ -78,6 +81,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * Generates a back arrow with the current page number
+     *
      * @param currentPage The current page number
      * @return A back arrow with the correct title and lore
      */
@@ -91,6 +95,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * Generates a forward arrow with the current page number
+     *
      * @param currentPage The current page number
      * @return A forward arrow with the correct title and lore
      */
@@ -104,6 +109,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * This sorts the items in the given BiMap by name
+     *
      * @param itemsAndNames The <a href="#{@link}"{@link BiMap}> with the items and names to be sorted
      * @return The sorted <a href="#{@link}"{@link BiMap}>
      */
@@ -125,6 +131,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * This sorts the items in the given List by price
+     *
      * @param items The <a href="#{@link}"{@link ArrayList}> with the <a href="#{@link}"{@link AuctionItem}>s to be sorted
      * @return The sorted <a href="#{@link}"{@link ArrayList}>
      */
@@ -154,7 +161,30 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     }
 
     /**
+     * This sorts the given list by the giver playername
+     *
+     * @param items      The list of items to sort
+     * @param playerName The name of the player
+     * @return The sorted list of items
+     */
+    public static ArrayList<AuctionItem> sortItemsByPlayer(ArrayList<AuctionItem> items, String playerName) {
+        if (items.size() == 0) {
+            return new ArrayList<>();
+        }
+        ArrayList<AuctionItem> tempItems = new ArrayList<>();
+
+        for (AuctionItem auctionItem : items) {
+            if (auctionItem.getPlayerName().equals(playerName)) {
+                tempItems.add(auctionItem);
+            }
+        }
+
+        return tempItems;
+    }
+
+    /**
      * This removes all items from the ah gui
+     *
      * @param auctionHousePages The list of pages
      */
     public static void clearAuctionHouseGui(List<Inventory> auctionHousePages) {
@@ -163,7 +193,8 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * This adds an <a href="#{@link}"{@link ItemStack}> to the auction house gui
-     * @param item The <a href="#{@link}"{@link ItemStack}> to be added
+     *
+     * @param item              The <a href="#{@link}"{@link ItemStack}> to be added
      * @param auctionHousePages The list of pages it should be added to
      */
     public static void addToMenu(ItemStack item, List<Inventory> auctionHousePages) {
@@ -178,17 +209,30 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * This opens the auction house for the player this class belongs to
      */
     public void openAuctionHouse() {
-        update();
+        update(false);
         player.openInventory(auctionHouse.get(0));
     }
 
     /**
+     * This opens the auction house for the player this class belongs to
+     *
+     * @param playerName This is the optional name to sort by
+     */
+    public void openAuctionHouse(String playerName, boolean isPlayerName) {
+        update(false);
+        currentlyDisplayedItems = sortItemsByPlayer((ArrayList<AuctionItem>) currentlyDisplayedItems, playerName);
+        player.openInventory(auctionHouse.get(0));
+        update(true);
+    }
+
+    /**
      * This opens the auction house for the player this class belongs to but filtered by a certain query
+     *
      * @param query The query to filter by
      */
     public void openAuctionHouse(String query) {
         this.query = query;
-        update();
+        update(false);
         player.openInventory(auctionHouse.get(0));
     }
 
@@ -196,20 +240,23 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * This refreshes the auction house
      */
     public void reloadAuctionHouse() {
-        update();
+        update(true);
         openAuctionHouse();
     }
 
     /**
      * This updates the auction house
+     * @param useSorted This is false if we should sort all items and true if we should use the already sorted list
      */
-    public void update() {
+    public void update(boolean useSorted) {
         // Clear the GUI
         clearAuctionHouseGui(auctionHouse);
         currentlyDisplayedItems.clear();
         if (Strings.isNullOrEmpty(query)) {
             // Sort the items
-            currentlyDisplayedItems.addAll(BaseAuctionHouseMenu.getAllItems());
+            if (!useSorted) {
+                currentlyDisplayedItems.addAll(BaseAuctionHouseMenu.getAllItems());
+            }
         } else {
             currentlyDisplayedItems.addAll(filterItemsByName(query, BaseAuctionHouseMenu.getAllItems()));
         }
@@ -222,7 +269,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         if (auctionHouse.size() == 0) {
             addPage(auctionHouse);
         }
-
+        currentlyDisplayedItems.clear();
         switch (sortMode) {
             case 0:
                 for (AuctionItem itemToAdd : sortItemsByName(items)) {
@@ -291,7 +338,8 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * This filters items in the given list by name
-     * @param query The query to filter by
+     *
+     * @param query        The query to filter by
      * @param whatToFilter The list of items to filter
      * @return The filtered list of items
      * <a href="#{@link}"{@link ItemStack}>
@@ -318,6 +366,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * Gets the current auction house
+     *
      * @return The current auction house fpr this player
      */
     public List<Inventory> getAuctionHouse() {

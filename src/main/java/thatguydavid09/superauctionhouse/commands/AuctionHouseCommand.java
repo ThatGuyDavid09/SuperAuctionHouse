@@ -1,5 +1,6 @@
 package thatguydavid09.superauctionhouse.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -59,6 +60,11 @@ public class AuctionHouseCommand implements CommandExecutor {
 
                 // Admin commands
                 case "clear":
+                    if (args.length == 3) {
+                        AdminCommands.clearConfirm(Bukkit.getPlayer(args[1]), args[2]);
+                        break;
+                    }
+
                     if (!AdminCommands.clear(player)) {
                         permissionError(player);
                     }
@@ -66,6 +72,12 @@ public class AuctionHouseCommand implements CommandExecutor {
 
                 case "help":
                     if (!PlayerCommands.help(player)) {
+                        permissionError(player);
+                    }
+                    break;
+
+                default:
+                    if (!PlayerCommands.openByPlayer(player, args[0])) {
                         permissionError(player);
                     }
                     break;

@@ -206,6 +206,14 @@ public class BaseAuctionHouseMenu {
     }
 
     /**
+     * This removes an <a href="#{@link}"{@link ItemStack}> from the auction house
+     * @param item The <a href="#{@link}"{@link ItemStack}> to remove
+     */
+    public static void removeItem(ItemStack item) {
+        allItems.removeIf(auctionItem -> auctionItem.getItem() == item);
+    }
+
+    /**
      * This updates various dictionaries about the current items
      * @param item The <a href="#{@link}"{@link AuctionItem}> to update dictionaries with
      */
@@ -329,10 +337,31 @@ public class BaseAuctionHouseMenu {
      * This removes all items from the auction house
      */
     public static void clearAuctionHouse() {
-        for (AuctionItem item : allItems) {
-            backUp(item, false);
+        allItems.clear();
+        resetAuctionId();
+
+        Connection connection = null;
+        Statement statement;
+        try {
+            SuperAuctionHouse.openConnection();
+            connection = SuperAuctionHouse.getConnection();
+            statement = connection.createStatement();
+
+            statement.execute("TRUNCATE TABLE auctionhouse");
+        } catch (SQLException e) {
+            SuperAuctionHouse.getInstance().getLogger().warning("Something has gone wrong with the database, see error log below");
+            e.printStackTrace();
+        } finally {
+            // Close connection
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    SuperAuctionHouse.getInstance().getLogger().warning("Something has gone wrong while closing the connection, see error log below");
+                    e.printStackTrace();
+                }
+            }
         }
-        auctionId = 0;
     }
 
     // The following deals with money
