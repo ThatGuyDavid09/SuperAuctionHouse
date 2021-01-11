@@ -274,7 +274,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
             }
         } else {
             for (AuctionItem itemToAdd : currentlyDisplayedItems) {
-                if (itemToAdd.getPlayerName().equals(this.playerName)) {
+                if (itemToAdd.getPlayerName().contains(playerName)) {
                     items.put(itemToAdd, itemToAdd.getName() + "" + itemToAdd.getId());
                 }
             }
@@ -353,7 +353,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     /**
      * This filters items in the given list by name
      *
-     * @param query        The query to filter by
+     * @param query The query to filter by
      * @param whatToFilter The list of items to filter
      * @return The filtered list of items
      * <a href="#{@link}"{@link ItemStack}>
