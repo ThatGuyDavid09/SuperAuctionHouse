@@ -2,7 +2,7 @@
 This is an Auction House plugin written for Minecraft spigot multiplayer.
 
 ## Features:
-* ###Complete: 
+* ### Complete: 
     * Selling items at a fixed price
     * Infinite sell items (only admins)
     * Buy items
