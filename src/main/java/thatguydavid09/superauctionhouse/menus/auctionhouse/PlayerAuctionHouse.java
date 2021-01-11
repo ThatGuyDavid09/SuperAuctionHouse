@@ -22,6 +22,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     // 0 is Alphabetically A-Z. 1 is alphabetically Z-A, 2 is by price ascending, 3 is by price descending
     public int sortMode = 0;
     public String query = "";
+    private String playerName = "";
     private List<Inventory> auctionHouse = new ArrayList<>();
     private List<AuctionItem> currentlyDisplayedItems = new ArrayList<>();
 
@@ -207,8 +208,12 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * This opens the auction house for the player this class belongs to
+     * @param resetPlayerName Whether to reset the player name parameter
      */
-    public void openAuctionHouse() {
+    public void openAuctionHouse(boolean resetPlayerName) {
+        if (resetPlayerName) {
+            this.playerName = "";
+        }
         update(false);
         player.openInventory(auctionHouse.get(0));
     }
@@ -219,10 +224,9 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * @param playerName This is the optional name to sort by
      */
     public void openAuctionHouse(String playerName, boolean isPlayerName) {
+        this.playerName = playerName;
         update(false);
-        currentlyDisplayedItems = sortItemsByPlayer((ArrayList<AuctionItem>) currentlyDisplayedItems, playerName);
         player.openInventory(auctionHouse.get(0));
-        update(true);
     }
 
     /**
@@ -241,29 +245,39 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      */
     public void reloadAuctionHouse() {
         update(true);
-        openAuctionHouse();
+        openAuctionHouse(false);
     }
 
     /**
      * This updates the auction house
+     *
      * @param useSorted This is false if we should sort all items and true if we should use the already sorted list
      */
     public void update(boolean useSorted) {
         // Clear the GUI
         clearAuctionHouseGui(auctionHouse);
-        currentlyDisplayedItems.clear();
-        if (Strings.isNullOrEmpty(query)) {
-            // Sort the items
-            if (!useSorted) {
+        if (!useSorted) {
+            currentlyDisplayedItems.clear();
+
+            if (Strings.isNullOrEmpty(query)) {
+                // Sort the items
                 currentlyDisplayedItems.addAll(BaseAuctionHouseMenu.getAllItems());
+            } else {
+                currentlyDisplayedItems.addAll(filterItemsByName(query, BaseAuctionHouseMenu.getAllItems()));
             }
-        } else {
-            currentlyDisplayedItems.addAll(filterItemsByName(query, BaseAuctionHouseMenu.getAllItems()));
         }
 
         BiMap<AuctionItem, String> items = HashBiMap.create();
-        for (AuctionItem itemToAdd : currentlyDisplayedItems) {
-            items.put(itemToAdd, itemToAdd.getName() + "" + itemToAdd.getId());
+        if (playerName.equals("")) {
+            for (AuctionItem itemToAdd : currentlyDisplayedItems) {
+                items.put(itemToAdd, itemToAdd.getName() + "" + itemToAdd.getId());
+            }
+        } else {
+            for (AuctionItem itemToAdd : currentlyDisplayedItems) {
+                if (itemToAdd.getPlayerName().equals(this.playerName)) {
+                    items.put(itemToAdd, itemToAdd.getName() + "" + itemToAdd.getId());
+                }
+            }
         }
 
         if (auctionHouse.size() == 0) {

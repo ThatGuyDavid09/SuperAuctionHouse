@@ -180,7 +180,7 @@ public class SellMenu {
 
         // Set confirm item to have fee
         meta = confirmItem.getItemMeta();
-        meta.setDisplayName(ChatColor.GREEN + "Confirm purchase - Fee: " + ChatColor.GOLD + fee + " " + (fee == 1 ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()));
+        meta.setDisplayName(ChatColor.GREEN + "Confirm sell - Fee: " + ChatColor.GOLD + fee + " " + (fee == 1 ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()));
         confirmItem.setItemMeta(meta);
     }
 
@@ -196,7 +196,7 @@ public class SellMenu {
 
         confirmItem = new ItemStack(Material.GREEN_CONCRETE);
         meta = confirmItem.getItemMeta();
-        meta.setDisplayName(ChatColor.GREEN + "Confirm purchase");
+        meta.setDisplayName(ChatColor.GREEN + "Confirm sell");
         confirmItem.setItemMeta(meta);
 
         cancelItem = new ItemStack(Material.BARRIER);

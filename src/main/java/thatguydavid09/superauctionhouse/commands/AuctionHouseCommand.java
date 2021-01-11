@@ -33,7 +33,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                 }
                 // Reset query upon player opening ah
                 auctionHousesByPlayer.get(player).query = "";
-                auctionHousesByPlayer.get(player).openAuctionHouse();
+                auctionHousesByPlayer.get(player).openAuctionHouse(true);
 
                 return true;
             }

@@ -91,14 +91,12 @@ public class BuyMenu {
     }
 
     public void cancelPurchase() {
-        player.closeInventory();
-        AuctionHouseCommand.getAuctionHouse(player).openAuctionHouse();
+        AuctionHouseCommand.getAuctionHouse(player).openAuctionHouse(true);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
     }
 
     public void cancelPurchaseNoSound() {
-        player.closeInventory();
-        AuctionHouseCommand.getAuctionHouse(player).openAuctionHouse();
+        AuctionHouseCommand.getAuctionHouse(player).openAuctionHouse(true);
     }
 
     public Inventory getBuyMenu() {
