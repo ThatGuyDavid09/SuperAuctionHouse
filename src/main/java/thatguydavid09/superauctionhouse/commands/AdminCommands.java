@@ -4,15 +4,20 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class AdminCommands {
@@ -71,5 +76,30 @@ public class AdminCommands {
             builder.append(characters.charAt(character));
         }
         return builder.toString();
+    }
+
+
+    public static boolean setloc(Player player) {
+        if (player.hasPermission("superauctionhouse.open.withblock")) {
+            FileConfiguration config = SuperAuctionHouse.getOpenBlocksConfig();
+            Location loc = player.getLocation();
+            String playerloc = loc.getWorld().getName() + "," + Math.floor(loc.getX()) + "," + Math.floor(loc.getY()) + "," + Math.floor(loc.getZ());
+
+            List<String> blocks = config.getStringList("auctionhouse.openblocks");
+            blocks.add(playerloc);
+            config.set("auctionhouse.openblocks", blocks);
+
+            try {
+                config.save(SuperAuctionHouse.getOpenblocksConfigFile());
+            } catch (IOException e) {
+                player.sendMessage(ChatColor.RED + "An error occurred saving this to the config file! See server logs for details.");
+                SuperAuctionHouse.getInstance().getLogger().severe(e.getMessage());
+                return true;
+            }
+            player.sendMessage(ChatColor.GREEN + "This location can now be used to open the auction house!");
+
+            return true;
+        }
+        return false;
     }
 }

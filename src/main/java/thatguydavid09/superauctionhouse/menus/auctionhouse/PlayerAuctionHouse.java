@@ -208,6 +208,15 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * This opens the auction house for the player this class belongs to
+     */
+    public void openAuctionHouse() {
+        this.playerName = "";
+        update(false);
+        player.openInventory(auctionHouse.get(0));
+    }
+
+    /**
+     * This opens the auction house for the player this class belongs to
      * @param resetPlayerName Whether to reset the player name parameter
      */
     public void openAuctionHouse(boolean resetPlayerName) {

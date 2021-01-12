@@ -35,3 +35,6 @@ auctionhouse:
       increment: 10
       # The actual fee
       fee: 1
+
+  # This is a list of coordinates at which right clicking can open the auction house (worldname,x,y,z)
+  openblocks: []

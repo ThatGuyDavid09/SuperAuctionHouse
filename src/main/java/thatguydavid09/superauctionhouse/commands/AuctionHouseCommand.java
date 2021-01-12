@@ -76,6 +76,12 @@ public class AuctionHouseCommand implements CommandExecutor {
                     }
                     break;
 
+                case "setloc":
+                    if (!AdminCommands.setloc(player)) {
+                        permissionError(player);
+                    }
+                    break;
+
                 default:
                     if (!PlayerCommands.openByPlayer(player, args[0])) {
                         permissionError(player);

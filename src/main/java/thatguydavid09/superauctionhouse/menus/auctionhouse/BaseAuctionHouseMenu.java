@@ -539,8 +539,6 @@ public class BaseAuctionHouseMenu {
                 }
             }
         }
-
-        plugin.getLogger().info("Auction house has been loaded!");
     }
 
     /**
@@ -763,7 +761,6 @@ public class BaseAuctionHouseMenu {
      * @return The <a href="#{@link}"{@link AuctionItem}> the json represents
      */
     public static AuctionItem auctionItemFromJson(String string) {
-        plugin.getLogger().info(string.replaceAll("\"", "\\\""));
         JSONObject json = new JSONObject(string.replaceAll("\"", "\\\""));
         return new AuctionItem(itemStackFromJson(json.getString("item")), json.getLong("id"), json.getLong("price"), UUID.fromString(json.getString("player")), json.getLong("time"), json.getBoolean("infsell"), json.getString("playerName"));
     }

@@ -5,7 +5,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 
 public class AuctionHouseRegister implements Listener {

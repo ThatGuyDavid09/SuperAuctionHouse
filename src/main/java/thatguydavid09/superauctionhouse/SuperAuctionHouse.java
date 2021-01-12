@@ -3,7 +3,9 @@ package thatguydavid09.superauctionhouse;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -14,11 +16,14 @@ import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseChat;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseRegister;
 import thatguydavid09.superauctionhouse.events.generic.PlayerFreeze;
 import thatguydavid09.superauctionhouse.events.generic.PreventItemRemoval;
+import thatguydavid09.superauctionhouse.events.generic.RightClick;
 import thatguydavid09.superauctionhouse.events.sell.SellNameChatEvent;
 import thatguydavid09.superauctionhouse.events.sell.SellPriceChatEvent;
 import thatguydavid09.superauctionhouse.events.sell.SellTimeChatEvent;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -38,6 +43,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
     // End vault stuff
     // Config
     private static FileConfiguration config;
+    private static File openblocksFile;
+    private static FileConfiguration openblocks;
     private static Connection connection;
 
     /**
@@ -124,9 +131,11 @@ public final class SuperAuctionHouse extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SellTimeChatEvent(), this);
         getServer().getPluginManager().registerEvents(new PlayerFreeze(), this);
         getServer().getPluginManager().registerEvents(new AuctionHouseRegister(), this);
+        getServer().getPluginManager().registerEvents(new RightClick(), this);
 
         // Load config
         config();
+        openBlockConfig();
 
         // Init database vars
         host = config.getString("database.host");
@@ -163,6 +172,36 @@ public final class SuperAuctionHouse extends JavaPlugin {
         getLogger().info("Loading config.yml...");
         config = getConfig();
     }
+
+    /**
+     * This loads the open blocks config
+     */
+    private void openBlockConfig() {
+        openblocksFile = new File(getDataFolder(), "openblocksconfig.yml");
+        if (!openblocksFile.exists()) {
+            openblocksFile.getParentFile().mkdirs();
+            saveResource("openblocksconfig.yml", false);
+        }
+
+        openblocks = new YamlConfiguration();
+        try {
+            openblocks.load(openblocksFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * This returns the openblocks config
+     * @return The open blocks config
+     */
+    public static FileConfiguration getOpenBlocksConfig() { return openblocks; }
+
+    /**
+     * This returns the openblocks config file
+     * @return The open blocks config file
+     */
+    public static File getOpenblocksConfigFile() { return openblocksFile; }
 
     // Vault stuff
 

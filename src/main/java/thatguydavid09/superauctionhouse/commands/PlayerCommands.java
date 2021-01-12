@@ -68,6 +68,10 @@ public class PlayerCommands {
                 player.sendMessage(ChatColor.BLUE + "- /ah sell " + ChatColor.GREEN + ": Opens the sell menu for the currently held item.");
             }
 
+            if (player.hasPermission("superauctionhouse.setopenloc")) {
+                player.sendMessage(ChatColor.BLUE + "- /ah setloc " + ChatColor.GREEN + ": Removes all items from the auction house.");
+            }
+
             if (player.hasPermission("superauctionhouse.clear")) {
                 player.sendMessage(ChatColor.BLUE + "- /ah clear " + ChatColor.GREEN + ": Removes all items from the auction house.");
             }

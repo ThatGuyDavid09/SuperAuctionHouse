@@ -28,18 +28,24 @@ permissions:
       superauctionhouse.sell.asothers: true
       superauctionhouse.clear: true
       superauctionhouse.sell.infsell: true
+      superauctionhouse.setopenloc: true
 
   superauctionhouse.player:
     description: Gives access to all SuperAuctionHouse player commands
     default: true
     children:
       superauctionhouse.open: true
+      superauctionhouse.open.withblock: true
       superauctionhouse.sell: true
       superauctionhouse.viewplayerah: true
       superauctionhouse.help: true
 
   superauctionhouse.open:
-    description: Allows a player to open the auction house
+    description: Allows a player to open the auction house from the command line
+    default: true
+
+  superauctionhouse.open.withblock:
+    description: Allows a player to open the auction house bby right clicking on a block
     default: true
 
   superauctionhouse.viewplayerah:
@@ -64,4 +70,8 @@ permissions:
 
   superauctionhouse.clear:
     description: Allows a player to clear the Auction House.
+    default: op
+
+  superauctionhouse.setopenloc:
+    description: Allows a player to mark a location to open the auction house
     default: op
