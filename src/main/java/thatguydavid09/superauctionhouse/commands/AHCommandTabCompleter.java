@@ -1,6 +1,7 @@
 package thatguydavid09.superauctionhouse.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -19,6 +20,10 @@ public class AHCommandTabCompleter implements TabCompleter {
 
             if (player.hasPermission("superauctionhouse.sell")) {
                 commands.add("sell");
+            }
+
+            if (player.hasPermission("superauctionhouse.setopenloc")) {
+                commands.add("setopenloc");
             }
 
             if (player.hasPermission("superauctionhouse.clear")) {

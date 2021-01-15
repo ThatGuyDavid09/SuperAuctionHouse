@@ -80,7 +80,7 @@ public class AdminCommands {
 
 
     public static boolean setloc(Player player) {
-        if (player.hasPermission("superauctionhouse.open.withblock")) {
+        if (player.hasPermission("superauctionhouse.setopenloc")) {
             FileConfiguration config = SuperAuctionHouse.getOpenBlocksConfig();
             Location loc = player.getLocation();
             String playerloc = loc.getWorld().getName() + "," + Math.floor(loc.getX()) + "," + Math.floor(loc.getY()) + "," + Math.floor(loc.getZ());
@@ -91,12 +91,12 @@ public class AdminCommands {
 
             try {
                 config.save(SuperAuctionHouse.getOpenblocksConfigFile());
+                player.sendMessage(ChatColor.GREEN + "This location can now be used to open the auction house!");
             } catch (IOException e) {
                 player.sendMessage(ChatColor.RED + "An error occurred saving this to the config file! See server logs for details.");
                 SuperAuctionHouse.getInstance().getLogger().severe(e.getMessage());
                 return true;
             }
-            player.sendMessage(ChatColor.GREEN + "This location can now be used to open the auction house!");
 
             return true;
         }
