@@ -72,6 +72,10 @@ public class PlayerCommands {
                 player.sendMessage(ChatColor.BLUE + "- /ah setloc " + ChatColor.GREEN + ": Makes the block at your feet able to open the auction house.");
             }
 
+            if (player.hasPermission("superauctionhouse.unsetloc")) {
+                player.sendMessage(ChatColor.BLUE + "- /ah setloc " + ChatColor.GREEN + ": Makes the block at your feet not able to open the auction house.");
+            }
+
             if (player.hasPermission("superauctionhouse.clear")) {
                 player.sendMessage(ChatColor.BLUE + "- /ah clear " + ChatColor.GREEN + ": Removes all items from the auction house.");
             }

@@ -82,11 +82,14 @@ public class AuctionHouseCommand implements CommandExecutor {
                     }
                     break;
 
-                default:
-                    if (!PlayerCommands.openByPlayer(player, args[0])) {
+                case "unsetloc":
+                    if (!AdminCommands.unsetloc(player)) {
                         permissionError(player);
                     }
                     break;
+
+                default:
+                    player.sendMessage(ChatColor.RED + "Not a valid command!");
             }
         } else {
             sender.sendMessage(ChatColor.RED + "This command can only be used by a player!");

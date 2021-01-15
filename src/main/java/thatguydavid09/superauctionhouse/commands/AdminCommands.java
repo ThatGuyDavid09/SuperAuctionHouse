@@ -102,4 +102,28 @@ public class AdminCommands {
         }
         return false;
     }
+
+    public static boolean unsetloc(Player player) {
+        if (player.hasPermission("superauctionhouse.unsetloc")) {
+            FileConfiguration config = SuperAuctionHouse.getOpenBlocksConfig();
+            Location loc = player.getLocation();
+            String playerloc = loc.getWorld().getName() + "," + Math.floor(loc.getX()) + "," + Math.floor(loc.getY()) + "," + Math.floor(loc.getZ());
+
+            List<String> blocks = config.getStringList("auctionhouse.openblocks");
+            blocks.remove(playerloc);
+            config.set("auctionhouse.openblocks", blocks);
+
+            try {
+                config.save(SuperAuctionHouse.getOpenblocksConfigFile());
+                player.sendMessage(ChatColor.GREEN + "This location will no longer open the auction house!");
+            } catch (IOException e) {
+                player.sendMessage(ChatColor.RED + "An error occurred saving this to the config file! See server logs for details.");
+                SuperAuctionHouse.getInstance().getLogger().severe(e.getMessage());
+                return true;
+            }
+
+            return true;
+        }
+        return false;
+    }
 }

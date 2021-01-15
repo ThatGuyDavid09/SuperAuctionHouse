@@ -29,6 +29,7 @@ permissions:
       superauctionhouse.clear: true
       superauctionhouse.sell.infsell: true
       superauctionhouse.setopenloc: true
+      superauctionhouse.unsetloc: true
 
   superauctionhouse.player:
     description: Gives access to all SuperAuctionHouse player commands
@@ -74,4 +75,8 @@ permissions:
 
   superauctionhouse.setopenloc:
     description: Allows a player to mark a location to open the auction house
+    default: op
+
+  superauctionhouse.unsetloc:
+    description: Allows a player to mark a location to not open the auction house
     default: op

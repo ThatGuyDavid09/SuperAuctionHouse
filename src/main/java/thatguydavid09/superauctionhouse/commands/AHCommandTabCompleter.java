@@ -26,6 +26,10 @@ public class AHCommandTabCompleter implements TabCompleter {
                 commands.add("setopenloc");
             }
 
+            if (player.hasPermission("superauctionhouse.unsetloc")) {
+                commands.add("unsetloc");
+            }
+
             if (player.hasPermission("superauctionhouse.clear")) {
                 commands.add("clear");
             }
