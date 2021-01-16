@@ -15,6 +15,8 @@ import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
@@ -248,7 +250,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
                 hours = hours / 60;
 
-                lore.add(hours + "h " + minutes + "m " + seconds + "s");
+                lore.add(ChatColor.YELLOW +  String.valueOf(hours) + "h " + minutes + "m " + seconds + "s");
             }
         } else {
             lore.add(ChatColor.GREEN + "Price: " + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural()));
@@ -292,6 +294,43 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         ItemStack itemstack = item.getItem();
         itemstack.setItemMeta(meta);
         item.setItem(itemstack);
+        return item;
+    }
+
+    /**
+     * This removes the added lore from an <a href="#{@link}"{@link ItemStack}>
+     *
+     * @param item The <a href="#{@link}"{@link ItemStack}> to remove lore from
+     */
+    public static ItemStack removeLore(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = meta.getLore();
+
+        if (lore == null) {
+            lore = new ArrayList<>();
+        }
+
+        // Check if it is an auction
+        Pattern timePattern = Pattern.compile("§e\\d\\dh \\d\\dm \\d\\ds");
+        Matcher timeMatcher = timePattern.matcher(lore.get(lore.size() - 1));
+        boolean isAuction = timeMatcher.find();
+
+        if (isAuction) {
+            if (lore.size() > 4) {
+                lore.subList(0, lore.size() - 1 - 7);
+            } else {
+                lore.clear();
+            }
+        } else {
+            if (lore.size() > 2) {
+                lore.subList(0, lore.size() - 1 - 5);
+            } else {
+                lore.clear();
+            }
+        }
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
         return item;
     }
 
@@ -385,38 +424,32 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         currentlyDisplayedItems.clear();
         switch (sortMode) {
             case 0:
-                for (AuctionItem itemToAdd : sortItemsByName(items)) {
-                    addToMenu(itemToAdd.getItem(), auctionHouse);
-                    currentlyDisplayedItems.add(itemToAdd);
-                }
+                currentlyDisplayedItems.addAll(sortItemsByName(items));
                 break;
             case 1:
                 // Reverse sorted array to sort Z-A
                 ArrayList<AuctionItem> itemsToSort = sortItemsByName(items);
                 Collections.reverse(itemsToSort);
-                for (AuctionItem itemToAdd : itemsToSort) {
-                    addToMenu(itemToAdd.getItem(), auctionHouse);
-                    currentlyDisplayedItems.add(itemToAdd);
-                }
+                currentlyDisplayedItems.addAll(itemsToSort);
                 break;
             case 2:
                 // Reverse sorted array to sort price descending
                 itemsToSort = sortItemsByPrice(new ArrayList<>(items.keySet()));
                 Collections.reverse(itemsToSort);
-
-                for (AuctionItem itemToAdd : itemsToSort) {
-                    addToMenu(itemToAdd.getItem(), auctionHouse);
-                    currentlyDisplayedItems.add(itemToAdd);
-                }
+                currentlyDisplayedItems.addAll(itemsToSort);
                 break;
             case 3:
                 itemsToSort = sortItemsByPrice(new ArrayList<>(items.keySet()));
 
-                for (AuctionItem itemToAdd : itemsToSort) {
-                    addToMenu(itemToAdd.getItem(), auctionHouse);
-                    currentlyDisplayedItems.add(itemToAdd);
-                }
+                currentlyDisplayedItems.addAll(itemsToSort);
                 break;
+        }
+
+        for (AuctionItem item : currentlyDisplayedItems) {
+            if (!useSorted) {
+                addLore(item);
+            }
+            addToMenu(item.getItem(), auctionHouse);
         }
 
         // Update the sorting sunflower
@@ -446,11 +479,6 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
         for (Inventory page : auctionHouse) {
             page.setItem(49, newSortItem);
-        }
-
-        for (AuctionItem item: currentlyDisplayedItems) {
-            int index = currentlyDisplayedItems.indexOf(item);
-            currentlyDisplayedItems.set(index, addLore(item));
         }
     }
 
