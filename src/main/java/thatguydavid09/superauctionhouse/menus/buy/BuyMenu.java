@@ -13,6 +13,7 @@ import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 
 public class BuyMenu {
     private static ItemStack confirm;
@@ -76,7 +77,7 @@ public class BuyMenu {
             BaseAuctionHouseMenu.removeMoney(player, item.getPrice());
             BaseAuctionHouseMenu.addMoney(player, item.getPrice());
             BaseAuctionHouseMenu.removeItem(item);
-            BaseAuctionHouseMenu.giveItemToPlayer(BaseAuctionHouseMenu.removeLore(item.getItem()), player);
+            BaseAuctionHouseMenu.giveItemToPlayer(PlayerAuctionHouse.removeLore(item).getItem(), player);
 
             // Make name look nicer
             String name = item.getName();

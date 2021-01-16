@@ -130,12 +130,7 @@ public class BaseAuctionHouseMenu {
      * @param infsell Whether the item should be removed from the auction house upon being bought
      */
     public static void addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell) {
-        ItemStack itemToAdd = item.clone();
-
-        // Add correct lore
-        ItemStack itemWithLore = addLore(itemToAdd, sellingPlayer, price);
-
-        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId(), time, infsell, sellingPlayer.getDisplayName());
+        AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, sellingPlayer.getDisplayName());
 
         updateDictionaries(auctionItem);
 
@@ -154,12 +149,7 @@ public class BaseAuctionHouseMenu {
      * @param infsell Whether the item should be removed from the auction house upon being bought
      */
     public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell) {
-        ItemStack itemToAdd = item.clone();
-
-        // Add correct lore
-        ItemStack itemWithLore = addLore(itemToAdd, playerName, price);
-
-        AuctionItem auctionItem = new AuctionItem(itemWithLore, auctionId, price, sellingPlayer.getUniqueId(), time, infsell, playerName);
+        AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, playerName);
 
         updateDictionaries(auctionItem);
 
@@ -174,11 +164,7 @@ public class BaseAuctionHouseMenu {
      * @param backup Whether to back up the item
      */
     private static void addItem(AuctionItem item, boolean backup) {
-        ItemStack itemToAdd = item.getItem();
-
-        ItemStack itemWithLore = addLore(item.getItem(), item.getPlayerName(), item.getPrice());
-
-        AuctionItem auctionItem = new AuctionItem(itemWithLore, item.getId(), item.getPrice(), item.getPlayerId(), item.getTime(), item.isInfsell(), item.getPlayerName());
+        AuctionItem auctionItem = new AuctionItem(item.getItem(), item.getId(), item.getPrice(), item.getPlayerId(), item.getTime(), item.isInfsell(), item.getPlayerName());
 
         updateDictionaries(auctionItem);
 
@@ -200,7 +186,7 @@ public class BaseAuctionHouseMenu {
         backUp(auctionItem, false);
 
         if (auctionItem.isInfsell()) {
-            AuctionItem item = new AuctionItem(removeLore(auctionItem.getItem()), auctionItem.getId(), auctionItem.getPrice(), auctionItem.getPlayerId(), auctionItem.getTime(), auctionItem.isInfsell(), auctionItem.getPlayerName());
+            AuctionItem item = new AuctionItem(auctionItem.getItem(), auctionItem.getId(), auctionItem.getPrice(), auctionItem.getPlayerId(), auctionItem.getTime(), auctionItem.isInfsell(), auctionItem.getPlayerName());
             addItem(item, true);
         }
     }
@@ -252,86 +238,6 @@ public class BaseAuctionHouseMenu {
             player.getWorld().dropItem(player.getLocation().add(0, 1, 0), itemStack);
         }
     }
-
-    /**
-     * This adds the correct lore to an <a href="#{@link}"{@link ItemStack}>
-     * @param item The <a href="#{@link}"{@link ItemStack}> to add the lore to
-     * @param sellingPlayer The <a href="#{@link}"{@link Player}> selling the item
-     * @param price The price of the item
-     * @return The <a href="#{@link}"{@link ItemStack}> with the correct lore
-     */
-    private static ItemStack addLore(ItemStack item, Player sellingPlayer, long price) {
-        ItemStack itemToRet = item.clone();
-        ItemMeta meta = itemToRet.getItemMeta();
-
-        NumberFormat numberFormat = NumberFormat.getInstance();
-        numberFormat.setGroupingUsed(true);
-
-        try {
-            if (meta.getLore() != null) {
-                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
-            } else {
-                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
-            }
-        } catch (NullPointerException e) {
-            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GOLD + ChatColor.GRAY + sellingPlayer.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
-        }
-
-        itemToRet.setItemMeta(meta);
-        return itemToRet;
-    }
-
-    /**
-     * This adds the correct lore to an <a href="#{@link}"{@link ItemStack}> with a custom selling player name
-     * @param item The <a href="#{@link}"{@link ItemStack}> to add the lore to
-     * @param sellingPlayerName The custom name of the player selling the item
-     * @param price The price of the item
-     * @return The <a href="#{@link}"{@link ItemStack}> with the correct lore
-     */
-    private static ItemStack addLore(ItemStack item, String sellingPlayerName, long price) {
-        ItemStack itemToRet = item.clone();
-        ItemMeta meta = itemToRet.getItemMeta();
-
-        NumberFormat numberFormat = NumberFormat.getInstance();
-        numberFormat.setGroupingUsed(true);
-
-        try {
-            if (meta.getLore() != null) {
-                meta.setLore(ListUtils.union(meta.getLore(), Arrays.asList("", ChatColor.GRAY + "+------------------+", "", ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayerName + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()))));
-            } else {
-                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayerName + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
-            }
-        } catch (NullPointerException e) {
-            meta.setLore(Collections.singletonList(ChatColor.GREEN + "Sold by " + ChatColor.GRAY + sellingPlayerName + ChatColor.GREEN + " for " + ChatColor.GOLD + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural())));
-        }
-
-        itemToRet.setItemMeta(meta);
-        return itemToRet;
-    }
-
-    /**
-     * This removes the added lore from an <a href="#{@link}"{@link ItemStack}>
-     * @param item The <a href="#{@link}"{@link ItemStack}> to remove lore from
-     * @return The <a href="#{@link}"{@link ItemStack}> with the lore removed
-     */
-    public static ItemStack removeLore(ItemStack item) {
-        ItemStack itemToRet = item.clone();
-        ItemMeta meta = itemToRet.getItemMeta();
-        List<String> lore = meta.getLore();
-        lore.remove(lore.size() - 1);
-
-        if (lore.size() > 0) {
-            for (int i = 0; i <= 2; i++) {
-                lore.remove(lore.size() - 1);
-            }
-        }
-
-        meta.setLore(lore);
-        itemToRet.setItemMeta(meta);
-
-        return itemToRet;
-    }
-
 
     /**
      * This removes all items from the auction house

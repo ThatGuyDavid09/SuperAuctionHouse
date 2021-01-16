@@ -13,8 +13,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
+import java.text.NumberFormat;
 import java.util.*;
 
+import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
@@ -207,6 +209,93 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     }
 
     /**
+     * This adds the correct lore to an <a href="#{@link}"{@link ItemStack}>
+     *
+     * @param item The <a href="#{@link}"{@link AuctionItem}> to add the lore to
+     */
+    private static AuctionItem addLore(AuctionItem item) {
+        ItemStack itemStack = item.getItem();
+        ItemMeta meta = itemStack.getItemMeta();
+
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(true);
+
+        ArrayList<String> lore = (ArrayList<String>) meta.getLore();
+
+        if (lore == null) {
+            lore = new ArrayList<>();
+        }
+
+        if (lore.size() > 0) {
+            lore.addAll(Arrays.asList("", ChatColor.GRAY + "+----------------------+", ""));
+        }
+
+        Long price = item.getPrice();
+
+        lore.add(ChatColor.GREEN + "Sold by: " + ChatColor.GRAY + item.getPlayerName());
+        if (item.isAuction()) {
+            lore.add(ChatColor.GREEN + "Current bid: " + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural()));
+            lore.add("");
+
+            long time = item.getTime();
+            if (time < 0) {
+                lore.add(ChatColor.RED + "This auction has expired!");
+            } else {
+
+                long seconds = time % 60;
+                long hours = time / 60;
+                long minutes = hours % 60;
+
+                hours = hours / 60;
+
+                lore.add(hours + "h " + minutes + "m " + seconds + "s");
+            }
+        } else {
+            lore.add(ChatColor.GREEN + "Price: " + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural()));
+        }
+
+        meta.setLore(lore);
+        ItemStack itemstack = item.getItem();
+        itemstack.setItemMeta(meta);
+        item.setItem(itemstack);
+        return item;
+    }
+
+    /**
+     * This removes the added lore from an <a href="#{@link}"{@link AuctionItem}>
+     *
+     * @param item The <a href="#{@link}"{@link AuctionItem}> to remove lore from
+     */
+    public static AuctionItem removeLore(AuctionItem item) {
+        ItemMeta meta = item.getItem().getItemMeta();
+        List<String> lore = meta.getLore();
+
+        if (lore == null) {
+            lore = new ArrayList<>();
+        }
+
+        if (item.isAuction()) {
+            if (lore.size() > 4) {
+                lore.subList(0, lore.size() - 1 - 7);
+            } else {
+                lore.clear();
+            }
+        } else {
+            if (lore.size() > 2) {
+                lore.subList(0, lore.size() - 1 - 5);
+            } else {
+                lore.clear();
+            }
+        }
+
+        meta.setLore(lore);
+        ItemStack itemstack = item.getItem();
+        itemstack.setItemMeta(meta);
+        item.setItem(itemstack);
+        return item;
+    }
+
+    /**
      * This opens the auction house for the player this class belongs to
      */
     public void openAuctionHouse() {
@@ -217,6 +306,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
     /**
      * This opens the auction house for the player this class belongs to
+     *
      * @param resetPlayerName Whether to reset the player name parameter
      */
     public void openAuctionHouse(boolean resetPlayerName) {
@@ -357,12 +447,17 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         for (Inventory page : auctionHouse) {
             page.setItem(49, newSortItem);
         }
+
+        for (AuctionItem item: currentlyDisplayedItems) {
+            int index = currentlyDisplayedItems.indexOf(item);
+            currentlyDisplayedItems.set(index, addLore(item));
+        }
     }
 
     /**
      * This filters items in the given list by name
      *
-     * @param query The query to filter by
+     * @param query        The query to filter by
      * @param whatToFilter The list of items to filter
      * @return The filtered list of items
      * <a href="#{@link}"{@link ItemStack}>

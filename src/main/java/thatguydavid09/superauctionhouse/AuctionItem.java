@@ -13,7 +13,7 @@ public class AuctionItem implements Serializable {
     private final long id;
     private final long price;
     private final String name;
-    private final ItemStack item;
+    private ItemStack item;
     private final UUID playerId;
 
     /**
@@ -115,5 +115,13 @@ public class AuctionItem implements Serializable {
     public long decTime() {
         time--;
         return time;
+    }
+
+    /**
+     * This sets the itemStack of this AuctionItem
+     * @param item The ItemStack to set
+     */
+    public void setItem(ItemStack item) {
+        this.item = item;
     }
 }
