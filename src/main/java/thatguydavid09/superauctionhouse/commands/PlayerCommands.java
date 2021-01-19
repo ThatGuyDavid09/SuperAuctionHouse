@@ -92,6 +92,12 @@ public class PlayerCommands {
         return false;
     }
 
+    /**
+     * Opens the auction house filtered by a given player name
+     * @param player The player who the ah should be opened for (must be online)
+     * @param playerName The name of the player to filter by
+     * @return Whether the player has permission to open the ah
+     */
     public static boolean openByPlayer(Player player, String playerName) {
         if (player.hasPermission("superauctionhouse.viewplayerah")) {
             AuctionHouseCommand.auctionHousesByPlayer.get(player).openAuctionHouse(playerName, true);

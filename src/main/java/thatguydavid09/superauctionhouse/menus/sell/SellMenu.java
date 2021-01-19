@@ -241,6 +241,7 @@ public class SellMenu {
 
     /**
      * Returns the feed for this auction
+     *
      * @return The fee for this auction
      */
     public int getFee() {

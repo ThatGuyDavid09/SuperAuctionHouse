@@ -37,7 +37,7 @@ public class PreventItemRemoval implements Listener {
         List<String> forbiddenTitles = new ArrayList<>(Arrays.asList(config.getString("auctionhouse.names.auctionhouse"), config.getString("auctionhouse.names.buymenu"), config.getString("auctionhouse.names.sellmenu")));
 
 
-        if (event.getClickedInventory() != null && forbiddenTitles.contains(event.getView().getTitle())) {
+        if (event.getClickedInventory() != null && forbiddenTitles.contains(event.getView().getTitle()) && event.getRawSlot() < 54) {
             if (event.getClick() == ClickType.LEFT) {
                 // Identify inventory as ah
                 List<Inventory> auctionHousePage = AuctionHouseCommand.getAuctionHouse(player).getAuctionHouse();

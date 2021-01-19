@@ -7,13 +7,13 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
 
 import java.util.List;
 
 public class AuctionHouseActions {
     /**
      * Display the next ah page to the player
+     *
      * @param player The player this is affecting
      */
     public static void nextPage(Player player) {
@@ -28,6 +28,7 @@ public class AuctionHouseActions {
 
     /**
      * Display the previous ah page to the player
+     *
      * @param player The player this is affecting
      */
     public static void previousPage(Player player) {
@@ -40,6 +41,7 @@ public class AuctionHouseActions {
 
     /**
      * Change the sort mode of the ah
+     *
      * @param player The player this is affecting
      */
     public static void cycleSortMode(Player player) {
@@ -55,6 +57,7 @@ public class AuctionHouseActions {
 
     /**
      * Ask the player for the query to sort by item name
+     *
      * @param player The player this is affecting
      */
     public static void find(Player player) {

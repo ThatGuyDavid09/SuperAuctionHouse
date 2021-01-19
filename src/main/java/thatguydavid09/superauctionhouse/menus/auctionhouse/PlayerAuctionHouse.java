@@ -27,8 +27,8 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     public int sortMode = 0;
     public String query = "";
     private String playerName = "";
-    private List<Inventory> auctionHouse = new ArrayList<>();
-    private List<AuctionItem> currentlyDisplayedItems = new ArrayList<>();
+    private final List<Inventory> auctionHouse = new ArrayList<>();
+    private final List<AuctionItem> currentlyDisplayedItems = new ArrayList<>();
 
     /**
      * Creates a personal auction house for the given player
@@ -236,7 +236,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
         lore.add(ChatColor.GREEN + "Sold by: " + ChatColor.GRAY + item.getPlayerName());
         if (item.isAuction()) {
-            lore.add(ChatColor.GREEN + "Current bid: " + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural()));
+            lore.add(ChatColor.GREEN + "Current bid: " + ChatColor.GOLD + numberFormat.format(price) + ChatColor.GREEN + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural()));
             lore.add("");
 
             long time = item.getTime();
@@ -250,10 +250,10 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
                 hours = hours / 60;
 
-                lore.add(ChatColor.YELLOW +  String.valueOf(hours) + "h " + minutes + "m " + seconds + "s");
+                lore.add(ChatColor.YELLOW + String.valueOf(hours) + "h " + minutes + "m " + seconds + "s");
             }
         } else {
-            lore.add(ChatColor.GREEN + "Price: " + numberFormat.format(price) + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural()));
+            lore.add(ChatColor.GREEN + "Price: " + ChatColor.GOLD + numberFormat.format(price) + ChatColor.GREEN + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural()));
         }
 
         meta.setLore(lore);
@@ -394,6 +394,8 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     public void update(boolean useSorted) {
         // Clear the GUI
         clearAuctionHouseGui(auctionHouse);
+
+        // Set currentlyDisplayedItems
         if (!useSorted) {
             currentlyDisplayedItems.clear();
 
@@ -403,24 +405,50 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
             } else {
                 currentlyDisplayedItems.addAll(filterItemsByName(query, BaseAuctionHouseMenu.getAllItems()));
             }
+
+            // This is so dumb why do I need to do this Java pisses me off sometimes
+            for (AuctionItem item : BaseAuctionHouseMenu.getAllItems()) {
+                removeLore(item);
+            }
         }
 
+        // Create BiMap with all items
         BiMap<AuctionItem, String> items = HashBiMap.create();
         if (playerName.equals("")) {
             for (AuctionItem itemToAdd : currentlyDisplayedItems) {
-                items.put(itemToAdd, itemToAdd.getName() + "" + itemToAdd.getId());
+                items.put(itemToAdd, itemToAdd.getName() + " " + itemToAdd.getId());
             }
         } else {
             for (AuctionItem itemToAdd : currentlyDisplayedItems) {
                 if (itemToAdd.getPlayerName().contains(playerName)) {
-                    items.put(itemToAdd, itemToAdd.getName() + "" + itemToAdd.getId());
+                    items.put(itemToAdd, itemToAdd.getName() + " " + itemToAdd.getId());
                 }
             }
+        }
+
+
+        BiMap<AuctionItem, String> tempItems = HashBiMap.create();
+        if (!useSorted) {
+            // Create copy of items
+            tempItems.putAll(items);
+            for (AuctionItem item : items.keySet()) {
+                AuctionItem tempItem = item.clone();
+                String tempVal = items.get(item);
+
+                tempItems.remove(item);
+                addLore(tempItem);
+
+                tempItems.put(tempItem, tempVal);
+            }
+            items.clear();
+            items.putAll(tempItems);
         }
 
         if (auctionHouse.size() == 0) {
             addPage(auctionHouse);
         }
+
+        // Sort items
         currentlyDisplayedItems.clear();
         switch (sortMode) {
             case 0:
@@ -445,10 +473,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
                 break;
         }
 
-        for (AuctionItem item : currentlyDisplayedItems) {
-            if (!useSorted) {
-                addLore(item);
-            }
+        for (AuctionItem item : items.keySet()) {
             addToMenu(item.getItem(), auctionHouse);
         }
 

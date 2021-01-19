@@ -21,7 +21,7 @@ public class BuyMenu {
     private static Inventory buyMenuTemplate = null;
     private final AuctionItem item;
     private final Player player;
-    private Inventory buyMenu;
+    private final Inventory buyMenu;
 
 
     public BuyMenu(AuctionItem item, Player player) {

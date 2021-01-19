@@ -1,7 +1,6 @@
 package thatguydavid09.superauctionhouse.menus.auctionhouse;
 
 import com.google.gson.*;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
@@ -22,7 +21,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.NumberFormat;
 import java.util.*;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
@@ -31,17 +29,15 @@ import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 public class BaseAuctionHouseMenu {
     // Other necessary stuff
     private static final SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
+    // List of all items
+    private final static List<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
     public static List<Player> playersFindingStuff = new ArrayList<>();
     private static Inventory baseAuctionHouse;
     private static long auctionId = 0; // This needs to be created from backup
-
     private static ItemStack sortItem;
-
     // Item to something
-    private static HashMap<UUID, List<AuctionItem>> itemsForPlayer = new HashMap<>(); // This needs to be created from backup
-    private static HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>(); // This needs to be created from backup
-    // List of all items
-    private static List<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
+    private static final HashMap<UUID, List<AuctionItem>> itemsForPlayer = new HashMap<>(); // This needs to be created from backup
+    private static final HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>(); // This needs to be created from backup
 
     /**
      * This creates all items for the auction house and creates the menu
@@ -123,11 +119,12 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This adds an item to the auction house
-     * @param item The <a href="#{@link}"{@link ItemStack}> to be added
+     *
+     * @param item          The <a href="#{@link}"{@link ItemStack}> to be added
      * @param sellingPlayer The <a href="#{@link}"{@link Player}> selling the item
-     * @param price The price of the item
-     * @param time The time the auction should last, -1 if it is not an auction
-     * @param infsell Whether the item should be removed from the auction house upon being bought
+     * @param price         The price of the item
+     * @param time          The time the auction should last, -1 if it is not an auction
+     * @param infsell       Whether the item should be removed from the auction house upon being bought
      */
     public static void addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell) {
         AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, sellingPlayer.getDisplayName());
@@ -141,12 +138,13 @@ public class BaseAuctionHouseMenu {
 
     /**
      * Adds an item to the auction house with a custom selling player name
-     * @param item The <a href="#{@link}"{@link ItemStack}> to be added
+     *
+     * @param item          The <a href="#{@link}"{@link ItemStack}> to be added
      * @param sellingPlayer The <a href="#{@link}"{@link Player}> selling the item
-     * @param price The price of the item
-     * @param playerName The custom name of the player
-     * @param time The time the auction should last, -1 if it is not an auction
-     * @param infsell Whether the item should be removed from the auction house upon being bought
+     * @param price         The price of the item
+     * @param playerName    The custom name of the player
+     * @param time          The time the auction should last, -1 if it is not an auction
+     * @param infsell       Whether the item should be removed from the auction house upon being bought
      */
     public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell) {
         AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, playerName);
@@ -160,7 +158,8 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This adds an item to the auction house, but from its AuctionItem
-     * @param item The <a href="#{@link}"{@link AuctionItem}> to add
+     *
+     * @param item   The <a href="#{@link}"{@link AuctionItem}> to add
      * @param backup Whether to back up the item
      */
     private static void addItem(AuctionItem item, boolean backup) {
@@ -177,6 +176,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This removes an item from the auction house
+     *
      * @param auctionItem The <a href="#{@link}"{@link AuctionItem}> to remove
      */
     public static void removeItem(AuctionItem auctionItem) {
@@ -193,6 +193,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This removes an <a href="#{@link}"{@link ItemStack}> from the auction house
+     *
      * @param item The <a href="#{@link}"{@link ItemStack}> to remove
      */
     public static void removeItem(ItemStack item) {
@@ -201,6 +202,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This updates various dictionaries about the current items
+     *
      * @param item The <a href="#{@link}"{@link AuctionItem}> to update dictionaries with
      */
     private static void updateDictionaries(AuctionItem item) {
@@ -216,6 +218,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This removes an AuctionItem from various dictionaries
+     *
      * @param item The AuctionItem to remove
      */
     private static void unUpdateDictionaries(AuctionItem item) {
@@ -225,7 +228,8 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This gives an <a href="#{@link}"{@link ItemStack}> to the Player
-     * @param item The <a href="#{@link}"{@link ItemStack}> to give
+     *
+     * @param item   The <a href="#{@link}"{@link ItemStack}> to give
      * @param player The <a href="#{@link}"{@link Player}> to give it to
      */
     public static void giveItemToPlayer(ItemStack item, Player player) {
@@ -274,6 +278,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This gives a <a href="#{@link}"{@link Player}> money
+     *
      * @param player The <a href="#{@link}"{@link Player}> to give money to
      * @param amount How much money to give
      */
@@ -283,6 +288,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This removes money from a <a href="#{@link}"{@link Player}>
+     *
      * @param player The <a href="#{@link}"{@link Player}> to remove money from
      * @param amount How much money to remove
      */
@@ -292,6 +298,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This returns how much money a <a href="#{@link}"{@link Player}> has
+     *
      * @param player The <a href="#{@link}"{@link Player}> in question
      * @return The amount of money the player has
      */
@@ -301,6 +308,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This checks if a <a href="#{@link}"{@link Player}> has above a certain amount of money
+     *
      * @param player The <a href="#{@link}"{@link Player}> in question
      * @param amount The amount of money to check for
      * @return Whether the player has the amount of money specified
@@ -311,6 +319,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This returns the total number of items
+     *
      * @return The number of items
      */
     public static long getNumOfItems() {
@@ -319,14 +328,24 @@ public class BaseAuctionHouseMenu {
 
     /**
      * Returns a list of all the items currently in the auction house
+     *
      * @return A list of all the items in the auction house
      */
     public static List<AuctionItem> getAllItems() {
-        return allItems;
+        // We must do this to prevent modifying the original list, as .addAll and the constructor method add pointers, not copies of the object.
+        ArrayList<AuctionItem> temp = new ArrayList<>();
+
+        for (AuctionItem item : allItems) {
+            temp.add(item.clone());
+        }
+
+        Collections.copy(temp, allItems);
+        return Collections.unmodifiableList(temp);
     }
 
     /**
      * Converts a given <a href="#{@link}"{@link ItemStack}> to its corresponding <a href="#{@link}"{@link AuctionItem}>
+     *
      * @param item The <a href="#{@link}"{@link ItemStack}> in question
      * @return Its corresponding <a href="#{@link}"{@link AuctionItem}>
      */
@@ -336,6 +355,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * Returns an <a href="#{@link}"{@link Inventory}> of the auction house template
+     *
      * @return The auction house template
      */
     public static Inventory getBaseAuctionHouse() {
@@ -344,6 +364,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * Returns the <a href="#{@link}"{@link ItemStack}> corresponding to the sort item
+     *
      * @return The <a href="#{@link}"{@link ItemStack}> corresponding to the sort item
      */
     public static ItemStack getSortItem() {
@@ -359,7 +380,8 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This backs up an item, either adding or removing it from the database
-     * @param item The <a href="#{@link}"{@link AuctionItem}> to be backed up
+     *
+     * @param item        The <a href="#{@link}"{@link AuctionItem}> to be backed up
      * @param addOrRemove Whether to add or to remove. True if add, false if remove
      */
     public static void backUp(AuctionItem item, boolean addOrRemove) {
@@ -449,6 +471,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This encodes an <a href="#{@link}"{@link AuctionItem}> to a json string
+     *
      * @param item The <a href="#{@link}"{@link AuctionItem}> to be converted
      * @return The json string representing the item
      */
@@ -466,6 +489,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This converts an <a href="#{@link}"{@link ItemStack}> to a json string
+     *
      * @param item The <a href="#{@link}"{@link ItemStack}> to be converted
      * @return The json string representing the item
      */
@@ -663,6 +687,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This converts a json string to an <a href="#{@link}"{@link AuctionItem}>
+     *
      * @param string The json string
      * @return The <a href="#{@link}"{@link AuctionItem}> the json represents
      */
@@ -673,6 +698,7 @@ public class BaseAuctionHouseMenu {
 
     /**
      * This converts a json string to an <a href="#{@link}"{@link ItemStack}>
+     *
      * @param string The json string
      * @return The <a href="#{@link}"{@link ItemStack}> the json represents
      */
