@@ -405,12 +405,9 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
             } else {
                 currentlyDisplayedItems.addAll(filterItemsByName(query, BaseAuctionHouseMenu.getAllItems()));
             }
-
-            // This is so dumb why do I need to do this Java pisses me off sometimes
-            for (AuctionItem item : BaseAuctionHouseMenu.getAllItems()) {
-                removeLore(item);
-            }
         }
+
+        // FIXME For some reason this keeps modifying the original allItems list, don't let it
 
         // Create BiMap with all items
         BiMap<AuctionItem, String> items = HashBiMap.create();
@@ -432,7 +429,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
             // Create copy of items
             tempItems.putAll(items);
             for (AuctionItem item : items.keySet()) {
-                AuctionItem tempItem = item.clone();
+                AuctionItem tempItem = new AuctionItem(item);
                 String tempVal = items.get(item);
 
                 tempItems.remove(item);

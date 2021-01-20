@@ -332,15 +332,15 @@ public class BaseAuctionHouseMenu {
      * @return A list of all the items in the auction house
      */
     public static List<AuctionItem> getAllItems() {
+        // FIXME Make this somehow not return a pointer to the original list
         // We must do this to prevent modifying the original list, as .addAll and the constructor method add pointers, not copies of the object.
-        ArrayList<AuctionItem> temp = new ArrayList<>();
+        List<AuctionItem> toReturn = new ArrayList<>();
 
         for (AuctionItem item : allItems) {
-            temp.add(item.clone());
+            toReturn.add(new AuctionItem(item));
         }
 
-        Collections.copy(temp, allItems);
-        return Collections.unmodifiableList(temp);
+        return toReturn;
     }
 
     /**

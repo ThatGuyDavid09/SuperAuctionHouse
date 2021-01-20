@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class AuctionItem implements Serializable, Cloneable {
+public class AuctionItem implements Serializable {
     private final String playerName;
     private final boolean infsell;
     private final boolean auction;
@@ -43,6 +43,25 @@ public class AuctionItem implements Serializable, Cloneable {
         this.auction = time > 0;
 
         this.playerName = playerName;
+    }
+
+    /**
+     * This is a cloning constructor
+     *
+     * @param item The AuctionItem to be cloned
+     */
+    public AuctionItem(AuctionItem item) {
+        this.item = item.getItem();
+        this.id = item.getId();
+        this.price = item.getPrice();
+        this.name = item.getName();
+        this.playerId = item.getPlayerId();
+
+        this.time = item.getTime();
+        this.infsell = item.isInfsell();
+        this.auction = item.isAuction();
+
+        this.playerName = item.getPlayerName();
     }
 
     /**
@@ -143,17 +162,5 @@ public class AuctionItem implements Serializable, Cloneable {
     public long decTime() {
         time--;
         return time;
-    }
-
-    /**
-     * Returns a copy of the AuctionItem
-     *
-     * @return A copy of the AuctionItem
-     */
-    public AuctionItem clone() {
-        try {
-            return (AuctionItem) super.clone();
-        } catch (CloneNotSupportedException ignored) {}
-        return null;
     }
 }
