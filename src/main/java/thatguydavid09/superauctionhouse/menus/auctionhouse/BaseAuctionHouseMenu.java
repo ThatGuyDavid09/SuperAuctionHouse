@@ -30,7 +30,7 @@ public class BaseAuctionHouseMenu {
     // Other necessary stuff
     private static final SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
     // List of all items
-    private final static List<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
+    private final static ArrayList<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
     public static List<Player> playersFindingStuff = new ArrayList<>();
     private static Inventory baseAuctionHouse;
     private static long auctionId = 0; // This needs to be created from backup
@@ -331,16 +331,16 @@ public class BaseAuctionHouseMenu {
      *
      * @return A list of all the items in the auction house
      */
-    public static List<AuctionItem> getAllItems() {
+    public static ArrayList<AuctionItem> getAllItems() {
         // FIXME Make this somehow not return a pointer to the original list
         // We must do this to prevent modifying the original list, as .addAll and the constructor method add pointers, not copies of the object.
-        List<AuctionItem> toReturn = new ArrayList<>();
-
-        for (AuctionItem item : allItems) {
-            toReturn.add(new AuctionItem(item));
-        }
-
-        return toReturn;
+//        List<AuctionItem> toReturn = new ArrayList<>();
+//
+//        for (AuctionItem item : allItems) {
+//            toReturn.add(new AuctionItem(item));
+//        }
+//        return toReturn;
+        return (ArrayList<AuctionItem>) allItems.clone();
     }
 
     /**

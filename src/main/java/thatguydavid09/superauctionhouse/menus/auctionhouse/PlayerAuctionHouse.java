@@ -23,12 +23,12 @@ import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     private final Player player;
+    private final List<Inventory> auctionHouse = new ArrayList<>();
+    private final List<AuctionItem> currentlyDisplayedItems = new ArrayList<>();
     // 0 is Alphabetically A-Z. 1 is alphabetically Z-A, 2 is by price ascending, 3 is by price descending
     public int sortMode = 0;
     public String query = "";
     private String playerName = "";
-    private final List<Inventory> auctionHouse = new ArrayList<>();
-    private final List<AuctionItem> currentlyDisplayedItems = new ArrayList<>();
 
     /**
      * Creates a personal auction house for the given player
@@ -215,7 +215,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      *
      * @param item The <a href="#{@link}"{@link AuctionItem}> to add the lore to
      */
-    private static AuctionItem addLore(AuctionItem item) {
+    public static AuctionItem addLore(AuctionItem item) {
         ItemStack itemStack = item.getItem();
         ItemMeta meta = itemStack.getItemMeta();
 
@@ -399,46 +399,35 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         if (!useSorted) {
             currentlyDisplayedItems.clear();
 
+            List<AuctionItem> allItems;
+
             if (Strings.isNullOrEmpty(query)) {
                 // Sort the items
-                currentlyDisplayedItems.addAll(BaseAuctionHouseMenu.getAllItems());
+                // currentlyDisplayedItems.addAll(BaseAuctionHouseMenu.getAllItems());
+                allItems = BaseAuctionHouseMenu.getAllItems();
             } else {
-                currentlyDisplayedItems.addAll(filterItemsByName(query, BaseAuctionHouseMenu.getAllItems()));
+                allItems = filterItemsByName(query, BaseAuctionHouseMenu.getAllItems());
             }
+
+            for (AuctionItem item : allItems) {
+                currentlyDisplayedItems.add(new AuctionItem(item));
+            }
+
         }
 
         // FIXME For some reason this keeps modifying the original allItems list, don't let it
-
         // Create BiMap with all items
         BiMap<AuctionItem, String> items = HashBiMap.create();
         if (playerName.equals("")) {
             for (AuctionItem itemToAdd : currentlyDisplayedItems) {
-                items.put(itemToAdd, itemToAdd.getName() + " " + itemToAdd.getId());
+                items.put(new AuctionItem(itemToAdd), itemToAdd.getName() + " " + itemToAdd.getId());
             }
         } else {
             for (AuctionItem itemToAdd : currentlyDisplayedItems) {
                 if (itemToAdd.getPlayerName().contains(playerName)) {
-                    items.put(itemToAdd, itemToAdd.getName() + " " + itemToAdd.getId());
+                    items.put(new AuctionItem(itemToAdd), itemToAdd.getName() + " " + itemToAdd.getId());
                 }
             }
-        }
-
-
-        BiMap<AuctionItem, String> tempItems = HashBiMap.create();
-        if (!useSorted) {
-            // Create copy of items
-            tempItems.putAll(items);
-            for (AuctionItem item : items.keySet()) {
-                AuctionItem tempItem = new AuctionItem(item);
-                String tempVal = items.get(item);
-
-                tempItems.remove(item);
-                addLore(tempItem);
-
-                tempItems.put(tempItem, tempVal);
-            }
-            items.clear();
-            items.putAll(tempItems);
         }
 
         if (auctionHouse.size() == 0) {

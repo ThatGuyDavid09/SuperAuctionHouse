@@ -21,6 +21,7 @@ import thatguydavid09.superauctionhouse.events.sell.SellNameChatEvent;
 import thatguydavid09.superauctionhouse.events.sell.SellPriceChatEvent;
 import thatguydavid09.superauctionhouse.events.sell.SellTimeChatEvent;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +50,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     /**
      * This returns an instance of the plugin
+     *
      * @return An instance of the plugin
      */
     public static SuperAuctionHouse getInstance() {
@@ -57,6 +59,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     /**
      * This returns an instance of the economy
+     *
      * @return An instance of the economy
      */
     public static Economy getEconomy() {
@@ -85,10 +88,56 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     /**
      * This gets an available connection to the database
+     *
      * @return A <a href="#{@link}"{@link Connection}> to the database
      */
     public static Connection getConnection() {
         return connection;
+    }
+
+    /**
+     * This returns the openblocks config
+     *
+     * @return The open blocks config
+     */
+    public static FileConfiguration getOpenBlocksConfig() {
+        return openblocks;
+    }
+
+    /**
+     * This returns the openblocks config file
+     *
+     * @return The open blocks config file
+     */
+    public static File getOpenblocksConfigFile() {
+        return openblocksFile;
+    }
+
+    /**
+     * This gets the host of the database
+     *
+     * @return The host of the database
+     */
+    public static String getHost() {
+        return host;
+    }
+
+    /**
+     * This gets the port of the database
+     *
+     * @return The port of the database
+     */
+    public static String getPort() {
+        return port;
+    }
+
+    /**
+     * This gets the name of the database
+     *
+     * @return The name of the database
+     */
+    public static String getDatabase() {
+        return database;
     }
 
     /**
@@ -115,11 +164,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
         itemMeta.setLore(Collections.emptyList());
         placeholder.setItemMeta(itemMeta);
 
-
-        this.getCommand("superauctionhouse").setExecutor(new AuctionHouseCommand());
-
         // Register command
-        getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "SuperAuctionHouse has been enabled!");
+        this.getCommand("superauctionhouse").setExecutor(new AuctionHouseCommand());
 
         // Register tabcompleter
         getCommand("superauctionhouse").setTabCompleter(new AHCommandTabCompleter());
@@ -146,7 +192,16 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
         setupDatabase();
         BaseAuctionHouseMenu.loadFromBackup();
+
+        // Add lore to all items
+        for (AuctionItem item : BaseAuctionHouseMenu.getAllItems()) {
+            PlayerAuctionHouse.addLore(item);
+        }
+
+        getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "SuperAuctionHouse has been enabled!");
     }
+
+    // Vault stuff
 
     /**
      * This is the method called when the plugin is disabled
@@ -158,6 +213,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
         // End vault stuff
 
     }
+    // End vault stuff
 
     /**
      * This loads the config
@@ -192,21 +248,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     /**
-     * This returns the openblocks config
-     * @return The open blocks config
-     */
-    public static FileConfiguration getOpenBlocksConfig() { return openblocks; }
-
-    /**
-     * This returns the openblocks config file
-     * @return The open blocks config file
-     */
-    public static File getOpenblocksConfigFile() { return openblocksFile; }
-
-    // Vault stuff
-
-    /**
      * This sets up the economy
+     *
      * @return Whether the economy was set up correctly
      */
     private boolean setupEconomy() {
@@ -220,7 +263,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
         econ = rsp.getProvider();
         return econ != null;
     }
-    // End vault stuff
 
     /**
      * This sets up the database
@@ -256,22 +298,4 @@ public final class SuperAuctionHouse extends JavaPlugin {
             }
         }
     }
-
-    /**
-     * This gets the host of the database
-     * @return The host of the database
-     */
-    public static String getHost() { return host; }
-
-    /**
-     * This gets the port of the database
-     * @return The port of the database
-     */
-    public static String getPort() { return port; }
-
-    /**
-     * This gets the name of the database
-     * @return The name of the database
-     */
-    public static String getDatabase() { return database; }
 }
