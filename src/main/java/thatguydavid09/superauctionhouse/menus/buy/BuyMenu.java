@@ -74,6 +74,11 @@ public class BuyMenu {
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
             cancelPurchaseNoSound();
         } else {
+            // Inform selling player of purchase
+            if (Bukkit.getServer().getPlayer(item.getPlayerId()) != null) {
+                Bukkit.getServer().getPlayer(item.getPlayerId()).sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GRAY + item.getPlayerName() + ChatColor.GREEN + " Has purchased your " + (item.getItem().getItemMeta().hasDisplayName() ? item.getItem().getItemMeta().getDisplayName() : String.valueOf(item.getItem().getType())) + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + " " + ((item.getPrice() == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
+            }
+
             BaseAuctionHouseMenu.removeMoney(player, item.getPrice());
             BaseAuctionHouseMenu.addMoney(player, item.getPrice());
             BaseAuctionHouseMenu.removeItem(item);
@@ -85,7 +90,7 @@ public class BuyMenu {
                 name = WordUtils.capitalizeFully(name.replace("_", " "));
             }
 
-            player.sendMessage(ChatColor.GREEN + "You have purchased " + ChatColor.GOLD + item.getItem().getAmount() + " " + name + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + ChatColor.GREEN + " " + ((item.getPrice() == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
+            player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GREEN + "You have purchased " + ChatColor.GOLD + item.getItem().getAmount() + " " + name + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + ChatColor.GREEN + " " + ((item.getPrice() == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
         }
         player.closeInventory();

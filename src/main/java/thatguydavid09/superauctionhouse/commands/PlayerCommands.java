@@ -54,12 +54,12 @@ public class PlayerCommands {
         }
         // Make sure to withdraw fee
         SuperAuctionHouse.getEconomy().withdrawPlayer(menu.player, menu.getFee());
-        menu.player.sendMessage(ChatColor.GREEN + "Auction has been created!");
+        menu.player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GREEN + "Auction has been created!");
     }
 
     public static boolean help(Player player) {
         if (player.hasPermission("superauctionhouse.help")) {
-            player.sendMessage(ChatColor.GREEN + "Available commands:");
+            player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GREEN + "Available commands:");
             if (player.hasPermission("superauctionhouse.open")) {
                 player.sendMessage(ChatColor.BLUE + "- /ah " + ChatColor.GREEN + ": Opens the auction house.");
             }

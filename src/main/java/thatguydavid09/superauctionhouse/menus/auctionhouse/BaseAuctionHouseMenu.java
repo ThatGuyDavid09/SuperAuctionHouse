@@ -129,7 +129,7 @@ public class BaseAuctionHouseMenu {
     public static void addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell) {
         AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, sellingPlayer.getDisplayName());
 
-        updateDictionaries(auctionItem);
+        updateDictionaries(PlayerAuctionHouse.addLore(auctionItem));
 
         auctionId++;
 
@@ -149,7 +149,7 @@ public class BaseAuctionHouseMenu {
     public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell) {
         AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, playerName);
 
-        updateDictionaries(auctionItem);
+        updateDictionaries(PlayerAuctionHouse.addLore(auctionItem));
 
         auctionId++;
 
@@ -328,19 +328,12 @@ public class BaseAuctionHouseMenu {
 
     /**
      * Returns a list of all the items currently in the auction house
+     * Returns a list of all the items currently in the auction house
      *
      * @return A list of all the items in the auction house
      */
     public static ArrayList<AuctionItem> getAllItems() {
-        // FIXME Make this somehow not return a pointer to the original list
-        // We must do this to prevent modifying the original list, as .addAll and the constructor method add pointers, not copies of the object.
-//        List<AuctionItem> toReturn = new ArrayList<>();
-//
-//        for (AuctionItem item : allItems) {
-//            toReturn.add(new AuctionItem(item));
-//        }
-//        return toReturn;
-        return (ArrayList<AuctionItem>) allItems.clone();
+        return allItems;
     }
 
     /**

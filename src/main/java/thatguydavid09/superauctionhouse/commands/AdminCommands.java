@@ -60,7 +60,7 @@ public class AdminCommands {
             clearcodes.remove(player);
 
             BaseAuctionHouseMenu.clearAuctionHouse();
-            player.sendMessage(ChatColor.GREEN + "Auction House has been cleared!");
+            player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GREEN + "Auction House has been cleared!");
             BaseAuctionHouseMenu.resetAuctionId();
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
         } else {
@@ -91,7 +91,7 @@ public class AdminCommands {
 
             try {
                 config.save(SuperAuctionHouse.getOpenblocksConfigFile());
-                player.sendMessage(ChatColor.GREEN + "This location can now be used to open the auction house!");
+                player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GREEN + "This location can now be used to open the auction house!");
             } catch (IOException e) {
                 player.sendMessage(ChatColor.RED + "An error occurred saving this to the config file! See server logs for details.");
                 SuperAuctionHouse.getInstance().getLogger().severe(e.getMessage());
@@ -115,7 +115,7 @@ public class AdminCommands {
 
             try {
                 config.save(SuperAuctionHouse.getOpenblocksConfigFile());
-                player.sendMessage(ChatColor.GREEN + "This location will no longer open the auction house!");
+                player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GREEN + "This location will no longer open the auction house!");
             } catch (IOException e) {
                 player.sendMessage(ChatColor.RED + "An error occurred saving this to the config file! See server logs for details.");
                 SuperAuctionHouse.getInstance().getLogger().severe(e.getMessage());

@@ -47,6 +47,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
     private static File openblocksFile;
     private static FileConfiguration openblocks;
     private static Connection connection;
+    private static String chatPrefix;
 
     /**
      * This returns an instance of the plugin
@@ -190,15 +191,13 @@ public final class SuperAuctionHouse extends JavaPlugin {
         username = config.getString("database.username");
         password = config.getString("database.password");
 
+        // Init chat prefix
+        chatPrefix = config.getString("settings.prefix");
+
         setupDatabase();
         BaseAuctionHouseMenu.loadFromBackup();
 
-        // Add lore to all items
-        for (AuctionItem item : BaseAuctionHouseMenu.getAllItems()) {
-            PlayerAuctionHouse.addLore(item);
-        }
-
-        getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "SuperAuctionHouse has been enabled!");
+        getLogger().info(ChatColor.GREEN + "SuperAuctionHouse has been enabled!");
     }
 
     // Vault stuff
@@ -297,5 +296,13 @@ public final class SuperAuctionHouse extends JavaPlugin {
                 }
             }
         }
+    }
+
+    /**
+     * This returns the chat prefix for this plugin
+     * @return The chat prefix
+     */
+    public static String getPrefix() {
+        return chatPrefix;
     }
 }

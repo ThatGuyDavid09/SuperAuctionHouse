@@ -9,6 +9,12 @@ database:
   username: "user"
   password: "pass"
 
+
+# These are the settings for the plugin
+settings:
+  # This is the prefix for any chat messages
+  prefix: "§a[§bSuperAuctionHouse§a] "
+
 # This is for stuff related to the auction house
 auctionhouse:
   # This is for the names of certain menus, like the auction house itself, the buy menu, or the sell menu. Use color code character §

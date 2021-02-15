@@ -415,7 +415,6 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
 
         }
 
-        // FIXME For some reason this keeps modifying the original allItems list, don't let it
         // Create BiMap with all items
         BiMap<AuctionItem, String> items = HashBiMap.create();
         if (playerName.equals("")) {
