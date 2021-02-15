@@ -6,22 +6,24 @@ import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import thatguydavid09.superauctionhouse.commands.AHCommandTabCompleter;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseChat;
+import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseClose;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseRegister;
+import thatguydavid09.superauctionhouse.events.auctionhouse.RightClickOpenAH;
 import thatguydavid09.superauctionhouse.events.generic.PlayerFreeze;
 import thatguydavid09.superauctionhouse.events.generic.PreventItemRemoval;
-import thatguydavid09.superauctionhouse.events.generic.RightClickOpenAH;
 import thatguydavid09.superauctionhouse.events.sell.SellNameChatEvent;
 import thatguydavid09.superauctionhouse.events.sell.SellPriceChatEvent;
 import thatguydavid09.superauctionhouse.events.sell.SellTimeChatEvent;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +32,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,11 +40,12 @@ public final class SuperAuctionHouse extends JavaPlugin {
     // For vault
     private static final Logger log = Logger.getLogger("Minecraft");
     public static ItemStack placeholder;
+    public static boolean areAuctions;
+    public static boolean areInstaBuys;
     // Database stuff
     private static String host, port, database, username, password;
     private static SuperAuctionHouse instance;
     private static Economy econ = null;
-    // End vault stuff
     // Config
     private static FileConfiguration config;
     private static File openblocksFile;
@@ -142,6 +146,17 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     /**
+     * This returns the chat prefix for this plugin
+     *
+     * @return The chat prefix
+     */
+    public static String getPrefix() {
+        return chatPrefix;
+    }
+
+    // Vault stuff
+
+    /**
      * This is the method called when the plugin is enabled
      */
     @Override
@@ -179,10 +194,13 @@ public final class SuperAuctionHouse extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerFreeze(), this);
         getServer().getPluginManager().registerEvents(new AuctionHouseRegister(), this);
         getServer().getPluginManager().registerEvents(new RightClickOpenAH(), this);
+        getServer().getPluginManager().registerEvents(new AuctionHouseClose(), this);
 
         // Load config
         config();
         openBlockConfig();
+        areAuctions = config.getBoolean("auctionhouse.allowauction");
+        areInstaBuys = config.getBoolean("auctionhouse.allowinsbuy");
 
         // Init database vars
         host = config.getString("database.host");
@@ -194,13 +212,40 @@ public final class SuperAuctionHouse extends JavaPlugin {
         // Init chat prefix
         chatPrefix = config.getString("settings.prefix");
 
+        // Database
         setupDatabase();
         BaseAuctionHouseMenu.loadFromBackup();
 
+        // Schedule updates for auctions
+//        if (areAuctions) {
+//            BukkitScheduler scheduler = getServer().getScheduler();
+//            scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+//                @Override
+//                public void run() {
+//                    for (AuctionItem item : BaseAuctionHouseMenu.getAllItems()) {
+//                        if (item.isAuction()) {
+//                            item.decTime();
+//                        }
+//                        ItemMeta meta = item.getItem().getItemMeta();
+//                        ItemStack itemStack = item.getItem();
+//                        List<String> lore = meta.getLore();
+//                        lore.remove(lore.size() - 1);
+//                        meta.setLore(lore);
+//                        itemStack.setItemMeta(meta);
+//                        item.setItem(itemStack);
+//                    }
+//                    for (Player player : BaseAuctionHouseMenu.playersWithAHOpen) {
+//                        // TODO Loop through all items and remove 1 from timer if they are auctions
+//                        AuctionHouseCommand.auctionHousesByPlayer.get(player).update(true);
+//                        AuctionHouseCommand.auctionHousesByPlayer.get(player).openAuctionHouse();
+//                    }
+//                }
+//            }, 0L, 20L);
+//        }
+
         getLogger().info(ChatColor.GREEN + "SuperAuctionHouse has been enabled!");
     }
-
-    // Vault stuff
+    // End vault stuff
 
     /**
      * This is the method called when the plugin is disabled
@@ -212,7 +257,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
         // End vault stuff
 
     }
-    // End vault stuff
 
     /**
      * This loads the config
@@ -296,13 +340,5 @@ public final class SuperAuctionHouse extends JavaPlugin {
                 }
             }
         }
-    }
-
-    /**
-     * This returns the chat prefix for this plugin
-     * @return The chat prefix
-     */
-    public static String getPrefix() {
-        return chatPrefix;
     }
 }

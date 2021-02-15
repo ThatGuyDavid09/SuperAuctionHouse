@@ -76,7 +76,7 @@ public class BuyMenu {
         } else {
             // Inform selling player of purchase
             if (Bukkit.getServer().getPlayer(item.getPlayerId()) != null) {
-                Bukkit.getServer().getPlayer(item.getPlayerId()).sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GRAY + item.getPlayerName() + ChatColor.GREEN + " Has purchased your " + (item.getItem().getItemMeta().hasDisplayName() ? item.getItem().getItemMeta().getDisplayName() : String.valueOf(item.getItem().getType())) + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + " " + ((item.getPrice() == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
+                Bukkit.getServer().getPlayer(item.getPlayerId()).sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GRAY + item.getPlayerName() + ChatColor.GREEN + " has purchased your " + item.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + " " + ((item.getPrice() == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
             }
 
             BaseAuctionHouseMenu.removeMoney(player, item.getPrice());

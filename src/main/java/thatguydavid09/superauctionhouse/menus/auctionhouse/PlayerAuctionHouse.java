@@ -338,6 +338,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * This opens the auction house for the player this class belongs to
      */
     public void openAuctionHouse() {
+        BaseAuctionHouseMenu.playersWithAHOpen.add(player);
         this.playerName = "";
         update(false);
         player.openInventory(auctionHouse.get(0));
@@ -349,6 +350,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * @param resetPlayerName Whether to reset the player name parameter
      */
     public void openAuctionHouse(boolean resetPlayerName) {
+        BaseAuctionHouseMenu.playersWithAHOpen.add(player);
         if (resetPlayerName) {
             this.playerName = "";
         }
@@ -362,6 +364,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * @param playerName This is the optional name to sort by
      */
     public void openAuctionHouse(String playerName, boolean isPlayerName) {
+        BaseAuctionHouseMenu.playersWithAHOpen.add(player);
         this.playerName = playerName;
         update(false);
         player.openInventory(auctionHouse.get(0));
@@ -373,6 +376,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * @param query The query to filter by
      */
     public void openAuctionHouse(String query) {
+        BaseAuctionHouseMenu.playersWithAHOpen.add(player);
         this.query = query;
         update(false);
         player.openInventory(auctionHouse.get(0));

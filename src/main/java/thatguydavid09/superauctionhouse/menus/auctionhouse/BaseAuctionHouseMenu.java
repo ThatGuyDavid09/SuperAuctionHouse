@@ -39,6 +39,9 @@ public class BaseAuctionHouseMenu {
     private static final HashMap<UUID, List<AuctionItem>> itemsForPlayer = new HashMap<>(); // This needs to be created from backup
     private static final HashMap<ItemStack, AuctionItem> itemStackToAuctionItem = new HashMap<>(); // This needs to be created from backup
 
+    // List to update every second
+    public static List<Player> playersWithAHOpen = new ArrayList<>();
+
     /**
      * This creates all items for the auction house and creates the menu
      */
@@ -469,15 +472,23 @@ public class BaseAuctionHouseMenu {
      * @return The json string representing the item
      */
     public static String auctionItemToJson(AuctionItem item) {
-        return StringEscapeUtils.escapeSql(new JSONObject()
-                .put("id", item.getId())
-                .put("price", item.getPrice())
-                .put("item", StringEscapeUtils.escapeSql(itemStackToJson(item.getItem())))
-                .put("player", StringEscapeUtils.escapeSql(item.getPlayerId().toString()))
-                .put("time", item.getTime())
-                .put("infsell", item.isInfsell())
-                .put("playerName", item.getPlayerName())
-                .toString());
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(
+                AuctionItem.class,
+                new AuctionItemInstanceCreator(item)
+        );
+        Gson gson = gsonBuilder.create();
+//        return StringEscapeUtils.escapeSql(new JSONObject()
+//                .put("id", item.getId())
+//                .put("price", item.getPrice())
+//                // .put("item", StringEscapeUtils.escapeSql(itemStackToJson(item.getItem())))
+//                .put("item", StringEscapeUtils.escapeSql(gson.toJson(item.getItem())))
+//                .put("player", StringEscapeUtils.escapeSql(item.getPlayerId().toString()))
+//                .put("time", item.getTime())
+//                .put("infsell", item.isInfsell())
+//                .put("playerName", item.getPlayerName())
+//                .toString());
+        return gson.toJson(item);
     }
 
     /**
@@ -685,8 +696,10 @@ public class BaseAuctionHouseMenu {
      * @return The <a href="#{@link}"{@link AuctionItem}> the json represents
      */
     public static AuctionItem auctionItemFromJson(String string) {
-        JSONObject json = new JSONObject(string.replaceAll("\"", "\\\""));
-        return new AuctionItem(itemStackFromJson(json.getString("item")), json.getLong("id"), json.getLong("price"), UUID.fromString(json.getString("player")), json.getLong("time"), json.getBoolean("infsell"), json.getString("playerName"));
+        Gson gson = new Gson();
+        // JSONObject json = new JSONObject(string.replaceAll("\"", "\\\""));
+        // return new AuctionItem(gson.fromJson(json.getString("item"), ItemStack.class)/*itemStackFromJson(json.getString("item"))*/, json.getLong("id"), json.getLong("price"), UUID.fromString(json.getString("player")), json.getLong("time"), json.getBoolean("infsell"), json.getString("playerName"));
+        return gson.fromJson(string, AuctionItem.class);
     }
 
     /**

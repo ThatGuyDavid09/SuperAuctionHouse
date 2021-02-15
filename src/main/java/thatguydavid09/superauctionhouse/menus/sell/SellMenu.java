@@ -49,6 +49,14 @@ public class SellMenu {
 
         createItems();
 
+        if (!SuperAuctionHouse.areInstaBuys) {
+            if (!SuperAuctionHouse.areAuctions) {
+                mode = -1;
+            } else {
+                mode = 1;
+            }
+        }
+
         createMenu();
     }
 
@@ -100,6 +108,9 @@ public class SellMenu {
                 break;
             case 2:
                 menu.setItem(33, infSellItem);
+                menu.setItem(28, placeholder);
+            default:
+                menu.setItem(33, placeholder);
                 menu.setItem(28, placeholder);
         }
 
@@ -252,19 +263,32 @@ public class SellMenu {
      * This increments the sell mode
      */
     public void incrementMode() {
-        if (mode > 1) {
-            mode = 0;
-            return;
-        }
-
-        if (mode == 1) {
-            if (player.hasPermission("superauctionhouse.sell.infsell")) {
-                mode++;
-            } else {
-                mode = 0;
-            }
-        } else {
-            mode++;
+        switch (mode) {
+            case 0:
+                if (SuperAuctionHouse.areAuctions) {
+                    mode++;
+                    break;
+                } else if (player.hasPermission("superauctionhouse.sell.infsell")) {
+                    mode = 2;
+                    break;
+                } else {
+                    break;
+                }
+            case 1:
+                if (player.hasPermission("superauctionhouse.sell.infsell")) {
+                    mode++;
+                } else {
+                    if (SuperAuctionHouse.areInstaBuys) {
+                        mode = 0;
+                    }
+                }
+                break;
+            case 2:
+                if (SuperAuctionHouse.areInstaBuys) {
+                    mode = 0;
+                } else if (SuperAuctionHouse.areAuctions) {
+                    mode = 1;
+                }
         }
     }
 }

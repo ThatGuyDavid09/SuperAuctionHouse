@@ -1,4 +1,4 @@
-package thatguydavid09.superauctionhouse.events.generic;
+package thatguydavid09.superauctionhouse.events.auctionhouse;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
