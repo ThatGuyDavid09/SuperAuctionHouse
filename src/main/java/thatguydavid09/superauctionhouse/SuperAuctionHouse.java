@@ -1,5 +1,6 @@
 package thatguydavid09.superauctionhouse;
 
+import com.google.gson.GsonBuilder;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -321,7 +322,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
             // Check existence of ah table
             if (!statement.executeQuery("SHOW TABLES FROM `" + database + "` LIKE 'auctionhouse';").next()) {
                 statement.executeUpdate("CREATE TABLE auctionhouse (" +
-                        "auctionitem TEXT NOT NULL," +
+                        "auctionitem LONGTEXT NOT NULL," +
                         "auctionid INTEGER NOT NULL)" +
                         "ENGINE=InnoDB;");
             }
