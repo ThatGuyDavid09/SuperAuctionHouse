@@ -1,13 +1,15 @@
 package thatguydavid09.superauctionhouse;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class AuctionItem implements ConfigurationSerializable {
+public class AuctionItem {
     private final String playerName;
     private final boolean infsell;
     private final boolean auction;
@@ -64,19 +66,6 @@ public class AuctionItem implements ConfigurationSerializable {
         this.auction = item.isAuction();
 
         this.playerName = item.getPlayerName();
-    }
-
-    public AuctionItem() {
-        item = null;
-        id = -1;
-        price = -1;
-        name = "";
-        playerId = null;
-        time = -100;
-        infsell = false;
-        auction = false;
-        playerName = "";
-
     }
 
     /**
@@ -177,35 +166,5 @@ public class AuctionItem implements ConfigurationSerializable {
     public long decTime() {
         time--;
         return time;
-    }
-
-    /**
-     * Creates a Map representation of this class.
-     *
-     * @return Map containing the current state of this class
-     */
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("item", item.serialize());
-        map.put("id", id);
-        map.put("price", price);
-        map.put("playerId", playerId);
-        map.put("time", time);
-        map.put("infsell", infsell);
-        map.put("playerName", playerName);
-
-        return map;
-    }
-
-    /**
-     * Returns the item represented by the map
-     *
-     * @return The object contained in this map
-     */
-    public AuctionItem deserialize(Map<String, Object> map) {
-        return new AuctionItem(ItemStack.deserialize((Map<String, Object>) map.get("item")), (Long) map.get("id"), (Long) map.get("price"), (UUID) map.get("playerId"),
-                (Long) map.get("time"), (Boolean) map.get("infsell"), (String) map.get("playerName"));
     }
 }

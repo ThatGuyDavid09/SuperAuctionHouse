@@ -3,10 +3,13 @@ package thatguydavid09.superauctionhouse.menus.auctionhouse;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import thatguydavid09.superauctionhouse.AuctionItem;
@@ -470,51 +473,92 @@ public class BaseAuctionHouseMenu {
      * @return The Base64 string representing the item
      */
     public static String encodeAuctionItem(AuctionItem item) {
+        ItemStack itemStack = item.getItem();
+        ItemMeta meta = itemStack.getItemMeta();
 
+        // Create NBT keys
+        NamespacedKey id = new NamespacedKey(plugin, "id");
+        NamespacedKey price = new NamespacedKey(plugin, "price");
+        NamespacedKey playerId = new NamespacedKey(plugin, "playerId");
+        NamespacedKey time = new NamespacedKey(plugin, "time");
+        NamespacedKey infsell = new NamespacedKey(plugin, "infsell");
+        NamespacedKey playerName = new NamespacedKey(plugin, "playerName");
+
+        // Set NBT
+        meta.getPersistentDataContainer().set(id, PersistentDataType.LONG, item.getId());
+        meta.getPersistentDataContainer().set(price, PersistentDataType.LONG, item.getPrice());
+        meta.getPersistentDataContainer().set(playerId, PersistentDataType.STRING, item.getPlayerId().toString());
+        meta.getPersistentDataContainer().set(time, PersistentDataType.LONG, item.getTime());
+        meta.getPersistentDataContainer().set(infsell, PersistentDataType.STRING, item.isInfsell() ? "true" : "false");
+        meta.getPersistentDataContainer().set(playerName, PersistentDataType.STRING, item.getPlayerName());
+
+        itemStack.setItemMeta(meta);
+        // TODO Serialize itemstack
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            BukkitObjectOutputStream os = new BukkitObjectOutputStream(out);
-            os.writeObject(item);
-            os.flush();
-            os.close();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            BukkitObjectOutputStream boos = new BukkitObjectOutputStream(baos);
+            boos.writeObject(itemStack);
+            boos.flush();
 
-            byte[] serialized = out.toByteArray();
-            return Base64.getEncoder().encodeToString(serialized);
+            byte[] serialized = baos.toByteArray();
+            String encoded = Base64.getEncoder().encodeToString(serialized);
+            boos.close();
+            return encoded;
 
         } catch (IOException e) {
             plugin.getLogger().severe(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             return null;
         }
-
     }
 
 
     /**
-     * This converts a json string to an <a href="#{@link}"{@link AuctionItem}>
+     * This converts a base64 string to an <a href="#{@link}"{@link AuctionItem}>
      *
      * @param object The encoded item
      * @return The <a href="#{@link}"{@link AuctionItem}> the Base64 string represents
      */
     public static AuctionItem decodeAuctionItem(String object) {
-
+        // TODO deserialize itemstack, get nbt, remove nbt, return AuctionItem
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            BukkitObjectOutputStream os = new BukkitObjectOutputStream(out);
-            os.close();
+            byte[] deserialized = Base64.getDecoder().decode(object);
+            ByteArrayInputStream bais = new ByteArrayInputStream(deserialized);
+            BukkitObjectInputStream bois = new BukkitObjectInputStream(bais);
 
-            byte[] deserialized;
-            deserialized = Base64.getDecoder().decode(object);
+            ItemStack item = (ItemStack) bois.readObject();
+            ItemMeta meta = item.getItemMeta();
+            bois.close();
 
-            ByteArrayInputStream in = new ByteArrayInputStream(deserialized);
-            BukkitObjectInputStream is = new BukkitObjectInputStream(in);
+            // Set NBT keys
+            NamespacedKey id = new NamespacedKey(plugin, "id");
+            NamespacedKey price = new NamespacedKey(plugin, "price");
+            NamespacedKey playerId = new NamespacedKey(plugin, "playerId");
+            NamespacedKey time = new NamespacedKey(plugin, "time");
+            NamespacedKey infsell = new NamespacedKey(plugin, "infsell");
+            NamespacedKey playerName = new NamespacedKey(plugin, "playerName");
 
-            return (AuctionItem) is.readObject();
+            // Remove NBT from item
+            ItemMeta metaCopy = meta.clone();
+            PersistentDataContainer container = metaCopy.getPersistentDataContainer();
+            container.remove(id);
+            container.remove(price);
+            container.remove(playerId);
+            container.remove(time);
+            container.remove(infsell);
+            container.remove(playerName);
+
+            item.setItemMeta(metaCopy);
+
+            // Create AuctionItem
+            PersistentDataContainer nbt = meta.getPersistentDataContainer();
+            return new AuctionItem(item, nbt.get(id, PersistentDataType.LONG), nbt.get(price, PersistentDataType.LONG),
+                    UUID.fromString(nbt.get(playerId, PersistentDataType.STRING)), nbt.get(time, PersistentDataType.LONG), nbt.get(playerName, PersistentDataType.STRING).equals("true"),
+                    nbt.get(playerName, PersistentDataType.STRING));
 
         } catch (IOException | ClassNotFoundException e) {
             plugin.getLogger().severe(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             return null;
         }
-
     }
 
 }

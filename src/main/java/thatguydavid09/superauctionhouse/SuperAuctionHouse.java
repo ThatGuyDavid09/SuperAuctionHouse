@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -186,6 +187,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
         // Register tabcompleter
         getCommand("superauctionhouse").setTabCompleter(new AHCommandTabCompleter());
+
         // Register events
         getServer().getPluginManager().registerEvents(new PreventItemRemoval(), this);
         getServer().getPluginManager().registerEvents(new AuctionHouseChat(), this);
