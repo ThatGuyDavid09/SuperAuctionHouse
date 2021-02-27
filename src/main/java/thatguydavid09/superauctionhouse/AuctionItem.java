@@ -1,18 +1,13 @@
 package thatguydavid09.superauctionhouse;
 
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class AuctionItem {
     private final String playerName;
     private final boolean infsell;
-    private final boolean auction;
+    private final boolean isAuction;
     private final long id;
     private final long price;
     private final String name;
@@ -27,7 +22,7 @@ public class AuctionItem {
      * @param id         The auction id of the item
      * @param price      The price of the item
      * @param playerId   The <a href="#{@link}"{@link UUID}> of the item
-     * @param time       The length of the item's auction in minutes (-1 if it isn't an auction)
+     * @param time       The length of the item's auction in seconds (-1 if it isn't an auction)
      * @param infsell    Whether the item should be removed from the auction hosue upon being bought
      * @param playerName The name of the player selling (empty for displayname of actual player)
      */
@@ -42,9 +37,9 @@ public class AuctionItem {
         }
         this.playerId = playerId;
 
-        this.time = time < 0 ? -1 : time * 60;
+        this.time = time;
         this.infsell = infsell;
-        this.auction = time > 0;
+        this.isAuction = time != -1;
 
         this.playerName = playerName;
     }
@@ -63,7 +58,7 @@ public class AuctionItem {
 
         this.time = item.getTime();
         this.infsell = item.isInfsell();
-        this.auction = item.isAuction();
+        this.isAuction = item.isAuction();
 
         this.playerName = item.getPlayerName();
     }
@@ -146,7 +141,7 @@ public class AuctionItem {
      * @return Whether the item is an auction
      */
     public boolean isAuction() {
-        return auction;
+        return isAuction;
     }
 
     /**
@@ -164,7 +159,13 @@ public class AuctionItem {
      * @return The new value of time
      */
     public long decTime() {
-        time--;
+        if (time > 0) {
+            time--;
+        }
+
+        if (time == -1 && isAuction) {
+            time = -2;
+        }
         return time;
     }
 }

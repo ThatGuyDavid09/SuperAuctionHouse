@@ -2,23 +2,17 @@ package thatguydavid09.superauctionhouse.commands;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 public class AdminCommands {
     private static HashMap<Player, String> clearcodes = new HashMap<>();
@@ -59,9 +53,9 @@ public class AdminCommands {
         if (clearcodes.get(player).equals(clearcode)) {
             clearcodes.remove(player);
 
-            BaseAuctionHouseMenu.clearAuctionHouse();
+            BaseAuctionHouse.clearAuctionHouse();
             player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GREEN + "Auction House has been cleared!");
-            BaseAuctionHouseMenu.resetAuctionId();
+            BaseAuctionHouse.resetAuctionId();
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
         } else {
             clearcodes.clear();
@@ -122,6 +116,20 @@ public class AdminCommands {
                 return true;
             }
 
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Backs up the auction house.
+     * @param player The player who requested the backup
+     * @return Whether the player has permission to back up the auction house
+     */
+    public static boolean backup(Player player) {
+        if (player.hasPermission("superauctionhouse.backup")) {
+            BaseAuctionHouse.backUp();
+            player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.AQUA + "Auction House has been backed up!");
             return true;
         }
         return false;

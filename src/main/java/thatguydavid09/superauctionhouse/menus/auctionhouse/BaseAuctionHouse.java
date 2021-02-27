@@ -27,7 +27,7 @@ import java.util.*;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
-public class BaseAuctionHouseMenu {
+public class BaseAuctionHouse {
     private static final SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
     // List of all items
     private final static ArrayList<AuctionItem> allItems = new ArrayList<>(); // This needs to be backed up
@@ -127,7 +127,7 @@ public class BaseAuctionHouseMenu {
      * @param item          The <a href="#{@link}"{@link ItemStack}> to be added
      * @param sellingPlayer The <a href="#{@link}"{@link Player}> selling the item
      * @param price         The price of the item
-     * @param time          The time the auction should last, -1 if it is not an auction
+     * @param time          The time the auction should last in seconds, -1 if it is not an auction
      * @param infsell       Whether the item should be removed from the auction house upon being bought
      */
     public static void addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell) {
@@ -375,6 +375,36 @@ public class BaseAuctionHouseMenu {
         auctionId = 0;
     }
 
+    public static void backUp() {
+        Connection connection = null;
+        Statement statement;
+        try {
+            SuperAuctionHouse.openConnection();
+            connection = SuperAuctionHouse.getConnection();
+            statement = connection.createStatement();
+
+            for (AuctionItem item : allItems) {
+                statement.executeUpdate("UPDATE auctionhouse " +
+                        "SET `auctionitem` = '" + encodeAuctionItem(item) + "' " +
+                        "WHERE auctionid = " + item.getId() + ";");
+            }
+
+        } catch (SQLException e) {
+            plugin.getLogger().warning("Something has gone wrong with the database, see error log below");
+            e.printStackTrace();
+        } finally {
+            // Close connection
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    plugin.getLogger().warning("Something has gone wrong while closing the connection, see error log below");
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     /**
      * This backs up an item, either adding or removing it from the database
      *
@@ -397,7 +427,7 @@ public class BaseAuctionHouseMenu {
                         "`auctionid` = " + item.getId() + ";");
             } else {
                 statement.executeUpdate("DELETE FROM `auctionhouse`" +
-                        "WHERE `auctionid` = + " + item.getId() + ";");
+                        "WHERE `auctionid` = " + item.getId() + ";");
             }
 
         } catch (SQLException e) {

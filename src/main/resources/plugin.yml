@@ -80,3 +80,11 @@ permissions:
   superauctionhouse.unsetloc:
     description: Allows a player to mark a location to not open the auction house
     default: op
+
+  superauctionhouse.ping:
+    description: Allows a player to ping the plugin to check the verion.
+    default: true
+
+  superauctionhouse.backup:
+    description: Allows a player to manually backup the auction house.
+    default: op

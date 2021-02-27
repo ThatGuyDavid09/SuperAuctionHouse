@@ -62,7 +62,7 @@ public class AuctionHouseActions {
      */
     public static void find(Player player) {
         player.closeInventory();
-        BaseAuctionHouseMenu.playersFindingStuff.add(player);
+        BaseAuctionHouse.playersFindingStuff.add(player);
         // Send player instructions
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("Type the name of the item you want to find in chat!").color(ChatColor.GREEN).create());
 

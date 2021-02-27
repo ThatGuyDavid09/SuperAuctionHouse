@@ -1,19 +1,15 @@
 package thatguydavid09.superauctionhouse;
 
-import com.google.gson.GsonBuilder;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 import thatguydavid09.superauctionhouse.commands.AHCommandTabCompleter;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseChat;
@@ -25,7 +21,9 @@ import thatguydavid09.superauctionhouse.events.generic.PreventItemRemoval;
 import thatguydavid09.superauctionhouse.events.sell.SellNameChatEvent;
 import thatguydavid09.superauctionhouse.events.sell.SellPriceChatEvent;
 import thatguydavid09.superauctionhouse.events.sell.SellTimeChatEvent;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
+import thatguydavid09.superauctionhouse.runnables.AuctionHouseBackup;
+import thatguydavid09.superauctionhouse.runnables.AuctionItemDecrementer;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +32,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -217,36 +214,16 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
         // Database
         setupDatabase();
-        BaseAuctionHouseMenu.loadFromBackup();
+        BaseAuctionHouse.loadFromBackup();
 
         // Schedule updates for auctions
-//        if (areAuctions) {
-//            BukkitScheduler scheduler = getServer().getScheduler();
-//            scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
-//                @Override
-//                public void run() {
-//                    for (AuctionItem item : BaseAuctionHouseMenu.getAllItems()) {
-//                        if (item.isAuction()) {
-//                            item.decTime();
-//                        }
-//                        ItemMeta meta = item.getItem().getItemMeta();
-//                        ItemStack itemStack = item.getItem();
-//                        List<String> lore = meta.getLore();
-//                        lore.remove(lore.size() - 1);
-//                        meta.setLore(lore);
-//                        itemStack.setItemMeta(meta);
-//                        item.setItem(itemStack);
-//                    }
-//                    for (Player player : BaseAuctionHouseMenu.playersWithAHOpen) {
-//                        // TODO Loop through all items and remove 1 from timer if they are auctions
-//                        AuctionHouseCommand.auctionHousesByPlayer.get(player).update(true);
-//                        AuctionHouseCommand.auctionHousesByPlayer.get(player).openAuctionHouse();
-//                    }
-//                }
-//            }, 0L, 20L);
-//        }
+        AuctionItemDecrementer auctionScheduler = new AuctionItemDecrementer();
+        auctionScheduler.start();
 
         getLogger().info(ChatColor.GREEN + "SuperAuctionHouse has been enabled!");
+
+        // Schedule backups
+        AuctionHouseBackup.scheduleBackups();
     }
     // End vault stuff
 
@@ -255,6 +232,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
      */
     @Override
     public void onDisable() {
+        BaseAuctionHouse.backUp();
+
         // Vault stuff
         log.info(String.format("[%s] Disabled Version %s", getDescription().getName(), getDescription().getVersion()));
         // End vault stuff

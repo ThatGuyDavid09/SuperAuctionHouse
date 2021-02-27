@@ -16,8 +16,7 @@ import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.commands.PlayerCommands;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.AuctionHouseActions;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.buy.BuyMenu;
 import thatguydavid09.superauctionhouse.menus.sell.SellMenu;
 
@@ -57,7 +56,7 @@ public class PreventItemRemoval implements Listener {
                     } else if (event.getRawSlot() <= 44) {
                         // AH item is clicked
                         if (event.getCurrentItem() != null) {
-                            confirm = new BuyMenu(BaseAuctionHouseMenu.itemStackToAuctionItem(event.getCurrentItem()), player);
+                            confirm = new BuyMenu(BaseAuctionHouse.itemStackToAuctionItem(event.getCurrentItem()), player);
                             (player).playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                             confirm.openBuyMenu();
                         } else {

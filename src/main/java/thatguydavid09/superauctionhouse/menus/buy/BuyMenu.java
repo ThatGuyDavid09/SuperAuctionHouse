@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 
 public class BuyMenu {
@@ -65,11 +65,11 @@ public class BuyMenu {
     }
 
     public void confirmPurchase() {
-        if (!BaseAuctionHouseMenu.hasMoney(player, item.getPrice())) {
+        if (!BaseAuctionHouse.hasMoney(player, item.getPrice())) {
             player.sendMessage(ChatColor.RED + "You don't have enough money to do that!");
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
             cancelPurchaseNoSound();
-        } else if (!BaseAuctionHouseMenu.getAllItems().contains(item)) {
+        } else if (!BaseAuctionHouse.getAllItems().contains(item)) {
             player.sendMessage(ChatColor.RED + "It seems that item has already been purchased!");
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
             cancelPurchaseNoSound();
@@ -79,10 +79,10 @@ public class BuyMenu {
                 Bukkit.getServer().getPlayer(item.getPlayerId()).sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GRAY + item.getPlayerName() + ChatColor.GREEN + " has purchased your " + item.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + " " + ((item.getPrice() == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
             }
 
-            BaseAuctionHouseMenu.removeMoney(player, item.getPrice());
-            BaseAuctionHouseMenu.addMoney(player, item.getPrice());
-            BaseAuctionHouseMenu.removeItem(item);
-            BaseAuctionHouseMenu.giveItemToPlayer(PlayerAuctionHouse.removeLore(item).getItem(), player);
+            BaseAuctionHouse.removeMoney(player, item.getPrice());
+            BaseAuctionHouse.addMoney(player, item.getPrice());
+            BaseAuctionHouse.removeItem(item);
+            BaseAuctionHouse.giveItemToPlayer(PlayerAuctionHouse.removeLore(item).getItem(), player);
 
             // Make name look nicer
             String name = item.getName();

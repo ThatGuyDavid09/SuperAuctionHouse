@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
-public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
+public class PlayerAuctionHouse extends BaseAuctionHouse {
     private final Player player;
     private final List<Inventory> auctionHouse = new ArrayList<>();
     private final List<AuctionItem> currentlyDisplayedItems = new ArrayList<>();
@@ -50,7 +50,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      */
     public static void addPage(List<Inventory> auctionHousePages) {
         Inventory inventory = Bukkit.getServer().createInventory(null, 54, SuperAuctionHouse.getInstance().getConfig().getString("auctionhouse.names.auctionhouse"));
-        inventory.setContents(BaseAuctionHouseMenu.getBaseAuctionHouse().getContents());
+        inventory.setContents(BaseAuctionHouse.getBaseAuctionHouse().getContents());
         auctionHousePages.add(inventory);
         updateArrows(auctionHousePages);
     }
@@ -93,7 +93,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     private static ItemStack createBackArrowWithPage(int currentPage) {
         ItemStack arrow = new ItemStack(Material.ARROW, 1);
         ItemMeta meta = arrow.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Previous page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouseMenu.getNumOfItems() / 44 + ")");
+        meta.setDisplayName(ChatColor.GOLD + "Previous page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouse.getNumOfItems() / 44 + ")");
         arrow.setItemMeta(meta);
         return arrow;
     }
@@ -107,7 +107,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     private static ItemStack createForwardArrowWithPage(int currentPage) {
         ItemStack arrow = new ItemStack(Material.ARROW, 1);
         ItemMeta meta = arrow.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Next page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouseMenu.getNumOfItems() / 44 + ")");
+        meta.setDisplayName(ChatColor.GOLD + "Next page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouse.getNumOfItems() / 44 + ")");
         arrow.setItemMeta(meta);
         return arrow;
     }
@@ -335,10 +335,22 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
     }
 
     /**
+     * Updates the lore of an item
+     * @param item The AucitonItem to update
+     * @return The item with updated lore
+     */
+    public static AuctionItem updateLore(AuctionItem item) {
+        AuctionItem toRet = removeLore(item);
+        toRet = addLore(item);
+
+        return toRet;
+    }
+
+    /**
      * This opens the auction house for the player this class belongs to
      */
     public void openAuctionHouse() {
-        BaseAuctionHouseMenu.playersWithAHOpen.add(player);
+        BaseAuctionHouse.playersWithAHOpen.add(player);
         this.playerName = "";
         update(false);
         player.openInventory(auctionHouse.get(0));
@@ -350,7 +362,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * @param resetPlayerName Whether to reset the player name parameter
      */
     public void openAuctionHouse(boolean resetPlayerName) {
-        BaseAuctionHouseMenu.playersWithAHOpen.add(player);
+        BaseAuctionHouse.playersWithAHOpen.add(player);
         if (resetPlayerName) {
             this.playerName = "";
         }
@@ -364,7 +376,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * @param playerName This is the optional name to sort by
      */
     public void openAuctionHouse(String playerName, boolean isPlayerName) {
-        BaseAuctionHouseMenu.playersWithAHOpen.add(player);
+        BaseAuctionHouse.playersWithAHOpen.add(player);
         this.playerName = playerName;
         update(false);
         player.openInventory(auctionHouse.get(0));
@@ -376,7 +388,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
      * @param query The query to filter by
      */
     public void openAuctionHouse(String query) {
-        BaseAuctionHouseMenu.playersWithAHOpen.add(player);
+        BaseAuctionHouse.playersWithAHOpen.add(player);
         this.query = query;
         update(false);
         player.openInventory(auctionHouse.get(0));
@@ -408,9 +420,9 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
             if (Strings.isNullOrEmpty(query)) {
                 // Sort the items
                 // currentlyDisplayedItems.addAll(BaseAuctionHouseMenu.getAllItems());
-                allItems = BaseAuctionHouseMenu.getAllItems();
+                allItems = BaseAuctionHouse.getAllItems();
             } else {
-                allItems = filterItemsByName(query, BaseAuctionHouseMenu.getAllItems());
+                allItems = filterItemsByName(query, BaseAuctionHouse.getAllItems());
             }
 
             for (AuctionItem item : allItems) {
@@ -467,7 +479,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouseMenu {
         }
 
         // Update the sorting sunflower
-        ItemStack newSortItem = BaseAuctionHouseMenu.getSortItem().clone();
+        ItemStack newSortItem = BaseAuctionHouse.getSortItem().clone();
         switch (sortMode) {
             case 0:
                 ItemMeta meta = newSortItem.getItemMeta();

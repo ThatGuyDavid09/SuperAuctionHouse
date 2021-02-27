@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 
 public class AuctionHouseClose implements Listener {
     @EventHandler
@@ -17,7 +17,7 @@ public class AuctionHouseClose implements Listener {
         String AHName = config.getString("auctionhouse.names.auctionhouse");
 
         if (event.getView().getTitle().equals(AHName)) {
-            BaseAuctionHouseMenu.playersWithAHOpen.remove(player);
+            BaseAuctionHouse.playersWithAHOpen.remove(player);
         }
     }
 }

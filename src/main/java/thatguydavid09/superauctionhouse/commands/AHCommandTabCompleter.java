@@ -38,6 +38,14 @@ public class AHCommandTabCompleter implements TabCompleter {
                 commands.add("help");
             }
 
+            if (player.hasPermission("superauctionhouse.ping")) {
+                commands.add("ping");
+            }
+
+            if (player.hasPermission("superauctionhouse.backup")) {
+                commands.add("backup");
+            }
+
             Collections.sort(commands);
 
             if (player.hasPermission("superauctionhouse.viewplayerah")) {

@@ -9,13 +9,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 
 public class AuctionHouseChat implements Listener {
     @EventHandler
     public void onChatMessage(AsyncPlayerChatEvent event) {
-        if (BaseAuctionHouseMenu.playersFindingStuff.contains(event.getPlayer())) {
-            BaseAuctionHouseMenu.playersFindingStuff.remove(event.getPlayer());
+        if (BaseAuctionHouse.playersFindingStuff.contains(event.getPlayer())) {
+            BaseAuctionHouse.playersFindingStuff.remove(event.getPlayer());
             event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("").color(ChatColor.GREEN).create());
             // Run synchronously, WHY DOES MINECRAFT RUN ON A SINGLE THREAD
             Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {

@@ -8,7 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouseMenu;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.sell.SellMenu;
 
 public class PlayerCommands {
@@ -48,14 +48,16 @@ public class PlayerCommands {
      */
     public static void confirmSell(SellMenu menu) {
         if (Strings.isNullOrEmpty(menu.displayName)) {
-            BaseAuctionHouseMenu.addItem(menu.item, menu.player, menu.price, menu.time, menu.mode == 2);
+            BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.time * 60, menu.mode == 2);
         } else {
-            BaseAuctionHouseMenu.addItem(menu.item, menu.player, menu.price, menu.displayName, menu.time, menu.mode == 2);
+            BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.displayName, menu.time, menu.mode == 2);
         }
         // Make sure to withdraw fee
         SuperAuctionHouse.getEconomy().withdrawPlayer(menu.player, menu.getFee());
         menu.player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GREEN + "Auction has been created!");
     }
+
+
 
     public static boolean help(Player player) {
         if (player.hasPermission("superauctionhouse.help")) {
@@ -84,6 +86,14 @@ public class PlayerCommands {
                 player.sendMessage(ChatColor.BLUE + "- /ah help " + ChatColor.GREEN + ": Displays this text.");
             }
 
+            if (player.hasPermission("superauctionhouse.ping")) {
+                player.sendMessage(ChatColor.BLUE + "- /ah ping " + ChatColor.GREEN + ": Pings the plugin, returns the name and version.");
+            }
+
+            if (player.hasPermission("superauctionhouse.backup")) {
+                player.sendMessage(ChatColor.BLUE + "- /ah backup " + ChatColor.GREEN + ": Backs up the auction house.");
+            }
+
             if (player.hasPermission("superauctionhouse.viewplayerah")) {
                 player.sendMessage(ChatColor.BLUE + "- /ah <playerName> " + ChatColor.GREEN + ": Shows you all auctions for sale by the specified player.");
             }
@@ -106,5 +116,18 @@ public class PlayerCommands {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Sends the player some info about the plugin.
+     * @param player The player to send info to.
+     * @return Whether the player has permission to execute this command.
+     */
+    public static boolean ping(Player player) {
+        if (player.hasPermission("superauctionhouse.ping")) {
+            player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.AQUA + " SuperAuctionHouse, version " + ChatColor.GREEN + SuperAuctionHouse.getInstance().getDescription().getVersion());
+            return true;
+        }
+        return false;
     }
 }
