@@ -7,7 +7,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
+import thatguydavid09.superauctionhouse.events.custom.PlayerSellEvent;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.sell.SellMenu;
 
@@ -46,15 +48,20 @@ public class PlayerCommands {
      *
      * @param menu The <a href="#{@link}"{@link SellMenu}> associated with the sell operation
      */
-    public static void confirmSell(SellMenu menu) {
+    public static void confirmSell(SellMenu menu, Player player) {
+        PlayerSellEvent event;
         if (Strings.isNullOrEmpty(menu.displayName)) {
-            BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.time * 60, menu.mode == 2, menu.mode == 1);
+            event = BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.time * 60, menu.mode == 2, menu.mode == 1);
         } else {
             // ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell, boolean isAuction
-            BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.displayName, menu.time, menu.mode == 2, menu.mode == 1);
+            event = BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.displayName, menu.time, menu.mode == 2, menu.mode == 1);
+        }
+        if (event.isCancelled()) {
+            return;
         }
         // Make sure to withdraw fee
         SuperAuctionHouse.getEconomy().withdrawPlayer(menu.player, menu.getFee());
+        player.getInventory().setItemInMainHand(null);
         menu.player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GREEN + "Auction has been created!");
     }
 

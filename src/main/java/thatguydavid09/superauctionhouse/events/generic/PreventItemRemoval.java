@@ -106,13 +106,14 @@ public class PreventItemRemoval implements Listener {
                         event.setCancelled(true);
                     }
 
+                    // Handle confirm sell
                     if (event.getRawSlot() == 31 && event.getInventory().getItem(31).getType() == Material.GREEN_CONCRETE) {
-                        PlayerCommands.confirmSell(menu);
+                        PlayerCommands.confirmSell(menu, player);
                         player.closeInventory();
-                        player.getInventory().setItemInMainHand(null);
                         PlayerCommands.sellMenuByPlayer.remove(player);
                     }
 
+                    // Handle close
                     if (event.getRawSlot() == 49) {
                         player.closeInventory();
                         PlayerCommands.sellMenuByPlayer.remove(player);

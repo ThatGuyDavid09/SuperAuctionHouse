@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
+import thatguydavid09.superauctionhouse.events.custom.PlayerBuyEvent;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 
@@ -74,6 +75,11 @@ public class BuyMenu {
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
             cancelPurchaseNoSound();
         } else {
+            PlayerBuyEvent event = BaseAuctionHouse.removeItem(item, player, true);
+            if (event.isCancelled()) {
+                return;
+            }
+
             // Inform selling player of purchase
             if (Bukkit.getServer().getPlayer(item.getPlayerId()) != null) {
                 Bukkit.getServer().getPlayer(item.getPlayerId()).sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.GRAY + item.getPlayerName() + ChatColor.GREEN + " has purchased your " + item.getName() + ChatColor.GREEN + " for " + ChatColor.GOLD + item.getPrice() + " " + ((item.getPrice() == 1) ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()) + "!");
@@ -81,7 +87,6 @@ public class BuyMenu {
 
             BaseAuctionHouse.removeMoney(player, item.getPrice());
             BaseAuctionHouse.addMoney(player, item.getPrice());
-            BaseAuctionHouse.removeItem(item, true);
             BaseAuctionHouse.giveItemToPlayer(PlayerAuctionHouse.removeLore(item).getItem(), player);
 
             // Make name look nicer

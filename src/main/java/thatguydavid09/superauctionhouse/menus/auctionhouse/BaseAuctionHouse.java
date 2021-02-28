@@ -1,7 +1,5 @@
 package thatguydavid09.superauctionhouse.menus.auctionhouse;
 
-import com.google.common.base.Predicates;
-import com.google.common.collect.Collections2;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,13 +10,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
+import thatguydavid09.superauctionhouse.events.custom.PlayerBuyEvent;
+import thatguydavid09.superauctionhouse.events.custom.PlayerSellEvent;
 
-import javax.naming.NamingSecurityException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -135,14 +133,20 @@ public class BaseAuctionHouse {
      * @param time          The time the auction should last in seconds, -1 if it is not an auction
      * @param infsell       Whether the item should be removed from the auction house upon being bought
      */
-    public static void addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell, boolean isAuction) {
+    public static PlayerSellEvent addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell, boolean isAuction) {
         AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, isAuction, sellingPlayer.getDisplayName());
 
-        updateDictionaries(PlayerAuctionHouse.addLore(auctionItem));
+        PlayerSellEvent event = new PlayerSellEvent(auctionItem, sellingPlayer);
+        Bukkit.getPluginManager().callEvent(event);
 
-        auctionId++;
+        if (!event.isCancelled()) {
+            updateDictionaries(PlayerAuctionHouse.addLore(auctionItem));
 
-        backUp(auctionItem, true);
+            auctionId++;
+
+            backUp(auctionItem, true);
+        }
+        return event;
     }
 
     /**
@@ -155,14 +159,21 @@ public class BaseAuctionHouse {
      * @param time          The time the auction should last, -1 if it is not an auction
      * @param infsell       Whether the item should be removed from the auction house upon being bought
      */
-    public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell, boolean isAuction) {
+    public static PlayerSellEvent addItem(ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell, boolean isAuction) {
         AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, isAuction, playerName);
 
-        updateDictionaries(PlayerAuctionHouse.addLore(auctionItem));
+        PlayerSellEvent event = new PlayerSellEvent(auctionItem, sellingPlayer);
+        Bukkit.getPluginManager().callEvent(event);
 
-        auctionId++;
+        if (!event.isCancelled()) {
+            updateDictionaries(PlayerAuctionHouse.addLore(auctionItem));
 
-        backUp(auctionItem, true);
+            auctionId++;
+
+            backUp(auctionItem, true);
+        }
+
+        return event;
     }
 
     /**
@@ -188,25 +199,23 @@ public class BaseAuctionHouse {
      *
      * @param auctionItem The <a href="#{@link}"{@link AuctionItem}> to remove
      */
-    public static void removeItem(AuctionItem auctionItem, boolean backup) {
-        unUpdateDictionaries(auctionItem);
-        allItems.remove(auctionItem);
+    public static PlayerBuyEvent removeItem(AuctionItem auctionItem, Player buyer, boolean backup) {
+        PlayerBuyEvent event = new PlayerBuyEvent(auctionItem, buyer);
+        Bukkit.getPluginManager().callEvent(event);
 
-        backUp(auctionItem, false);
+        if (!event.isCancelled()) {
+            unUpdateDictionaries(auctionItem);
+            allItems.remove(auctionItem);
 
-        if (auctionItem.isInfsell()) {
-            AuctionItem item = new AuctionItem(auctionItem.getItem(), auctionItem.getId(), auctionItem.getPrice(), auctionItem.getPlayerId(), auctionItem.getTime(), auctionItem.isInfsell(), auctionItem.isAuction(), auctionItem.getPlayerName());
-            addItem(item, backup);
+            backUp(auctionItem, false);
+
+            if (auctionItem.isInfsell()) {
+                AuctionItem item = new AuctionItem(auctionItem.getItem(), auctionItem.getId(), auctionItem.getPrice(), auctionItem.getPlayerId(), auctionItem.getTime(), auctionItem.isInfsell(), auctionItem.isAuction(), auctionItem.getPlayerName());
+                addItem(item, backup);
+            }
         }
-    }
 
-    /**
-     * This removes an <a href="#{@link}"{@link ItemStack}> from the auction house
-     *
-     * @param item The <a href="#{@link}"{@link ItemStack}> to remove
-     */
-    public static void removeItem(ItemStack item) {
-        allItems.removeIf(auctionItem -> auctionItem.getItem() == item);
+        return event;
     }
 
     /**
