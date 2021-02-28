@@ -20,9 +20,8 @@ public class AuctionItemDecrementer {
                     for (AuctionItem item : BaseAuctionHouse.getAllItems()) {
                         if (item.isAuction()) {
                             item.decTime();
+                            PlayerAuctionHouse.updateLore(item);
                         }
-
-                        PlayerAuctionHouse.updateLore(item);
                     }
 
                     for (Player player : BaseAuctionHouse.playersWithAHOpen) {

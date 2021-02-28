@@ -61,6 +61,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                     if (!PlayerCommands.ping(player)) {
                         permissionError(player);
                     }
+                    break;
 
                 // Admin commands
                 case "clear":
@@ -96,6 +97,7 @@ public class AuctionHouseCommand implements CommandExecutor {
                     if (!AdminCommands.backup(player)) {
                         permissionError(player);
                     }
+                    break;
 
                 default:
                     player.sendMessage(ChatColor.RED + "Not a valid command!");

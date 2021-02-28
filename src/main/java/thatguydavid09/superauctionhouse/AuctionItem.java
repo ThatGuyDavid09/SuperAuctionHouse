@@ -26,7 +26,7 @@ public class AuctionItem {
      * @param infsell    Whether the item should be removed from the auction hosue upon being bought
      * @param playerName The name of the player selling (empty for displayname of actual player)
      */
-    public AuctionItem(ItemStack item, long id, long price, UUID playerId, long time, boolean infsell, String playerName) {
+    public AuctionItem(ItemStack item, long id, long price, UUID playerId, long time, boolean infsell, boolean isAuction, String playerName) {
         this.item = item;
         this.id = id;
         this.price = price;
@@ -37,9 +37,9 @@ public class AuctionItem {
         }
         this.playerId = playerId;
 
-        this.time = time;
+        this.time = time < 0 ? -1 : time;
         this.infsell = infsell;
-        this.isAuction = time != -1;
+        this.isAuction = isAuction;
 
         this.playerName = playerName;
     }

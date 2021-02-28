@@ -240,17 +240,17 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
             lore.add("");
 
             long time = item.getTime();
-            if (time < 0) {
-                lore.add(ChatColor.RED + "This auction has expired!");
-            } else {
+            if (item.isAuction()) {
+                if (time <= 0) {
+                    lore.add(ChatColor.RED + "This auction has expired!");
+                } else {
 
-                long seconds = time % 60;
-                long hours = time / 60;
-                long minutes = hours % 60;
+                    long hours = time / 3600;
+                    long minutes = (time % 3600) / 60;
+                    long seconds = time % 60;
 
-                hours = hours / 60;
-
-                lore.add(ChatColor.YELLOW + String.valueOf(hours) + "h " + minutes + "m " + seconds + "s");
+                    lore.add(ChatColor.YELLOW + String.valueOf(hours) + "h " + minutes + "m " + seconds + "s");
+                }
             }
         } else {
             lore.add(ChatColor.GREEN + "Price: " + ChatColor.GOLD + numberFormat.format(price) + ChatColor.GREEN + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural()));
@@ -277,14 +277,21 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
         }
 
         if (item.isAuction()) {
-            if (lore.size() > 4) {
-                lore.subList(0, lore.size() - 1 - 7);
+            if (lore.size() > 5) {
+//                lore.subList(lore.size() - 1 - 7, lore.size() - 1).clear();
+                // .sublist() doesn't work for me so we are doing this
+                for (int i = 0; i < 7; i++) {
+                    lore.remove(lore.size() - 1);
+                }
             } else {
                 lore.clear();
             }
         } else {
             if (lore.size() > 2) {
-                lore.subList(0, lore.size() - 1 - 5);
+//                lore.subList(lore.size() - 1 - 5, lore.size() - 1).clear();
+                for (int i = 0; i < 5; i++) {
+                    lore.remove(lore.size() - 1);
+                }
             } else {
                 lore.clear();
             }
@@ -336,14 +343,15 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
 
     /**
      * Updates the lore of an item
+     *
      * @param item The AucitonItem to update
      * @return The item with updated lore
      */
     public static AuctionItem updateLore(AuctionItem item) {
-        AuctionItem toRet = removeLore(item);
-        toRet = addLore(item);
+        removeLore(item);
+        addLore(item);
 
-        return toRet;
+        return item;
     }
 
     /**

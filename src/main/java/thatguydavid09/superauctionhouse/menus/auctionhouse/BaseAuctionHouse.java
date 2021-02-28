@@ -1,5 +1,7 @@
 package thatguydavid09.superauctionhouse.menus.auctionhouse;
 
+import com.google.common.base.Predicates;
+import com.google.common.collect.Collections2;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -10,11 +12,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
+import javax.naming.NamingSecurityException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
@@ -130,8 +135,8 @@ public class BaseAuctionHouse {
      * @param time          The time the auction should last in seconds, -1 if it is not an auction
      * @param infsell       Whether the item should be removed from the auction house upon being bought
      */
-    public static void addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell) {
-        AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, sellingPlayer.getDisplayName());
+    public static void addItem(ItemStack item, Player sellingPlayer, long price, long time, boolean infsell, boolean isAuction) {
+        AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, isAuction, sellingPlayer.getDisplayName());
 
         updateDictionaries(PlayerAuctionHouse.addLore(auctionItem));
 
@@ -150,8 +155,8 @@ public class BaseAuctionHouse {
      * @param time          The time the auction should last, -1 if it is not an auction
      * @param infsell       Whether the item should be removed from the auction house upon being bought
      */
-    public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell) {
-        AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, playerName);
+    public static void addItem(ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell, boolean isAuction) {
+        AuctionItem auctionItem = new AuctionItem(item.clone(), auctionId, price, sellingPlayer.getUniqueId(), time, infsell, isAuction, playerName);
 
         updateDictionaries(PlayerAuctionHouse.addLore(auctionItem));
 
@@ -166,8 +171,8 @@ public class BaseAuctionHouse {
      * @param item   The <a href="#{@link}"{@link AuctionItem}> to add
      * @param backup Whether to back up the item
      */
-    private static void addItem(AuctionItem item, boolean backup) {
-        AuctionItem auctionItem = new AuctionItem(item.getItem(), item.getId(), item.getPrice(), item.getPlayerId(), item.getTime(), item.isInfsell(), item.getPlayerName());
+    public static void addItem(AuctionItem item, boolean backup) {
+        AuctionItem auctionItem = new AuctionItem(item.getItem(), item.getId(), item.getPrice(), item.getPlayerId(), item.getTime(), item.isInfsell(), item.isAuction(), item.getPlayerName());
 
         updateDictionaries(auctionItem);
 
@@ -183,15 +188,15 @@ public class BaseAuctionHouse {
      *
      * @param auctionItem The <a href="#{@link}"{@link AuctionItem}> to remove
      */
-    public static void removeItem(AuctionItem auctionItem) {
+    public static void removeItem(AuctionItem auctionItem, boolean backup) {
         unUpdateDictionaries(auctionItem);
         allItems.remove(auctionItem);
 
         backUp(auctionItem, false);
 
         if (auctionItem.isInfsell()) {
-            AuctionItem item = new AuctionItem(auctionItem.getItem(), auctionItem.getId(), auctionItem.getPrice(), auctionItem.getPlayerId(), auctionItem.getTime(), auctionItem.isInfsell(), auctionItem.getPlayerName());
-            addItem(item, true);
+            AuctionItem item = new AuctionItem(auctionItem.getItem(), auctionItem.getId(), auctionItem.getPrice(), auctionItem.getPlayerId(), auctionItem.getTime(), auctionItem.isInfsell(), auctionItem.isAuction(), auctionItem.getPlayerName());
+            addItem(item, backup);
         }
     }
 
@@ -211,6 +216,19 @@ public class BaseAuctionHouse {
      */
     private static void updateDictionaries(AuctionItem item) {
         // Update dictionaries
+        // Add Auction id to item as nbt
+        ItemStack itemToModify = item.getItem();
+        ItemMeta meta = itemToModify.getItemMeta();
+
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        NamespacedKey auctionId = new NamespacedKey(SuperAuctionHouse.getInstance(), "auctionId");
+
+        container.set(auctionId, PersistentDataType.LONG, item.getId());
+        itemToModify.setItemMeta(meta);
+        item.setItem(itemToModify);
+
+
         if (!itemsForPlayer.containsKey(item.getPlayerId())) {
             itemsForPlayer.put(item.getPlayerId(), new ArrayList<>());
         }
@@ -347,7 +365,15 @@ public class BaseAuctionHouse {
      * @return Its corresponding <a href="#{@link}"{@link AuctionItem}>
      */
     public static AuctionItem itemStackToAuctionItem(ItemStack item) {
-        return itemStackToAuctionItem.get(item);
+        NamespacedKey auctionId = new NamespacedKey(SuperAuctionHouse.getInstance(), "auctionId");
+        long id = item.getItemMeta().getPersistentDataContainer().get(auctionId, PersistentDataType.LONG);
+
+        // This filters through the itemStackToAuctionItem dictionary and finds the auctionItem that has the same id as the itemStack
+        Map<Object, Object> filtered = itemStackToAuctionItem.entrySet()
+                .stream()
+                .filter(map -> map.getValue().getId() == id)
+                .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
+        return (AuctionItem) filtered.values().toArray()[0];
     }
 
     /**
@@ -512,6 +538,7 @@ public class BaseAuctionHouse {
         NamespacedKey playerId = new NamespacedKey(plugin, "playerId");
         NamespacedKey time = new NamespacedKey(plugin, "time");
         NamespacedKey infsell = new NamespacedKey(plugin, "infsell");
+        NamespacedKey isAuction = new NamespacedKey(plugin, "isAuction");
         NamespacedKey playerName = new NamespacedKey(plugin, "playerName");
 
         // Set NBT
@@ -519,7 +546,8 @@ public class BaseAuctionHouse {
         meta.getPersistentDataContainer().set(price, PersistentDataType.LONG, item.getPrice());
         meta.getPersistentDataContainer().set(playerId, PersistentDataType.STRING, item.getPlayerId().toString());
         meta.getPersistentDataContainer().set(time, PersistentDataType.LONG, item.getTime());
-        meta.getPersistentDataContainer().set(infsell, PersistentDataType.STRING, item.isInfsell() ? "true" : "false");
+        meta.getPersistentDataContainer().set(infsell, PersistentDataType.SHORT, item.isInfsell() ? (short) 1 : (short) 0);
+        meta.getPersistentDataContainer().set(isAuction, PersistentDataType.SHORT, item.isAuction() ? (short) 1 : (short) 0);
         meta.getPersistentDataContainer().set(playerName, PersistentDataType.STRING, item.getPlayerName());
 
         itemStack.setItemMeta(meta);
@@ -565,25 +593,34 @@ public class BaseAuctionHouse {
             NamespacedKey playerId = new NamespacedKey(plugin, "playerId");
             NamespacedKey time = new NamespacedKey(plugin, "time");
             NamespacedKey infsell = new NamespacedKey(plugin, "infsell");
+            NamespacedKey isAuction = new NamespacedKey(plugin, "isAuction");
             NamespacedKey playerName = new NamespacedKey(plugin, "playerName");
 
+            // Get NBT data
+            PersistentDataContainer nbt = meta.getPersistentDataContainer();
+            long ahId = nbt.get(id, PersistentDataType.LONG);
+            long ahPrice = nbt.get(price, PersistentDataType.LONG);
+            UUID ahUuid = UUID.fromString(nbt.get(playerId, PersistentDataType.STRING));
+            long ahTime = nbt.get(time, PersistentDataType.LONG);
+            boolean ahIsInfsell = nbt.get(infsell, PersistentDataType.SHORT) == 1;
+            boolean ahIsAuction = nbt.get(isAuction, PersistentDataType.SHORT) == 1;
+            String ahPlayerName = nbt.get(playerName, PersistentDataType.STRING);
+
+
             // Remove NBT from item
-            ItemMeta metaCopy = meta.clone();
-            PersistentDataContainer container = metaCopy.getPersistentDataContainer();
+            PersistentDataContainer container = meta.getPersistentDataContainer();
             container.remove(id);
             container.remove(price);
             container.remove(playerId);
             container.remove(time);
             container.remove(infsell);
+            container.remove(isAuction);
             container.remove(playerName);
 
-            item.setItemMeta(metaCopy);
+            item.setItemMeta(meta);
 
             // Create AuctionItem
-            PersistentDataContainer nbt = meta.getPersistentDataContainer();
-            return new AuctionItem(item, nbt.get(id, PersistentDataType.LONG), nbt.get(price, PersistentDataType.LONG),
-                    UUID.fromString(nbt.get(playerId, PersistentDataType.STRING)), nbt.get(time, PersistentDataType.LONG), nbt.get(playerName, PersistentDataType.STRING).equals("true"),
-                    nbt.get(playerName, PersistentDataType.STRING));
+            return new AuctionItem(item, ahId, ahPrice, ahUuid, ahTime, ahIsInfsell, ahIsAuction, ahPlayerName);
 
         } catch (IOException | ClassNotFoundException e) {
             plugin.getLogger().severe(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));

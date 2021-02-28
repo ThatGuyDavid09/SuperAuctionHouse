@@ -48,9 +48,10 @@ public class PlayerCommands {
      */
     public static void confirmSell(SellMenu menu) {
         if (Strings.isNullOrEmpty(menu.displayName)) {
-            BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.time * 60, menu.mode == 2);
+            BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.time * 60, menu.mode == 2, menu.mode == 1);
         } else {
-            BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.displayName, menu.time, menu.mode == 2);
+            // ItemStack item, Player sellingPlayer, long price, String playerName, long time, boolean infsell, boolean isAuction
+            BaseAuctionHouse.addItem(menu.item, menu.player, menu.price, menu.displayName, menu.time, menu.mode == 2, menu.mode == 1);
         }
         // Make sure to withdraw fee
         SuperAuctionHouse.getEconomy().withdrawPlayer(menu.player, menu.getFee());
