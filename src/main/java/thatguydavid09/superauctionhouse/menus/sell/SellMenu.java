@@ -13,7 +13,7 @@ import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 
 import java.util.HashMap;
 
-import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
+import static thatguydavid09.superauctionhouse.SuperAuctionHouse.empty;
 
 public class SellMenu {
     public static HashMap<Player, Long> playersEnteringPrice = new HashMap<>();
@@ -82,7 +82,7 @@ public class SellMenu {
         menu.setItem(13, item);
 
         menu.setItem(29, priceItem);
-        menu.setItem(31, placeholder);
+        menu.setItem(31, empty);
 
         menu.setItem(49, cancelItem);
 
@@ -100,7 +100,7 @@ public class SellMenu {
         switch (mode) {
             case 0:
                 menu.setItem(33, instaBuyItem);
-                menu.setItem(28, placeholder);
+                menu.setItem(28, empty);
                 break;
             case 1:
                 menu.setItem(33, auctionItem);
@@ -108,10 +108,10 @@ public class SellMenu {
                 break;
             case 2:
                 menu.setItem(33, infSellItem);
-                menu.setItem(28, placeholder);
+                menu.setItem(28, empty);
             default:
-                menu.setItem(33, placeholder);
-                menu.setItem(28, placeholder);
+                menu.setItem(33, empty);
+                menu.setItem(28, empty);
         }
 
         if (player.hasPermission("superauctionhouse.sell.asothers")) {
@@ -122,7 +122,7 @@ public class SellMenu {
         int index = 0;
         for (ItemStack item : contents) {
             if (item == null) {
-                contents[index] = placeholder;
+                contents[index] = empty;
             }
             index++;
         }
@@ -165,7 +165,7 @@ public class SellMenu {
         ItemMeta meta = priceItem.getItemMeta();
         // Set price item to have price
         if (price > 0) {
-            meta.setDisplayName(ChatColor.GOLD + "Set price: " + ChatColor.GREEN + price + ChatColor.GOLD + " " + (price == 1 ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()));
+            meta.setDisplayName(ChatColor.GREEN + "Set price: " + ChatColor.GOLD + price + ChatColor.GOLD + " " + (price == 1 ? SuperAuctionHouse.getEconomy().currencyNameSingular() : SuperAuctionHouse.getEconomy().currencyNamePlural()));
         } else {
             meta.setDisplayName(ChatColor.GOLD + "Set price");
         }
@@ -212,7 +212,7 @@ public class SellMenu {
 
         cancelItem = new ItemStack(Material.BARRIER);
         meta = cancelItem.getItemMeta();
-        meta.setDisplayName(ChatColor.RED + "Cancel purchase");
+        meta.setDisplayName(ChatColor.RED + "Cancel sell");
         cancelItem.setItemMeta(meta);
 
         playerNameItem = new ItemStack(Material.PLAYER_HEAD);

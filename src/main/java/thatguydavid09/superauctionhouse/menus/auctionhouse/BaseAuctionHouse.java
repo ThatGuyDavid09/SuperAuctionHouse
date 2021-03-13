@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
-import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
+import static thatguydavid09.superauctionhouse.SuperAuctionHouse.empty;
 
 public class BaseAuctionHouse {
     private static final SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
@@ -55,8 +55,8 @@ public class BaseAuctionHouse {
         baseAuctionHouse = Bukkit.getServer().createInventory(null, 54, SuperAuctionHouse.getInstance().getConfig().getString("auctionhouse.names.auctionhouse"));
 
         // Set placeholder items
-        baseAuctionHouse.setItem(47, placeholder);
-        baseAuctionHouse.setItem(51, placeholder);
+        baseAuctionHouse.setItem(47, empty);
+        baseAuctionHouse.setItem(51, empty);
 
         // Set view auctions diamond
         ItemStack viewAuctions = new ItemStack(Material.DIAMOND, 1);
@@ -100,8 +100,8 @@ public class BaseAuctionHouse {
         goForwardArrow.setItemMeta(itemMeta);
 
         // These are set later
-        baseAuctionHouse.setItem(48, placeholder); // For back arrow
-        baseAuctionHouse.setItem(50, placeholder); // For forward arrow
+        baseAuctionHouse.setItem(48, empty); // For back arrow
+        baseAuctionHouse.setItem(50, empty); // For forward arrow
 
         // Set the search sign
         // Items
@@ -183,7 +183,7 @@ public class BaseAuctionHouse {
      * @param backup Whether to back up the item
      */
     public static void addItem(AuctionItem item, boolean backup) {
-        AuctionItem auctionItem = new AuctionItem(item.getItem(), item.getId(), item.getPrice(), item.getPlayerId(), item.getTime(), item.isInfsell(), item.isAuction(), item.getPlayerName());
+        AuctionItem auctionItem = new AuctionItem(item);
 
         updateDictionaries(auctionItem);
 
@@ -549,6 +549,8 @@ public class BaseAuctionHouse {
         NamespacedKey infsell = new NamespacedKey(plugin, "infsell");
         NamespacedKey isAuction = new NamespacedKey(plugin, "isAuction");
         NamespacedKey playerName = new NamespacedKey(plugin, "playerName");
+        NamespacedKey bidderId = new NamespacedKey(plugin, "bidderId");
+        NamespacedKey bidderName = new NamespacedKey(plugin, "bidderName");
 
         // Set NBT
         meta.getPersistentDataContainer().set(id, PersistentDataType.LONG, item.getId());
@@ -558,6 +560,8 @@ public class BaseAuctionHouse {
         meta.getPersistentDataContainer().set(infsell, PersistentDataType.SHORT, item.isInfsell() ? (short) 1 : (short) 0);
         meta.getPersistentDataContainer().set(isAuction, PersistentDataType.SHORT, item.isAuction() ? (short) 1 : (short) 0);
         meta.getPersistentDataContainer().set(playerName, PersistentDataType.STRING, item.getPlayerName());
+        meta.getPersistentDataContainer().set(bidderId, PersistentDataType.STRING, (item.getCurrentBidderId() != null ? item.getCurrentBidderId().toString() : "none lol"));
+        meta.getPersistentDataContainer().set(bidderName, PersistentDataType.STRING, (item.getCurrentBidderName() != null ? item.getCurrentBidderName() : "none lol"));
 
         itemStack.setItemMeta(meta);
         // TODO Serialize itemstack
@@ -604,6 +608,8 @@ public class BaseAuctionHouse {
             NamespacedKey infsell = new NamespacedKey(plugin, "infsell");
             NamespacedKey isAuction = new NamespacedKey(plugin, "isAuction");
             NamespacedKey playerName = new NamespacedKey(plugin, "playerName");
+            NamespacedKey bidderId = new NamespacedKey(plugin, "bidderId");
+            NamespacedKey bidderName = new NamespacedKey(plugin, "bidderName");
 
             // Get NBT data
             PersistentDataContainer nbt = meta.getPersistentDataContainer();
@@ -614,6 +620,8 @@ public class BaseAuctionHouse {
             boolean ahIsInfsell = nbt.get(infsell, PersistentDataType.SHORT) == 1;
             boolean ahIsAuction = nbt.get(isAuction, PersistentDataType.SHORT) == 1;
             String ahPlayerName = nbt.get(playerName, PersistentDataType.STRING);
+            String currentBidderId = nbt.get(bidderId, PersistentDataType.STRING);
+            String currentBidderName = nbt.get(bidderName, PersistentDataType.STRING);
 
 
             // Remove NBT from item
@@ -625,11 +633,17 @@ public class BaseAuctionHouse {
             container.remove(infsell);
             container.remove(isAuction);
             container.remove(playerName);
+            container.remove(bidderId);
+            container.remove(bidderName);
 
             item.setItemMeta(meta);
 
             // Create AuctionItem
-            return new AuctionItem(item, ahId, ahPrice, ahUuid, ahTime, ahIsInfsell, ahIsAuction, ahPlayerName);
+            AuctionItem auctionItem = new AuctionItem(item, ahId, ahPrice, ahUuid, ahTime, ahIsInfsell, ahIsAuction, ahPlayerName);
+            if (!currentBidderId.equals("none lol") && !currentBidderName.equals("none lol")) {
+                auctionItem.setBidder(UUID.fromString(currentBidderId), currentBidderName);
+            }
+            return auctionItem;
 
         } catch (IOException | ClassNotFoundException e) {
             plugin.getLogger().severe(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));

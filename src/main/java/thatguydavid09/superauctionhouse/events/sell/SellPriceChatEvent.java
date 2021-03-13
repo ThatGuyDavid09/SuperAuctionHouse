@@ -31,7 +31,7 @@ public class SellPriceChatEvent implements Listener {
                 return;
             }
 
-            SellMenu.playersEnteringPrice.replace(event.getPlayer(), -1L, price);
+            SellMenu.playersEnteringPrice.replace(event.getPlayer(), price);
 
             SellMenu menu = PlayerCommands.sellMenuByPlayer.get(event.getPlayer());
 

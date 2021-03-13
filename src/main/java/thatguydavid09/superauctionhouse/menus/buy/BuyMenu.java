@@ -42,7 +42,7 @@ public class BuyMenu {
     private void createBuyMenuTemplate() {
         buyMenuTemplate = Bukkit.createInventory(null, 9, "Confirm purchase");
         for (int i = 0; i < 9; i++) {
-            buyMenuTemplate.setItem(i, SuperAuctionHouse.placeholder);
+            buyMenuTemplate.setItem(i, SuperAuctionHouse.empty);
         }
 
         // Create confirm item

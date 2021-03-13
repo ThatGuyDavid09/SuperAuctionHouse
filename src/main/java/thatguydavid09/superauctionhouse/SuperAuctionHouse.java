@@ -16,6 +16,7 @@ import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseChat;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseClose;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseRegister;
 import thatguydavid09.superauctionhouse.events.auctionhouse.RightClickOpenAH;
+import thatguydavid09.superauctionhouse.events.bid.CustomBidChatEvent;
 import thatguydavid09.superauctionhouse.events.generic.PlayerFreeze;
 import thatguydavid09.superauctionhouse.events.generic.PreventItemRemoval;
 import thatguydavid09.superauctionhouse.events.sell.SellNameChatEvent;
@@ -38,7 +39,7 @@ import java.util.logging.Logger;
 public final class SuperAuctionHouse extends JavaPlugin {
     // For vault
     private static final Logger log = Logger.getLogger("Minecraft");
-    public static ItemStack placeholder;
+    public static ItemStack empty;
     public static boolean areAuctions;
     public static boolean areInstaBuys;
     // Database stuff
@@ -173,11 +174,11 @@ public final class SuperAuctionHouse extends JavaPlugin {
         instance = this;
 
         // Sets placeholder item
-        placeholder = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
-        ItemMeta itemMeta = placeholder.getItemMeta();
+        empty = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
+        ItemMeta itemMeta = empty.getItemMeta();
         itemMeta.setDisplayName(" ");
         itemMeta.setLore(Collections.emptyList());
-        placeholder.setItemMeta(itemMeta);
+        empty.setItemMeta(itemMeta);
 
         // Register command
         this.getCommand("superauctionhouse").setExecutor(new AuctionHouseCommand());
@@ -191,6 +192,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SellPriceChatEvent(), this);
         getServer().getPluginManager().registerEvents(new SellNameChatEvent(), this);
         getServer().getPluginManager().registerEvents(new SellTimeChatEvent(), this);
+        getServer().getPluginManager().registerEvents(new CustomBidChatEvent(), this);
         getServer().getPluginManager().registerEvents(new PlayerFreeze(), this);
         getServer().getPluginManager().registerEvents(new AuctionHouseRegister(), this);
         getServer().getPluginManager().registerEvents(new RightClickOpenAH(), this);

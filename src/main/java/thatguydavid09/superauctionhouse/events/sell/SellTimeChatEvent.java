@@ -31,7 +31,7 @@ public class SellTimeChatEvent implements Listener {
                 return;
             }
 
-            SellMenu.playersEnteringTime.replace(event.getPlayer(), -1L, time);
+            SellMenu.playersEnteringTime.replace(event.getPlayer(), time);
 
             SellMenu menu = PlayerCommands.sellMenuByPlayer.get(event.getPlayer());
 

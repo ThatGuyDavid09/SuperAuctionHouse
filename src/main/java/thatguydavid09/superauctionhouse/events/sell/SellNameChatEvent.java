@@ -24,7 +24,7 @@ public class SellNameChatEvent implements Listener {
                 return;
             }
 
-            SellMenu.playersEnteringName.replace(event.getPlayer(), "", name);
+            SellMenu.playersEnteringName.replace(event.getPlayer(), name);
 
             SellMenu menu = PlayerCommands.sellMenuByPlayer.get(event.getPlayer());
 

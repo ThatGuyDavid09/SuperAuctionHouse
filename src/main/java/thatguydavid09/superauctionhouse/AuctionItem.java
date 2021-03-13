@@ -1,5 +1,6 @@
 package thatguydavid09.superauctionhouse;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -9,11 +10,13 @@ public class AuctionItem {
     private final boolean infsell;
     private final boolean isAuction;
     private final long id;
-    private final long price;
+    private long price;
     private final String name;
     private final UUID playerId;
     private long time;
     private ItemStack item;
+    private UUID currentBidderId = null;
+    private String currentBidderName = null;
 
     /**
      * <a href="#{@link}"{@link AuctionItem}> constructor
@@ -61,6 +64,28 @@ public class AuctionItem {
         this.isAuction = item.isAuction();
 
         this.playerName = item.getPlayerName();
+
+        this.currentBidderName = item.getCurrentBidderName();
+        this.currentBidderId = item.getCurrentBidderId();
+    }
+
+    /**
+     * This sets all information regarding the current bidder of the item
+     * @param player The player bidding on the item
+     */
+    public void setBidder(Player player) {
+        currentBidderId = player.getUniqueId();
+        currentBidderName = player.getDisplayName();
+    }
+
+    /**
+     * This sets all information regarding the current bidder of the item
+     * @param playerId The UUID of the player bidding on the item
+     * @param playerName The name of the player bidding on the item
+     */
+    public void setBidder(UUID playerId, String playerName) {
+        currentBidderId = playerId;
+        currentBidderName = playerName;
     }
 
     /**
@@ -167,5 +192,31 @@ public class AuctionItem {
             time = -2;
         }
         return time;
+    }
+
+    /**
+     * This sets the price of the item to a certain value
+     * @param price The price to be set to
+     * @return The modified price of the item
+     */
+    public long setPrice(long price) {
+        this.price += price;
+        return this.price;
+    }
+
+    /**
+     * This returns the UUID of the current bidder
+     * @return The UUID of the current bidder
+     */
+    public UUID getCurrentBidderId() {
+        return currentBidderId;
+    }
+
+    /**
+     * This returns the name of the current bidder
+     * @return The name of the current bidder
+     */
+    public String getCurrentBidderName() {
+        return currentBidderName;
     }
 }

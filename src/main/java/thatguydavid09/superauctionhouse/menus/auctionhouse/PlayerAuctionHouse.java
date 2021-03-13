@@ -18,8 +18,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static thatguydavid09.superauctionhouse.SuperAuctionHouse.empty;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
-import static thatguydavid09.superauctionhouse.SuperAuctionHouse.placeholder;
 
 public class PlayerAuctionHouse extends BaseAuctionHouse {
     private final Player player;
@@ -65,15 +65,15 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
 
         for (Inventory inv : auctionHousePages) {
             if (auctionHousePages.size() == 1) {
-                inv.setItem(48, placeholder);
-                inv.setItem(50, placeholder);
+                inv.setItem(48, empty);
+                inv.setItem(50, empty);
             } else {
                 if (pageNum == 1) {
-                    inv.setItem(48, placeholder);
+                    inv.setItem(48, empty);
                     inv.setItem(50, createForwardArrowWithPage(1));
                 } else if (pageNum == auctionHousePages.size()) {
                     inv.setItem(48, createBackArrowWithPage(auctionHousePages.size()));
-                    inv.setItem(50, placeholder);
+                    inv.setItem(50, empty);
                 } else {
                     inv.setItem(48, createBackArrowWithPage(pageNum));
                     inv.setItem(50, createForwardArrowWithPage(pageNum));
@@ -237,6 +237,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
         lore.add(ChatColor.GREEN + "Sold by: " + ChatColor.GRAY + item.getPlayerName());
         if (item.isAuction()) {
             lore.add(ChatColor.GREEN + "Current bid: " + ChatColor.GOLD + numberFormat.format(price) + ChatColor.GREEN + " " + ((price == 1) ? getEconomy().currencyNameSingular() : getEconomy().currencyNamePlural()));
+            lore.add(ChatColor.GREEN + "Top bidder: " + ChatColor.GRAY + (item.getCurrentBidderName() != null ? item.getCurrentBidderName() : "None"));
             lore.add("");
 
             long time = item.getTime();
@@ -280,7 +281,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
             if (lore.size() > 5) {
 //                lore.subList(lore.size() - 1 - 7, lore.size() - 1).clear();
                 // .sublist() doesn't work for me so we are doing this
-                for (int i = 0; i < 7; i++) {
+                for (int i = 0; i < 8; i++) {
                     lore.remove(lore.size() - 1);
                 }
             } else {
@@ -324,7 +325,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
 
         if (isAuction) {
             if (lore.size() > 4) {
-                lore.subList(0, lore.size() - 1 - 7);
+                lore.subList(0, lore.size() - 1 - 8);
             } else {
                 lore.clear();
             }
@@ -434,7 +435,10 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
             }
 
             for (AuctionItem item : allItems) {
-                currentlyDisplayedItems.add(new AuctionItem(item));
+                // Filter out expired items
+                if (item.getTime() > 0 || !item.isAuction()) {
+                    currentlyDisplayedItems.add(new AuctionItem(item));
+                }
             }
 
         }

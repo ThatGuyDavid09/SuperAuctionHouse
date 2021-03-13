@@ -21,7 +21,11 @@ auctionhouse:
   names:
     auctionhouse: "Auction House"
     buymenu: "Confirm purchase"
+    bidmenu: "Bid Menu"
     sellmenu: "Sell item"
+
+  # This is the minimum amount a bid must be above the current bid
+  minbidinterval: 1
 
   # Set to true if you want players to be able to create auctions
   allowauction: true
