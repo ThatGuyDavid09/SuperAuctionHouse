@@ -18,6 +18,10 @@ public class PlayerBuyEvent extends Event implements Cancellable {
         isCancelled = false;
     }
 
+    public static HandlerList getHandlerList() {
+        return HANDLERS_LIST;
+    }
+
     /**
      * Gets the cancellation state of this event. A cancelled event will not
      * be executed in the server, but will still pass to other plugins
@@ -45,15 +49,11 @@ public class PlayerBuyEvent extends Event implements Cancellable {
         return HANDLERS_LIST;
     }
 
-    public static HandlerList getHandlerList() {
-        return HANDLERS_LIST;
-    }
-
-    public Player getBuyer() {
+    public Player getPlayer() {
         return buyer;
     }
 
-    public AuctionItem getSoldItem() {
+    public AuctionItem getItem() {
         return item;
     }
 }

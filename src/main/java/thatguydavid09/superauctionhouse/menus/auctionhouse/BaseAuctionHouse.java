@@ -564,7 +564,6 @@ public class BaseAuctionHouse {
         meta.getPersistentDataContainer().set(bidderName, PersistentDataType.STRING, (item.getCurrentBidderName() != null ? item.getCurrentBidderName() : "none lol"));
 
         itemStack.setItemMeta(meta);
-        // TODO Serialize itemstack
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             BukkitObjectOutputStream boos = new BukkitObjectOutputStream(baos);
@@ -590,7 +589,6 @@ public class BaseAuctionHouse {
      * @return The <a href="#{@link}"{@link AuctionItem}> the Base64 string represents
      */
     public static AuctionItem decodeAuctionItem(String object) {
-        // TODO deserialize itemstack, get nbt, remove nbt, return AuctionItem
         try {
             byte[] deserialized = Base64.getDecoder().decode(object);
             ByteArrayInputStream bais = new ByteArrayInputStream(deserialized);

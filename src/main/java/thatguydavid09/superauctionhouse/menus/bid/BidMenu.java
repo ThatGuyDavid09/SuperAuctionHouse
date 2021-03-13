@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
+import thatguydavid09.superauctionhouse.events.custom.PlayerBidEvent;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 
 public class BidMenu {
@@ -113,14 +114,17 @@ public class BidMenu {
     }
 
     public void confirmBid() {
-        // TODO make sure to call the custom event here
         // Check for enough money
         if (SuperAuctionHouse.getEconomy().getBalance(player) >= bid) {
-            AuctionItem item = BaseAuctionHouse.getAllItems().get(BaseAuctionHouse.getAllItems().indexOf(this.item));
-            item.setPrice(this.bid);
-            item.setBidder(player);
-            player.sendMessage(SuperAuctionHouse.getPrefix() + net.md_5.bungee.api.ChatColor.GREEN + "Bid has been placed!");
-            player.closeInventory();
+            PlayerBidEvent event = new PlayerBidEvent(item, player);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                AuctionItem item = BaseAuctionHouse.getAllItems().get(BaseAuctionHouse.getAllItems().indexOf(this.item));
+                item.setPrice(this.bid);
+                item.setBidder(player);
+                player.sendMessage(SuperAuctionHouse.getPrefix() + net.md_5.bungee.api.ChatColor.GREEN + "Bid has been placed!");
+                player.closeInventory();
+            }
         } else {
             player.closeInventory();
             player.sendMessage(ChatColor.RED + "You don't have enough money to do that!");

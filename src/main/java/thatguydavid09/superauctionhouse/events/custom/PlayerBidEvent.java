@@ -6,16 +6,15 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import thatguydavid09.superauctionhouse.AuctionItem;
 
-public class PlayerSellEvent extends Event implements Cancellable {
+public class PlayerBidEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private final AuctionItem item;
-    private final Player seller;
+    private final Player bidder;
     private boolean isCancelled;
 
-    public PlayerSellEvent(AuctionItem soldItem, Player seller) {
-        item = soldItem;
-        this.seller = seller;
-        isCancelled = false;
+    public PlayerBidEvent(AuctionItem item, Player bidder) {
+        this.item = item;
+        this.bidder = bidder;
     }
 
     /**
@@ -26,7 +25,7 @@ public class PlayerSellEvent extends Event implements Cancellable {
      */
     @Override
     public boolean isCancelled() {
-        return isCancelled;
+        return false;
     }
 
     /**
@@ -50,7 +49,7 @@ public class PlayerSellEvent extends Event implements Cancellable {
     }
 
     public Player getPlayer() {
-        return seller;
+        return bidder;
     }
 
     public AuctionItem getItem() {
