@@ -22,7 +22,7 @@ public class RightClickOpenAH implements Listener {
 
                 for (String location : config.getStringList("auctionhouse.openblocks")) {
                     if (location.equals(playerloc)) {
-                        AuctionHouseCommand.auctionHousesByPlayer.get(player).openAuctionHouse();
+                        AuctionHouseCommand.getAuctionHouse(player).openAuctionHouse();
                         event.setCancelled(true);
                     }
                 }

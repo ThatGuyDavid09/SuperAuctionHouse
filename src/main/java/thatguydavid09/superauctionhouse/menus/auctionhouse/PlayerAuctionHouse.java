@@ -17,14 +17,18 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.empty;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 
 public class PlayerAuctionHouse extends BaseAuctionHouse {
+    private static ItemStack claimAllItem = null;
     private final Player player;
     private final List<Inventory> auctionHouse = new ArrayList<>();
     private final List<AuctionItem> currentlyDisplayedItems = new ArrayList<>();
+    // TODO actually implement this
+    private final boolean isOwnAuctionMenu;
     // 0 is Alphabetically A-Z. 1 is alphabetically Z-A, 2 is by price ascending, 3 is by price descending
     public int sortMode = 0;
     public String query = "";
@@ -35,8 +39,17 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
      *
      * @param player The <a href="#{@link}"{@link Player}> to who the ah belongs
      */
-    public PlayerAuctionHouse(Player player) {
+    public PlayerAuctionHouse(Player player, boolean isOwnAuctionMenu) {
         this.player = player;
+        this.isOwnAuctionMenu = isOwnAuctionMenu;
+
+        if (claimAllItem == null) {
+            Material type;
+            claimAllItem = new ItemStack(Material.CAULDRON);
+            ItemMeta meta = claimAllItem.getItemMeta();
+            meta.setDisplayName(ChatColor.YELLOW + "Claim all auctions");
+            claimAllItem.setItemMeta(meta);
+        }
     }
 
     /*************************************
@@ -93,7 +106,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
     private static ItemStack createBackArrowWithPage(int currentPage) {
         ItemStack arrow = new ItemStack(Material.ARROW, 1);
         ItemMeta meta = arrow.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Previous page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouse.getNumOfItems() / 44 + ")");
+        meta.setDisplayName(ChatColor.GOLD + "Previous page " + ChatColor.GRAY + "(Page " + currentPage + "/" + (long) Math.ceil((double) BaseAuctionHouse.getNumOfItems() / 44) + ")");
         arrow.setItemMeta(meta);
         return arrow;
     }
@@ -107,7 +120,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
     private static ItemStack createForwardArrowWithPage(int currentPage) {
         ItemStack arrow = new ItemStack(Material.ARROW, 1);
         ItemMeta meta = arrow.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Next page " + ChatColor.GRAY + "(Page " + currentPage + "/" + BaseAuctionHouse.getNumOfItems() / 44 + ")");
+        meta.setDisplayName(ChatColor.GOLD + "Next page " + ChatColor.GRAY + "(Page " + currentPage + "/" + (long) Math.ceil((double) BaseAuctionHouse.getNumOfItems() / 44) + ")");
         arrow.setItemMeta(meta);
         return arrow;
     }
@@ -359,10 +372,18 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
      * This opens the auction house for the player this class belongs to
      */
     public void openAuctionHouse() {
-        BaseAuctionHouse.playersWithAHOpen.add(player);
+        int page = 0;
+        // TODO add a fix to open inventory that player has
         this.playerName = "";
         update(false);
-        player.openInventory(auctionHouse.get(0));
+        if (!player.getOpenInventory().getTopInventory().toString().contains("CraftInventoryCrafting")) {
+            if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
+                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
+                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            }
+        }
+        player.openInventory(auctionHouse.get(page));
     }
 
     /**
@@ -371,12 +392,19 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
      * @param resetPlayerName Whether to reset the player name parameter
      */
     public void openAuctionHouse(boolean resetPlayerName) {
-        BaseAuctionHouse.playersWithAHOpen.add(player);
+        int page = 0;
         if (resetPlayerName) {
             this.playerName = "";
         }
         update(false);
-        player.openInventory(auctionHouse.get(0));
+        if (!player.getOpenInventory().getTopInventory().toString().contains("CraftInventoryCrafting")) {
+            if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
+                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
+                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            }
+        }
+        player.openInventory(auctionHouse.get(page));
     }
 
     /**
@@ -385,10 +413,17 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
      * @param playerName This is the optional name to sort by
      */
     public void openAuctionHouse(String playerName, boolean isPlayerName) {
-        BaseAuctionHouse.playersWithAHOpen.add(player);
+        int page = 0;
         this.playerName = playerName;
         update(false);
-        player.openInventory(auctionHouse.get(0));
+        if (!player.getOpenInventory().getTopInventory().toString().contains("CraftInventoryCrafting")) {
+            if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
+                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
+                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            }
+        }
+        player.openInventory(auctionHouse.get(page));
     }
 
     /**
@@ -397,10 +432,17 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
      * @param query The query to filter by
      */
     public void openAuctionHouse(String query) {
-        BaseAuctionHouse.playersWithAHOpen.add(player);
+        int page = 0;
         this.query = query;
         update(false);
-        player.openInventory(auctionHouse.get(0));
+        if (!player.getOpenInventory().getTopInventory().toString().contains("CraftInventoryCrafting")) {
+            if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
+                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
+                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            }
+        }
+        player.openInventory(auctionHouse.get(page));
     }
 
     /**
@@ -429,15 +471,29 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
             if (Strings.isNullOrEmpty(query)) {
                 // Sort the items
                 // currentlyDisplayedItems.addAll(BaseAuctionHouseMenu.getAllItems());
-                allItems = BaseAuctionHouse.getAllItems();
+                allItems = isOwnAuctionMenu ? BaseAuctionHouse.getItemsByPlayerId(player.getUniqueId())/*BaseAuctionHouse.getAllItems().stream().filter(item -> item.getPlayerId() == player.getUniqueId()).collect(Collectors.toList())*/ : BaseAuctionHouse.getAllItems();
             } else {
-                allItems = filterItemsByName(query, BaseAuctionHouse.getAllItems());
+                allItems = filterItemsByName(query, isOwnAuctionMenu ? BaseAuctionHouse.getItemsByPlayerId(player.getUniqueId())/*BaseAuctionHouse.getAllItems().stream().filter(item -> item.getPlayerId() == player.getUniqueId()).collect(Collectors.toList())*/ : BaseAuctionHouse.getAllItems());
             }
 
             for (AuctionItem item : allItems) {
                 // Filter out expired items
                 if (item.getTime() > 0 || !item.isAuction()) {
-                    currentlyDisplayedItems.add(new AuctionItem(item));
+                    if (isOwnAuctionMenu && item.getPlayerId() == player.getUniqueId()) {
+                        ItemStack itemStack = item.getItem().clone();
+                        ItemMeta meta = itemStack.getItemMeta();
+                        List<String> lore = meta.getLore();
+                        lore.remove(lore.size() - 1);
+                        lore.add(ChatColor.YELLOW + "Click to claim!");
+                        meta.setLore(lore);
+                        itemStack.setItemMeta(meta);
+
+                        AuctionItem auctionItem = new AuctionItem(item);
+                        auctionItem.setItem(itemStack);
+                        currentlyDisplayedItems.add(auctionItem);
+                    } else {
+                        currentlyDisplayedItems.add(new AuctionItem(item));
+                    }
                 }
             }
 
@@ -517,6 +573,13 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
 
         for (Inventory page : auctionHouse) {
             page.setItem(49, newSortItem);
+
+            if (isOwnAuctionMenu) {
+                page.setItem(45, claimAllItem);
+                page.setItem(46, empty);
+                page.setItem(52, empty);
+                page.setItem(53, empty);
+            }
         }
     }
 

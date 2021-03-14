@@ -18,7 +18,7 @@ public class AuctionHouseActions {
      */
     public static void nextPage(Player player) {
         // AH for this player
-        List<Inventory> auctionHousePage = AuctionHouseCommand.getAuctionHouse(player).getAuctionHouse();
+        List<Inventory> auctionHousePage = BaseAuctionHouse.determineInvType(player) == 0 ? AuctionHouseCommand.getAuctionHouse(player).getAuctionHouse() : AuctionHouseCommand.getOwnAuctionHouse(player).getAuctionHouse();
         // This monster piece of crap code gets the current index of the ah we are on by getting the name of the forward and back arrows I know it is garbage
         int currentIndexOfInv = Integer.parseInt(player.getOpenInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]);
         player.openInventory(auctionHousePage.get(currentIndexOfInv));
@@ -32,7 +32,7 @@ public class AuctionHouseActions {
      * @param player The player this is affecting
      */
     public static void previousPage(Player player) {
-        List<Inventory> auctionHousePage = AuctionHouseCommand.getAuctionHouse(player).getAuctionHouse();
+        List<Inventory> auctionHousePage = BaseAuctionHouse.determineInvType(player) == 0 ? AuctionHouseCommand.getAuctionHouse(player).getAuctionHouse() : AuctionHouseCommand.getOwnAuctionHouse(player).getAuctionHouse();
         int currentIndexOfInv = Integer.parseInt(player.getOpenInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]);
         player.openInventory(auctionHousePage.get(currentIndexOfInv - 2));
 
@@ -45,13 +45,21 @@ public class AuctionHouseActions {
      * @param player The player this is affecting
      */
     public static void cycleSortMode(Player player) {
-        AuctionHouseCommand.getAuctionHouse(player).sortMode++;
+        if (BaseAuctionHouse.determineInvType(player) == 0) {
+            AuctionHouseCommand.getAuctionHouse(player).sortMode++;
 
-        if (AuctionHouseCommand.getAuctionHouse(player).sortMode > 3) {
-            AuctionHouseCommand.getAuctionHouse(player).sortMode = 0;
+            if (AuctionHouseCommand.getAuctionHouse(player).sortMode > 3) {
+                AuctionHouseCommand.getAuctionHouse(player).sortMode = 0;
+            }
+            AuctionHouseCommand.getAuctionHouse(player).reloadAuctionHouse();
+        } else {
+            AuctionHouseCommand.getOwnAuctionHouse(player).sortMode++;
+
+            if (AuctionHouseCommand.getOwnAuctionHouse(player).sortMode > 3) {
+                AuctionHouseCommand.getOwnAuctionHouse(player).sortMode = 0;
+            }
+            AuctionHouseCommand.getOwnAuctionHouse(player).reloadAuctionHouse();
         }
-        AuctionHouseCommand.getAuctionHouse(player).reloadAuctionHouse();
-
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
     }
 

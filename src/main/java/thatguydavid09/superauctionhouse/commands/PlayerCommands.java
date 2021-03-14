@@ -118,7 +118,7 @@ public class PlayerCommands {
      */
     public static boolean openByPlayer(Player player, String playerName) {
         if (player.hasPermission("superauctionhouse.viewplayerah")) {
-            AuctionHouseCommand.auctionHousesByPlayer.get(player).openAuctionHouse(playerName, true);
+            AuctionHouseCommand.getAuctionHouse(player).openAuctionHouse(playerName, true);
 
             return true;
         } else {

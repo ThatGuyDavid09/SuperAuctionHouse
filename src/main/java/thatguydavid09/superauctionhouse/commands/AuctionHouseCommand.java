@@ -11,10 +11,16 @@ import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 import java.util.HashMap;
 
 public class AuctionHouseCommand implements CommandExecutor {
+    // FIXME make these not public
     public static HashMap<Player, PlayerAuctionHouse> auctionHousesByPlayer = new HashMap<>();
+    public static HashMap<Player, PlayerAuctionHouse> ownAuctionHousesByPlayer = new HashMap<>();
 
     public static PlayerAuctionHouse getAuctionHouse(Player player) {
         return auctionHousesByPlayer.get(player);
+    }
+
+    public static PlayerAuctionHouse getOwnAuctionHouse(Player player) {
+        return ownAuctionHousesByPlayer.get(player);
     }
 
     private static void permissionError(Player player) {
@@ -29,7 +35,10 @@ public class AuctionHouseCommand implements CommandExecutor {
             if (args.length == 0) {
                 // Open ah
                 if (!auctionHousesByPlayer.containsKey(player)) {
-                    auctionHousesByPlayer.put(player, new PlayerAuctionHouse(player));
+                    auctionHousesByPlayer.put(player, new PlayerAuctionHouse(player, true));
+                }
+                if (!ownAuctionHousesByPlayer.containsKey(player)) {
+                    ownAuctionHousesByPlayer.put(player, new PlayerAuctionHouse(player, true));
                 }
                 // Reset query upon player opening ah
                 auctionHousesByPlayer.get(player).query = "";

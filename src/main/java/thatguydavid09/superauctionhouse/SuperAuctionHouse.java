@@ -13,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import thatguydavid09.superauctionhouse.commands.AHCommandTabCompleter;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseChat;
-import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseClose;
 import thatguydavid09.superauctionhouse.events.auctionhouse.AuctionHouseRegister;
 import thatguydavid09.superauctionhouse.events.auctionhouse.RightClickOpenAH;
 import thatguydavid09.superauctionhouse.events.bid.CustomBidChatEvent;
@@ -196,7 +195,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerFreeze(), this);
         getServer().getPluginManager().registerEvents(new AuctionHouseRegister(), this);
         getServer().getPluginManager().registerEvents(new RightClickOpenAH(), this);
-        getServer().getPluginManager().registerEvents(new AuctionHouseClose(), this);
 
         // Load config
         config();

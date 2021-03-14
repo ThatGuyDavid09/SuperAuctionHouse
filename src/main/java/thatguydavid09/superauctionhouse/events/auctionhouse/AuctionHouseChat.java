@@ -19,7 +19,12 @@ public class AuctionHouseChat implements Listener {
             event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder("").color(ChatColor.GREEN).create());
             // Run synchronously, WHY DOES MINECRAFT RUN ON A SINGLE THREAD
             Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {
-                AuctionHouseCommand.getAuctionHouse(event.getPlayer()).openAuctionHouse(event.getMessage());
+                if (BaseAuctionHouse.determineInvType(event.getPlayer()) == 0) {
+                    AuctionHouseCommand.getAuctionHouse(event.getPlayer()).openAuctionHouse(event.getMessage());
+
+                } else if (BaseAuctionHouse.determineInvType(event.getPlayer()) == 1) {
+                    AuctionHouseCommand.getOwnAuctionHouse(event.getPlayer()).openAuctionHouse(event.getMessage());
+                }
             });
             event.setCancelled(true);
         }

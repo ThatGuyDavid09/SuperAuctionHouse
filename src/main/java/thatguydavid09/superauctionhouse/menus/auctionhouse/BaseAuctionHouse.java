@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -40,7 +41,7 @@ public class BaseAuctionHouse {
     // Other necessary stuff
     public static List<Player> playersFindingStuff = new ArrayList<>();
     // List to update every second
-    public static List<Player> playersWithAHOpen = new ArrayList<>();
+    private static HashMap<Player, Integer> playersWithAHOpen = new HashMap<>();
 
     private static Inventory baseAuctionHouse;
     private static long auctionId = 0; // This needs to be created from backup
@@ -649,4 +650,21 @@ public class BaseAuctionHouse {
         }
     }
 
+    public static int determineInvType(Player player) {
+        InventoryView inv = player.getOpenInventory();
+         if (inv.getTopInventory().toString().contains("CraftInventoryCrafting")) {
+             return -1;
+         }
+
+         if (inv.getTopInventory().getItem(45).getType() == Material.DIAMOND) {
+             return 0;
+         } else if (inv.getTopInventory().getItem(45).getType() == Material.CAULDRON) {
+             return 1;
+         }
+         return -1;
+    }
+
+    public static List<AuctionItem> getItemsByPlayerId(UUID id) {
+        return itemsForPlayer.get(id);
+    }
 }

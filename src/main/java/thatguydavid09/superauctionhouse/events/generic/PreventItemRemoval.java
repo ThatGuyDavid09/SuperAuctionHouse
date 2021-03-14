@@ -18,7 +18,6 @@ import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.commands.PlayerCommands;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.AuctionHouseActions;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
-import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.bid.BidMenu;
 import thatguydavid09.superauctionhouse.menus.bid.BidMenuActions;
 import thatguydavid09.superauctionhouse.menus.buy.BuyMenu;
@@ -50,6 +49,9 @@ public class PreventItemRemoval implements Listener {
                     if (event.getRawSlot() == 50 && event.getCurrentItem().getType() == Material.ARROW) {
                         AuctionHouseActions.nextPage(player);
                         event.setCancelled(true);
+                    } else if (event.getRawSlot() == 45 && event.getCurrentItem().getType() == Material.DIAMOND) {
+                        AuctionHouseCommand.getOwnAuctionHouse(player).openAuctionHouse();
+                        event.setCancelled(true);
                     } else if (event.getRawSlot() == 48 && event.getCurrentItem().getType() == Material.ARROW) {
                         AuctionHouseActions.previousPage(player);
                         event.setCancelled(true);
@@ -60,6 +62,41 @@ public class PreventItemRemoval implements Listener {
                         event.setCancelled(true);
                         AuctionHouseActions.find(player);
                     } else if (event.getRawSlot() <= 44) {
+                        // AH item is clicked
+                        if (event.getCurrentItem() != null) {
+                            AuctionItem item = BaseAuctionHouse.itemStackToAuctionItem(event.getCurrentItem());
+                            if (item.isAuction()) {
+                                bidMenus.remove(player);
+                                BidMenu confirm = new BidMenu(item, player);
+                                bidMenus.put(player, confirm);
+                                (player).playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
+                                confirm.openBidMenu();
+                            } else {
+                                buyMenus.remove(player);
+                                BuyMenu confirm = new BuyMenu(item, player);
+                                buyMenus.put(player, confirm);
+                                (player).playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
+                                confirm.openBuyMenu();
+                            }
+                        } else {
+                            event.setCancelled(true);
+                        }
+                    } else {
+                        event.setCancelled(true);
+                    }
+                } else if (AuctionHouseCommand.getOwnAuctionHouse(player).getAuctionHouse().contains(event.getClickedInventory())) {
+                    // Identify as Own Auctions inventory
+                    if (event.getRawSlot() == 50 && event.getCurrentItem().getType() == Material.ARROW) {
+                        AuctionHouseActions.nextPage(player);
+                        event.setCancelled(true);
+                    } else if (event.getRawSlot() == 48 && event.getCurrentItem().getType() == Material.ARROW) {
+                        AuctionHouseActions.previousPage(player);
+                        event.setCancelled(true);
+                    } else if (event.getRawSlot() == 49 && event.getCurrentItem().getType() == Material.SUNFLOWER) {
+                        AuctionHouseActions.cycleSortMode(player);
+                        event.setCancelled(true);
+                    } else if (event.getRawSlot() <= 44) {
+                        // TODO replace with claiming logic
                         // AH item is clicked
                         if (event.getCurrentItem() != null) {
                             AuctionItem item = BaseAuctionHouse.itemStackToAuctionItem(event.getCurrentItem());
@@ -154,15 +191,15 @@ public class PreventItemRemoval implements Listener {
                     if (event.getRawSlot() == 49) {
                         AuctionHouseCommand.getAuctionHouse(player).reloadAuctionHouse();
 
-                    // If is confirm item
+                        // If is confirm item
                     } else if (event.getRawSlot() == 40 && event.getCurrentItem().getType() == Material.GREEN_CONCRETE) {
                         menu.confirmBid();
 
-                    // If is bid increase 1
+                        // If is bid increase 1
                     } else if (event.getRawSlot() == 28) {
                         menu.increaseBid(minBidInterval * 1);
 
-                    // If is bin increase 2
+                        // If is bin increase 2
                     } else if (event.getRawSlot() == 29) {
                         menu.increaseBid(minBidInterval * 5);
 

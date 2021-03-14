@@ -5,16 +5,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 
 public class AuctionHouseRegister implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        AuctionHouseCommand.auctionHousesByPlayer.put(event.getPlayer(), new PlayerAuctionHouse(event.getPlayer()));
+        AuctionHouseCommand.auctionHousesByPlayer.put(event.getPlayer(), new PlayerAuctionHouse(event.getPlayer(), false));
+        AuctionHouseCommand.ownAuctionHousesByPlayer.put(event.getPlayer(), new PlayerAuctionHouse(event.getPlayer(), true));
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         AuctionHouseCommand.auctionHousesByPlayer.remove(event.getPlayer());
+        AuctionHouseCommand.ownAuctionHousesByPlayer.remove(event.getPlayer());
     }
 }
