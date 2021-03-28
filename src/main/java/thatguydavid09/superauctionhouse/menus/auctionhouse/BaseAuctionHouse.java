@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import thatguydavid09.superauctionhouse.AuctionItem;
@@ -28,8 +29,8 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.empty;
+import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
 
 public class BaseAuctionHouse {
     private static final SuperAuctionHouse plugin = SuperAuctionHouse.getInstance();
@@ -64,7 +65,7 @@ public class BaseAuctionHouse {
         ItemMeta itemMeta = viewAuctions.getItemMeta();
         itemMeta.setDisplayName(ChatColor.GOLD + "View your auctions");
         itemMeta.setLore(Arrays.asList(ChatColor.BLUE + "You currently have " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "outstanding ",
-                ChatColor.BLUE + "auctions and " + ChatColor.YELLOW + "0 " + ChatColor.BLUE + "auctions ready to claim."));
+                ChatColor.BLUE + "auctions."));
         viewAuctions.setItemMeta(itemMeta);
 
         baseAuctionHouse.setItem(45, viewAuctions);
@@ -211,7 +212,7 @@ public class BaseAuctionHouse {
             backUp(auctionItem, false);
 
             if (auctionItem.isInfsell()) {
-                AuctionItem item = new AuctionItem(auctionItem.getItem(), auctionItem.getId(), auctionItem.getPrice(), auctionItem.getPlayerId(), auctionItem.getTime(), auctionItem.isInfsell(), auctionItem.isAuction(), auctionItem.getPlayerName());
+                AuctionItem item = new AuctionItem(auctionItem);
                 addItem(item, backup);
             }
         }
@@ -266,6 +267,12 @@ public class BaseAuctionHouse {
      */
     public static void giveItemToPlayer(ItemStack item, Player player) {
         ItemMeta meta = item.getItemMeta();
+
+        NamespacedKey auctionid = new NamespacedKey(SuperAuctionHouse.getInstance(), "auctionid");
+
+        PersistentDataContainer nbt = meta.getPersistentDataContainer();
+        nbt.remove(auctionid);
+
         item.setItemMeta(meta);
 
         List<ItemStack> itemsToDrop = new ArrayList<>(player.getInventory().addItem(item).values());
@@ -512,6 +519,7 @@ public class BaseAuctionHouse {
             rs = statement.executeQuery("SELECT auctionitem FROM auctionhouse;");
             while (rs.next()) {
                 AuctionItem item = decodeAuctionItem(rs.getString("auctionitem"));
+                // TODO remove nbt
                 addItem(item, false);
             }
             plugin.getLogger().info("Auctionhouse has been loaded from database!");
@@ -624,16 +632,15 @@ public class BaseAuctionHouse {
 
 
             // Remove NBT from item
-            PersistentDataContainer container = meta.getPersistentDataContainer();
-            container.remove(id);
-            container.remove(price);
-            container.remove(playerId);
-            container.remove(time);
-            container.remove(infsell);
-            container.remove(isAuction);
-            container.remove(playerName);
-            container.remove(bidderId);
-            container.remove(bidderName);
+            nbt.remove(id);
+            nbt.remove(price);
+            nbt.remove(playerId);
+            nbt.remove(time);
+            nbt.remove(infsell);
+            nbt.remove(isAuction);
+            nbt.remove(playerName);
+            nbt.remove(bidderId);
+            nbt.remove(bidderName);
 
             item.setItemMeta(meta);
 
@@ -652,16 +659,19 @@ public class BaseAuctionHouse {
 
     public static int determineInvType(Player player) {
         InventoryView inv = player.getOpenInventory();
-         if (inv.getTopInventory().toString().contains("CraftInventoryCrafting")) {
-             return -1;
-         }
+        if (inv.getTopInventory().toString().contains("CraftInventoryCrafting")) {
+            return -1;
+        }
 
-         if (inv.getTopInventory().getItem(45).getType() == Material.DIAMOND) {
-             return 0;
-         } else if (inv.getTopInventory().getItem(45).getType() == Material.CAULDRON) {
-             return 1;
-         }
-         return -1;
+        try {
+            if (inv.getTopInventory().getItem(45).getType() == Material.DIAMOND) {
+                return 0;
+            } else if (inv.getTopInventory().getItem(45).getType() == Material.CAULDRON) {
+                return 1;
+            }
+        } catch (Exception ignored) {
+        }
+        return -1;
     }
 
     public static List<AuctionItem> getItemsByPlayerId(UUID id) {

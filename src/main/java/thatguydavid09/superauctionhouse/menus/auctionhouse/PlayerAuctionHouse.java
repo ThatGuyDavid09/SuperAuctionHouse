@@ -17,7 +17,6 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.empty;
 import static thatguydavid09.superauctionhouse.SuperAuctionHouse.getEconomy;
@@ -27,7 +26,6 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
     private final Player player;
     private final List<Inventory> auctionHouse = new ArrayList<>();
     private final List<AuctionItem> currentlyDisplayedItems = new ArrayList<>();
-    // TODO actually implement this
     private final boolean isOwnAuctionMenu;
     // 0 is Alphabetically A-Z. 1 is alphabetically Z-A, 2 is by price ascending, 3 is by price descending
     public int sortMode = 0;
@@ -373,14 +371,16 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
      */
     public void openAuctionHouse() {
         int page = 0;
-        // TODO add a fix to open inventory that player has
         this.playerName = "";
         update(false);
         if (!player.getOpenInventory().getTopInventory().toString().contains("CraftInventoryCrafting")) {
-            if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
-                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
-            } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
-                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            try {
+                if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
+                    page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+                } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
+                    page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+                }
+            } catch (Exception ignored) {
             }
         }
         player.openInventory(auctionHouse.get(page));
@@ -398,10 +398,13 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
         }
         update(false);
         if (!player.getOpenInventory().getTopInventory().toString().contains("CraftInventoryCrafting")) {
-            if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
-                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
-            } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
-                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            try {
+                if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
+                    page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+                } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
+                    page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+                }
+            } catch (Exception ignored) {
             }
         }
         player.openInventory(auctionHouse.get(page));
@@ -417,10 +420,13 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
         this.playerName = playerName;
         update(false);
         if (!player.getOpenInventory().getTopInventory().toString().contains("CraftInventoryCrafting")) {
-            if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
-                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
-            } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
-                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            try {
+                if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
+                    page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+                } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
+                    page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+                }
+            } catch (Exception ignored) {
             }
         }
         player.openInventory(auctionHouse.get(page));
@@ -436,10 +442,13 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
         this.query = query;
         update(false);
         if (!player.getOpenInventory().getTopInventory().toString().contains("CraftInventoryCrafting")) {
-            if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
-                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
-            } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
-                page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+            try {
+                if (player.getOpenInventory().getTopInventory().getItem(50).getType() == Material.ARROW) {
+                    page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(50).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+                } else if (player.getOpenInventory().getTopInventory().getItem(48).getType() == Material.ARROW) {
+                    page = Integer.parseInt(player.getOpenInventory().getTopInventory().getItem(48).getItemMeta().getDisplayName().split("/")[0].split(" ")[3]) - 1;
+                }
+            } catch (Exception ignored) {
             }
         }
         player.openInventory(auctionHouse.get(page));
@@ -478,7 +487,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
 
             for (AuctionItem item : allItems) {
                 // Filter out expired items
-                if (item.getTime() > 0 || !item.isAuction()) {
+                if (item.isExpired()) {
                     if (isOwnAuctionMenu && item.getPlayerId() == player.getUniqueId()) {
                         ItemStack itemStack = item.getItem().clone();
                         ItemMeta meta = itemStack.getItemMeta();
@@ -491,9 +500,9 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
                         AuctionItem auctionItem = new AuctionItem(item);
                         auctionItem.setItem(itemStack);
                         currentlyDisplayedItems.add(auctionItem);
-                    } else {
-                        currentlyDisplayedItems.add(new AuctionItem(item));
                     }
+                } else {
+                    currentlyDisplayedItems.add(new AuctionItem(item));
                 }
             }
 
@@ -542,7 +551,7 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
                 break;
         }
 
-        for (AuctionItem item : items.keySet()) {
+        for (AuctionItem item : currentlyDisplayedItems) {
             addToMenu(item.getItem(), auctionHouse);
         }
 
@@ -579,6 +588,17 @@ public class PlayerAuctionHouse extends BaseAuctionHouse {
                 page.setItem(46, empty);
                 page.setItem(52, empty);
                 page.setItem(53, empty);
+            } else {
+                // Update view own auction item and view own bid item
+                // TODO add view own bid item
+                ItemStack viewAuctions = new ItemStack(Material.DIAMOND, 1);
+                ItemMeta itemMeta = viewAuctions.getItemMeta();
+                itemMeta.setDisplayName(ChatColor.GOLD + "View your auctions");
+                itemMeta.setLore(Arrays.asList(ChatColor.BLUE + "You currently have " + ChatColor.YELLOW + BaseAuctionHouse.getItemsByPlayerId(player.getUniqueId()).size() + " " + ChatColor.BLUE + "outstanding ",
+                        ChatColor.BLUE + "auctions."));
+                viewAuctions.setItemMeta(itemMeta);
+
+                page.setItem(45, viewAuctions);
             }
         }
     }

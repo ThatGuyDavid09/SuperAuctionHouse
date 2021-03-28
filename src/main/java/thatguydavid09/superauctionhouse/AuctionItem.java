@@ -219,4 +219,12 @@ public class AuctionItem {
     public String getCurrentBidderName() {
         return currentBidderName;
     }
+
+    /**
+     * Return whether the item is expired.
+     * @return Whether the item is expired.
+     */
+    public boolean isExpired() {
+        return isAuction && time <= 0;
+    }
 }

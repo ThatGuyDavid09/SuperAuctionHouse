@@ -45,21 +45,21 @@ public class AuctionHouseActions {
      * @param player The player this is affecting
      */
     public static void cycleSortMode(Player player) {
+        PlayerAuctionHouse ah = null;
         if (BaseAuctionHouse.determineInvType(player) == 0) {
-            AuctionHouseCommand.getAuctionHouse(player).sortMode++;
-
-            if (AuctionHouseCommand.getAuctionHouse(player).sortMode > 3) {
-                AuctionHouseCommand.getAuctionHouse(player).sortMode = 0;
-            }
-            AuctionHouseCommand.getAuctionHouse(player).reloadAuctionHouse();
+            ah = AuctionHouseCommand.getAuctionHouse(player);
         } else {
-            AuctionHouseCommand.getOwnAuctionHouse(player).sortMode++;
-
-            if (AuctionHouseCommand.getOwnAuctionHouse(player).sortMode > 3) {
-                AuctionHouseCommand.getOwnAuctionHouse(player).sortMode = 0;
-            }
-            AuctionHouseCommand.getOwnAuctionHouse(player).reloadAuctionHouse();
+            ah = AuctionHouseCommand.getOwnAuctionHouse(player);
         }
+
+        ah.sortMode++;
+
+        if (ah.sortMode > 3) {
+            ah.sortMode = 0;
+        }
+
+        ah.reloadAuctionHouse();
+
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
     }
 

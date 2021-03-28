@@ -12,12 +12,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import thatguydavid09.superauctionhouse.AuctionItem;
 import thatguydavid09.superauctionhouse.SuperAuctionHouse;
 import thatguydavid09.superauctionhouse.commands.AuctionHouseCommand;
 import thatguydavid09.superauctionhouse.commands.PlayerCommands;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.AuctionHouseActions;
 import thatguydavid09.superauctionhouse.menus.auctionhouse.BaseAuctionHouse;
+import thatguydavid09.superauctionhouse.menus.auctionhouse.PlayerAuctionHouse;
 import thatguydavid09.superauctionhouse.menus.bid.BidMenu;
 import thatguydavid09.superauctionhouse.menus.bid.BidMenuActions;
 import thatguydavid09.superauctionhouse.menus.buy.BuyMenu;
@@ -99,20 +102,21 @@ public class PreventItemRemoval implements Listener {
                         // TODO replace with claiming logic
                         // AH item is clicked
                         if (event.getCurrentItem() != null) {
-                            AuctionItem item = BaseAuctionHouse.itemStackToAuctionItem(event.getCurrentItem());
-                            if (item.isAuction()) {
-                                bidMenus.remove(player);
-                                BidMenu confirm = new BidMenu(item, player);
-                                bidMenus.put(player, confirm);
-                                (player).playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                                confirm.openBidMenu();
-                            } else {
-                                buyMenus.remove(player);
-                                BuyMenu confirm = new BuyMenu(item, player);
-                                buyMenus.put(player, confirm);
-                                (player).playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                                confirm.openBuyMenu();
+                            ItemStack updatedItem = event.getCurrentItem();
+                            ItemMeta meta = updatedItem.getItemMeta();
+                            List<String> lore = meta.getLore();
+                            lore.remove(lore.size() - 1);
+                            lore.add(ChatColor.RED + "This auction has expired!");
+                            meta.setLore(lore);
+                            updatedItem.setItemMeta(meta);
+
+                            AuctionItem item = BaseAuctionHouse.itemStackToAuctionItem(updatedItem);
+
+                            if (event.getCurrentItem().getItemMeta().getLore().get(lore.size() - 1).contains("Click")) {
+                                BaseAuctionHouse.removeItem(item, player, true);
+                                BaseAuctionHouse.giveItemToPlayer(item.getItem(), player);
                             }
+
                         } else {
                             event.setCancelled(true);
                         }
