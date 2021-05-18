@@ -134,4 +134,14 @@ public class AdminCommands {
         }
         return false;
     }
+
+    // TODO add reload auction house command
+    public static boolean reload(Player player) {
+        if (player.hasPermission("superauctionhouse.reload")) {
+            BaseAuctionHouse.loadFromBackup();
+            player.sendMessage(SuperAuctionHouse.getPrefix() + ChatColor.AQUA + "Auction House has been reloaded!");
+            return true;
+        }
+        return false;
+    }
 }

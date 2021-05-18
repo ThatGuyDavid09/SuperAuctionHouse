@@ -495,7 +495,9 @@ public class BaseAuctionHouse {
      * This creates the auction house from a backup
      */
     public static void loadFromBackup() {
-        createAuctionHouse();
+        allItems.clear();
+        itemsForPlayer.clear();
+        itemStackToAuctionItem.clear();
 
         Connection connection = null;
         Statement statement;

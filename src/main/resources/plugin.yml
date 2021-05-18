@@ -30,6 +30,8 @@ permissions:
       superauctionhouse.sell.infsell: true
       superauctionhouse.setopenloc: true
       superauctionhouse.unsetloc: true
+      superauctionhouse.backup: true
+      superauctionhouse.reload: true
 
   superauctionhouse.player:
     description: Gives access to all SuperAuctionHouse player commands
@@ -87,4 +89,8 @@ permissions:
 
   superauctionhouse.backup:
     description: Allows a player to manually backup the auction house.
+    default: op
+
+  superauctionhouse.reload:
+    description: Allows a player to manually reload the auction house.
     default: op

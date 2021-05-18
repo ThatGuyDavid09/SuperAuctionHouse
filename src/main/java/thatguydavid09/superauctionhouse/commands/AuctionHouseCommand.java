@@ -108,7 +108,14 @@ public class AuctionHouseCommand implements CommandExecutor {
                     }
                     break;
 
+                case "reload":
+                    if (!AdminCommands.reload(player)) {
+                        permissionError(player);
+                    }
+                    break;
+
                 default:
+                    // TODO add ability to open another person's auction house
                     player.sendMessage(ChatColor.RED + "Not a valid command!");
             }
         } else {

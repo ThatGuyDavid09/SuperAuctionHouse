@@ -214,12 +214,14 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
         // Database
         setupDatabase();
+        BaseAuctionHouse.createAuctionHouse();
         BaseAuctionHouse.loadFromBackup();
 
         // Schedule updates for auctions
         AuctionItemDecrementer auctionScheduler = new AuctionItemDecrementer();
         auctionScheduler.start();
 
+        // TODO replace with a real enable message
         getLogger().info(ChatColor.GREEN + "SuperAuctionHouse has been enabled!");
 
         // Schedule backups
