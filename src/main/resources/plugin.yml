@@ -1,0 +1,7 @@
+name: SuperAuctionHouse
+version: '1-0-SNAPSHOT'
+main: com.thatguydavid.superauctionhouse.SuperAuctionHouse
+api-version: 1.16
+prefix: SuperAuctionHouse
+authors: [ ThatGuyDavid ]
+description: A fully-featured auction house plugin for minecraft servers.
