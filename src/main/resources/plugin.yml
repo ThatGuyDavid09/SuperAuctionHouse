@@ -5,3 +5,10 @@ api-version: 1.16
 prefix: SuperAuctionHouse
 authors: [ ThatGuyDavid ]
 description: A fully-featured auction house plugin for minecraft servers.
+
+commands:
+  ah:
+    description: Opens the auction house
+    usage: /<command>
+    permission: superauctionhouse.ah
+    aliases: [ auctionhouse, sah, superauctionhouse ]
