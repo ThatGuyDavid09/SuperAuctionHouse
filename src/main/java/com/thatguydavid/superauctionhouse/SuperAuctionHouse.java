@@ -11,12 +11,15 @@ import java.io.File;
 import java.io.IOException;
 
 public final class SuperAuctionHouse extends JavaPlugin {
-    public static String prefix = ChatColor.RESET + "[" + ChatColor.AQUA + "SuperAuctionHouse" + ChatColor.RESET + "] ";
-    public static MessageLoader messages;
+    public final static String prefix = ChatColor.RESET + "[" + ChatColor.AQUA + "SuperAuctionHouse" + ChatColor.RESET + "] ";
+    private static MessageLoader messages;
+
+    private static JavaPlugin instance;
 
 
     @Override
     public void onEnable() {
+        instance = this;
         loadConfigs();
         registerCommands();
     }
@@ -25,12 +28,23 @@ public final class SuperAuctionHouse extends JavaPlugin {
         this.getCommand("ah").setExecutor(new AHCommand());
     }
 
+    public static JavaPlugin getInstance() {
+        return instance;
+    }
+
+    public static MessageLoader getMessages() {
+        return messages;
+    }
+
     private void loadConfigs() {
         File messagesConfigFile = new File(getDataFolder(), "messages.yml");
-        if (!messagesConfigFile.exists()) {
-            messagesConfigFile.getParentFile().mkdirs();
-            saveResource("messages.yml", false);
-        }
+        saveResource("messages.yml", true);
+        // Commented out for testing reasons.
+        // TODO: when ready for release, uncomment
+//        if (!messagesConfigFile.exists()) {
+//            messagesConfigFile.getParentFile().mkdirs();
+//            saveResource("messages.yml", false);
+//        }
 
         YamlConfiguration messagesConfig = YamlConfiguration.loadConfiguration(messagesConfigFile);
         messages = new MessageLoader(messagesConfig);

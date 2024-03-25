@@ -1,3 +1,4 @@
 version: 1-0-SNAPSHOT
-ah_command_not_player_error: ($PREFIX)($RED)Only players may open the auction house!,
+ah_command_not_player_error: ($PREFIX)($RED)Only players may open the auction house!
 ah_command_success: ($PREFIX)Pretend the auction house opened.
+ah_title: Auction House
