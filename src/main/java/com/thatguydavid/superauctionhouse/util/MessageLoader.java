@@ -16,7 +16,7 @@ public class MessageLoader {
     public String getMessage(String path) {
         String unReplaced = config.getString(path);
         if (unReplaced == null) {
-            throw new IllegalArgumentException("Message path does not exist in messages.yml");
+            return path;
         }
         String replaced = unReplaced.replace("($PREFIX)", SuperAuctionHouse.prefix);
         replaced = replaced.replace("($BLACK)", ChatColor.BLACK.toString());

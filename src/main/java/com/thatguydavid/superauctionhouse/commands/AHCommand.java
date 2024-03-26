@@ -1,6 +1,7 @@
 package com.thatguydavid.superauctionhouse.commands;
 
 import com.thatguydavid.superauctionhouse.SuperAuctionHouse;
+import com.thatguydavid.superauctionhouse.inventories.AuctionHouse;
 import com.thatguydavid.superauctionhouse.util.AuctionItem;
 import com.thatguydavid.superauctionhouse.util.AuctionType;
 import org.bukkit.ChatColor;
@@ -25,7 +26,8 @@ public class AHCommand implements CommandExecutor {
         Player player = (Player) sender;
         switch (args.length) {
             case 0:
-                player.sendMessage(SuperAuctionHouse.prefix + "Pretend the auction house opened.");
+                new AuctionHouse(player, SuperAuctionHouse.getMessages().getMessage("ah_title")).open();
+//                player.sendMessage(SuperAuctionHouse.prefix + "Pretend the auction house opened.");
                 break;
             case 1:
                 if (Objects.equals(args[0], "sell")) {

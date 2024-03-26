@@ -4,6 +4,7 @@ main: com.thatguydavid.superauctionhouse.SuperAuctionHouse
 api-version: 1.16
 prefix: SuperAuctionHouse
 authors: [ ThatGuyDavid ]
+dependencies: [ Vault ]
 description: A fully-featured auction house plugin for minecraft servers.
 
 commands:

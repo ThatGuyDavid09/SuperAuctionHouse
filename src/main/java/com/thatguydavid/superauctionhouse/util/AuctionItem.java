@@ -1,12 +1,17 @@
 package com.thatguydavid.superauctionhouse.util;
 
+import com.thatguydavid.superauctionhouse.SuperAuctionHouse;
+import de.themoep.inventorygui.DynamicGuiElement;
+import de.themoep.inventorygui.GuiElement;
+import de.themoep.inventorygui.InventoryGui;
+import de.themoep.inventorygui.StaticGuiElement;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 
 public class AuctionItem {
     private final int id;
@@ -14,7 +19,7 @@ public class AuctionItem {
     private final Player seller;
     private final String sellerName;
     private final Instant createTime;
-    private final Duration duration;
+    private final Instant endTime;
     private final AuctionType auctionType;
 
     private double price;
@@ -29,12 +34,12 @@ public class AuctionItem {
         this.item = item;
         this.seller = seller;
         this.price = price;
-        this.duration = duration;
         this.auctionType = auctionType;
         this.sellerName = sellerName;
         this.highestBidder = null;
 
         this.createTime = Instant.ofEpochMilli(System.currentTimeMillis());
+        this.endTime = createTime.plusSeconds(duration.getSeconds());
     }
 
     public int getId() {
@@ -57,8 +62,12 @@ public class AuctionItem {
         return createTime;
     }
 
-    public Duration getDuration() {
-        return duration;
+    public Instant getEndTime() {
+        return endTime;
+    }
+
+    public Duration getDurationRemaining() {
+        return Duration.between(Instant.ofEpochMilli(System.currentTimeMillis()), endTime);
     }
 
     public AuctionType getAuctionType() {
@@ -76,11 +85,53 @@ public class AuctionItem {
     public String toString() {
         String itemName = "";
 
-        if (item.getItemMeta() == null || !item.getItemMeta().hasDisplayName()) {
+        if (item.hasItemMeta() && !item.getItemMeta().hasDisplayName()) {
             itemName = item.getItemMeta().getDisplayName();
         } else {
             itemName = item.getType().name();
         }
         return itemName + ChatColor.RESET;
+    }
+
+    /**
+     * For use in something like a GuiElementGroup, when it does not matter what the character is
+     *
+     * @return
+     */
+    public GuiElement getGuiElement(InventoryGui gui) {
+        return getGuiElement('a', gui);
+    }
+
+    public GuiElement getGuiElement(char character, InventoryGui gui) {
+        String[] name = {ItemUtils.getItemName(item)};
+        String[] existingLore = (String[]) ArrayUtils.addAll(name, ItemUtils.getItemLoreArray(item));
+
+        String[] separatorLore = ItemUtils.getSeparatorLoreArray();
+
+        return new DynamicGuiElement(character, (viewer) -> {
+            String[] extraLore;
+
+            if (getDurationRemaining().isNegative()) {
+                extraLore = new String[]{
+                        ChatColor.RED + "This auction is expired!"
+                };
+            } else {
+                extraLore = new String[]{
+                        ChatColor.RESET + "" + ChatColor.GRAY + "Price: " + ChatColor.GOLD + SuperAuctionHouse.getInstance().getEconomy().format(price),
+                        ChatColor.RESET + "" + ChatColor.GRAY + "Seller: " + sellerName,
+                        ChatColor.RESET + "" + ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + DurationUtils.formatDuration(getDurationRemaining()),
+                        " ",
+                        ChatColor.RESET + "" + ChatColor.YELLOW + String.format("Click to %s!", auctionType == AuctionType.AUCTION ? "bid" : "buy")
+                };
+            }
+
+            return new StaticGuiElement(character, item,
+                    click -> {
+                        gui.playClickSound();
+                        // TODO implement buy menu here
+                        return true;
+                    },
+                    (String[]) ArrayUtils.addAll(ArrayUtils.addAll(existingLore, separatorLore), extraLore));
+        });
     }
 }

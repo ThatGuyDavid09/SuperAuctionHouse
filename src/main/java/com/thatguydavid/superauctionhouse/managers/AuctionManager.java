@@ -1,10 +1,8 @@
 package com.thatguydavid.superauctionhouse.managers;
 
 import com.thatguydavid.superauctionhouse.events.AuctionListEvent;
-import com.thatguydavid.superauctionhouse.storage.DummyStorage;
 import com.thatguydavid.superauctionhouse.storage.Storage;
 import com.thatguydavid.superauctionhouse.util.AuctionItem;
-import com.thatguydavid.superauctionhouse.util.AuctionType;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
@@ -14,9 +12,9 @@ public class AuctionManager {
     private ArrayList<AuctionItem> currentAuctions;
     private Storage store;
     private long maxId;
-    public AuctionManager() {
+    public AuctionManager(Storage store) {
         currentAuctions = new ArrayList<>();
-        store = new DummyStorage();
+        this.store = store;
         maxId = store.getMaxId();
     }
 
@@ -56,5 +54,9 @@ public class AuctionManager {
 
     public void refreshAvailableAuctions() {
         currentAuctions = (ArrayList<AuctionItem>) Arrays.asList(store.getCurrentAuctions());
+    }
+
+    public AuctionItem[] getAllAuctions() {
+        return currentAuctions.toArray(new AuctionItem[0]);
     }
 }

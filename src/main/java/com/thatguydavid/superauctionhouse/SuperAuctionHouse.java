@@ -3,10 +3,15 @@ package com.thatguydavid.superauctionhouse;
 import com.thatguydavid.superauctionhouse.commands.AHCommand;
 import com.thatguydavid.superauctionhouse.listeners.AuctionListListener;
 import com.thatguydavid.superauctionhouse.managers.AuctionManager;
+import com.thatguydavid.superauctionhouse.storage.DummyStorage;
+import com.thatguydavid.superauctionhouse.storage.Storage;
 import com.thatguydavid.superauctionhouse.util.MessageLoader;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -17,14 +22,23 @@ public final class SuperAuctionHouse extends JavaPlugin {
     public final static String prefixNoColor = ChatColor.stripColor(prefix);
     private static MessageLoader messages;
 
-    private static JavaPlugin instance;
+    private static SuperAuctionHouse instance;
     private static AuctionManager auctionManager;
+    private Economy econ;
+    private Storage store;
 
 
     @Override
     public void onEnable() {
         instance = this;
         loadConfigs();
+
+        if (!setupEconomy()) {
+            this.getLogger().severe("Disabled due to no Vault dependency found!");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
         registerCommands();
         registerEventListeners();
         createAuctionManager();
@@ -35,11 +49,25 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     private void createAuctionManager() {
-        auctionManager = new AuctionManager();
+        store = new DummyStorage();
+        auctionManager = new AuctionManager(store);
     }
 
     private void registerCommands() {
         this.getCommand("ah").setExecutor(new AHCommand());
+    }
+
+    private boolean setupEconomy() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
     }
 
     private void loadConfigs() {
@@ -61,7 +89,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
 //        getLogger().info("onDisable called!");
     }
 
-    public static JavaPlugin getInstance() {
+    public static SuperAuctionHouse getInstance() {
         return instance;
     }
 
@@ -70,4 +98,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     public static AuctionManager getAuctionManager() { return auctionManager; }
+
+    public Economy getEconomy() { return econ; }
 }

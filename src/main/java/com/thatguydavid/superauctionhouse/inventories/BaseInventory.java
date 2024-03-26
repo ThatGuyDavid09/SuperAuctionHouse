@@ -34,7 +34,7 @@ public class BaseInventory {
 
     protected void createGuiBase() {
         gui = new InventoryGui(SuperAuctionHouse.getInstance(), holder, SuperAuctionHouse.getMessages().getMessage(titlePath), guiLayout);
-        gui.setFiller(new ItemStack(Material.GRAY_STAINED_GLASS));
+        gui.setFiller(new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
     }
 
     protected void populateGui() { }

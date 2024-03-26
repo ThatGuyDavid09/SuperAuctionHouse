@@ -31,7 +31,7 @@ public class DummyStorage implements Storage {
     @Override
     public AuctionItem[] getCurrentAuctions() {
         return items.stream()
-                .filter(i -> i.getCreateTime().plusSeconds(i.getDuration().getSeconds()).isAfter(Instant.ofEpochMilli(System.currentTimeMillis())))
+                .filter(i -> Instant.ofEpochMilli(System.currentTimeMillis()).isAfter(i.getEndTime()))
                 .toArray(AuctionItem[]::new);
     }
 
