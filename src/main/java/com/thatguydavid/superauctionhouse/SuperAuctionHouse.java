@@ -1,6 +1,8 @@
 package com.thatguydavid.superauctionhouse;
 
 import com.thatguydavid.superauctionhouse.commands.AHCommand;
+import com.thatguydavid.superauctionhouse.listeners.AuctionListListener;
+import com.thatguydavid.superauctionhouse.managers.AuctionManager;
 import com.thatguydavid.superauctionhouse.util.MessageLoader;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -12,9 +14,11 @@ import java.io.IOException;
 
 public final class SuperAuctionHouse extends JavaPlugin {
     public final static String prefix = ChatColor.RESET + "[" + ChatColor.AQUA + "SuperAuctionHouse" + ChatColor.RESET + "] ";
+    public final static String prefixNoColor = ChatColor.stripColor(prefix);
     private static MessageLoader messages;
 
     private static JavaPlugin instance;
+    private static AuctionManager auctionManager;
 
 
     @Override
@@ -22,18 +26,20 @@ public final class SuperAuctionHouse extends JavaPlugin {
         instance = this;
         loadConfigs();
         registerCommands();
+        registerEventListeners();
+        createAuctionManager();
+    }
+
+    private void registerEventListeners() {
+        getServer().getPluginManager().registerEvents(new AuctionListListener(), this);
+    }
+
+    private void createAuctionManager() {
+        auctionManager = new AuctionManager();
     }
 
     private void registerCommands() {
         this.getCommand("ah").setExecutor(new AHCommand());
-    }
-
-    public static JavaPlugin getInstance() {
-        return instance;
-    }
-
-    public static MessageLoader getMessages() {
-        return messages;
     }
 
     private void loadConfigs() {
@@ -52,6 +58,16 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getLogger().info("onDisable called!");
+//        getLogger().info("onDisable called!");
     }
+
+    public static JavaPlugin getInstance() {
+        return instance;
+    }
+
+    public static MessageLoader getMessages() {
+        return messages;
+    }
+
+    public static AuctionManager getAuctionManager() { return auctionManager; }
 }

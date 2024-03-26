@@ -1,5 +1,6 @@
 package com.thatguydavid.superauctionhouse.util;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -70,5 +71,16 @@ public class AuctionItem {
 
     public Player getHighestBidder() {
         return highestBidder;
+    }
+
+    public String toString() {
+        String itemName = "";
+
+        if (item.getItemMeta() == null || !item.getItemMeta().hasDisplayName()) {
+            itemName = item.getItemMeta().getDisplayName();
+        } else {
+            itemName = item.getType().name();
+        }
+        return itemName + ChatColor.RESET;
     }
 }
