@@ -16,9 +16,13 @@ public class BaseInventory {
     public BaseInventory(Player holder, String titlePath) {
         this.holder = holder;
         this.titlePath = titlePath;
+        initializeOtherVariables();
         createGuiLayout();
         createGuiBase();
         populateGui();
+    }
+
+    protected void initializeOtherVariables() {
     }
 
     protected void createGuiLayout() {

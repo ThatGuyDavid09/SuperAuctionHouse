@@ -1,13 +1,10 @@
 package com.thatguydavid.superauctionhouse.inventories;
 
 import com.thatguydavid.superauctionhouse.SuperAuctionHouse;
+import com.thatguydavid.superauctionhouse.elements.AuctionSortElement;
 import com.thatguydavid.superauctionhouse.elements.AuctionsGuiElement;
-import com.thatguydavid.superauctionhouse.managers.AuctionManager;
-import com.thatguydavid.superauctionhouse.util.AuctionItem;
-import com.thatguydavid.superauctionhouse.util.MessageLoader;
-import de.themoep.inventorygui.GuiElementGroup;
+import com.thatguydavid.superauctionhouse.util.AuctionSortState;
 import de.themoep.inventorygui.GuiPageElement;
-import de.themoep.inventorygui.InventoryGui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,7 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 public class AuctionHouse extends BaseInventory {
-    BukkitTask refreshTask;
+    private BukkitTask refreshTask;
+    public AuctionSortState sortState;
 
     public AuctionHouse(Player holder, String pathTitle) {
         super(holder, pathTitle);
@@ -25,12 +23,21 @@ public class AuctionHouse extends BaseInventory {
         registerCloseAction();
     }
 
+    @Override
+    protected void initializeOtherVariables() {
+        sortState = new AuctionSortState();
+    }
+
     private void registerRefreshEvent() {
         refreshTask = Bukkit.getScheduler().runTaskTimer(SuperAuctionHouse.getInstance(), () -> {
-                    gui.draw();
+                    drawInventory();
                 },
                 0L,
                 20L);
+    }
+
+    public void drawInventory() {
+        gui.draw();
     }
 
     private void registerCloseAction() {
@@ -44,6 +51,7 @@ public class AuctionHouse extends BaseInventory {
     protected void createGuiLayout() {
         /*
         i - General auction items
+        z - First page (crossbow)
         b - Page back (arrow)
         r - Reset settings (only visible when different from default, barrier)
         l - Opens menu to filter by name (sign)
@@ -51,6 +59,7 @@ public class AuctionHouse extends BaseInventory {
         s - Sort by price, time, etc (hopper)
         a - Filter by auction type (auction, BIN, etc, diamond (all), clock (auction), gold ingot (BIN))
         f - Page forward (arrow)
+        z - Last page (crossbow)
          */
         this.guiLayout = new String[]{
                 " iiiiiii ",
@@ -62,9 +71,19 @@ public class AuctionHouse extends BaseInventory {
         };
     }
 
+    public void recreateAuctionGroupElement() {
+        createAuctionGroupElement();
+        drawInventory();
+    }
+
+    private void createAuctionGroupElement() {
+        gui.addElement(new AuctionsGuiElement('i', SuperAuctionHouse.getAuctionManager().getAllAuctions(), gui, sortState).getElement());
+    }
+
     @Override
     protected void populateGui() {
-        gui.addElement(new AuctionsGuiElement('i', SuperAuctionHouse.getAuctionManager().getAllAuctions(), gui).getElement());
+        createAuctionGroupElement();
+        gui.addElement(new AuctionSortElement('s', gui, this).getElement());
         gui.addElement(new GuiPageElement('f', new ItemStack(Material.ARROW),
                 GuiPageElement.PageAction.NEXT,
                 ChatColor.RESET + "" + ChatColor.GREEN + "Next page",
