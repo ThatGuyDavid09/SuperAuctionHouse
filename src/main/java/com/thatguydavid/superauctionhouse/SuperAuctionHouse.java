@@ -42,6 +42,13 @@ public final class SuperAuctionHouse extends JavaPlugin {
         registerCommands();
         registerEventListeners();
         createAuctionManager();
+        registerScheduledTasks();
+    }
+
+    private void registerScheduledTasks() {
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            auctionManager.refreshAvailableAuctions();
+        }, 0L, 20L*60L); // Refresh available auctions every minute
     }
 
     private void registerEventListeners() {

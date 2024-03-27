@@ -6,6 +6,7 @@ import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -104,9 +105,17 @@ public class AuctionItem {
 
     public GuiElement getGuiElement(char character, InventoryGui gui) {
         String[] name = {ItemUtils.getItemName(item)};
-        String[] existingLore = (String[]) ArrayUtils.addAll(name, ItemUtils.getItemLoreArray(item));
+        String[] existingLore = ItemUtils.getItemLoreArray(item);
 
         String[] separatorLore = ItemUtils.getSeparatorLoreArray();
+
+        String[] allExist;
+
+        if (existingLore.length == 0) {
+            allExist = name;
+        } else {
+            allExist = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(name, existingLore), separatorLore);
+        }
 
         return new DynamicGuiElement(character, (viewer) -> {
             String[] extraLore;
@@ -116,12 +125,14 @@ public class AuctionItem {
                         ChatColor.RED + "This auction is expired!"
                 };
             } else {
+                String costWord = auctionType == AuctionType.AUCTION ? "Bid" : "Price";
+                String purchaseWord = auctionType == AuctionType.AUCTION ? "bid" : "buy";
                 extraLore = new String[]{
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Price: " + ChatColor.GOLD + SuperAuctionHouse.getInstance().getEconomy().format(price),
+                        ChatColor.RESET + "" + ChatColor.GRAY + costWord + ": " + ChatColor.GOLD + SuperAuctionHouse.getInstance().getEconomy().format(price),
                         ChatColor.RESET + "" + ChatColor.GRAY + "Seller: " + sellerName,
                         ChatColor.RESET + "" + ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + DurationUtils.formatDuration(getDurationRemaining()),
                         " ",
-                        ChatColor.RESET + "" + ChatColor.YELLOW + String.format("Click to %s!", auctionType == AuctionType.AUCTION ? "bid" : "buy")
+                        ChatColor.RESET + "" + ChatColor.YELLOW + String.format("Click to %s!", purchaseWord)
                 };
             }
 
@@ -131,7 +142,7 @@ public class AuctionItem {
                         // TODO implement buy menu here
                         return true;
                     },
-                    (String[]) ArrayUtils.addAll(ArrayUtils.addAll(existingLore, separatorLore), extraLore));
+                    (String[]) ArrayUtils.addAll(allExist, extraLore));
         });
     }
 }

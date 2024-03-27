@@ -16,8 +16,12 @@ public class AuctionListListener implements Listener {
         AuctionItem auction = event.getAuction();
         String message = String.format(
                 "Player %s "
-                        + ChatColor.RESET + "auctioned item %s" +
-                        " for %.2f", event.getSeller().getDisplayName(), ItemUtils.getItemName(auction.getItem()), event.getAuction().getPrice());
+                        + ChatColor.RESET + "auctioned %d %s" +
+                        " for %.2f",
+                event.getSeller().getName(),
+                event.getAuction().getItem().getAmount(),
+                ItemUtils.getItemName(auction.getItem()),
+                event.getAuction().getPrice());
         // FIXME sort out this nonsense with the fine logs not showing up
         Bukkit.getLogger().info(SuperAuctionHouse.prefixNoColor + message);
         auction.getSeller().sendMessage(SuperAuctionHouse.prefix + message);

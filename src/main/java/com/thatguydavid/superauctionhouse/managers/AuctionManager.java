@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class AuctionManager {
     private ArrayList<AuctionItem> currentAuctions;
     private Storage store;
-    private long maxId;
+    private int maxId;
     public AuctionManager(Storage store) {
         currentAuctions = new ArrayList<>();
         this.store = store;
@@ -30,7 +30,7 @@ public class AuctionManager {
      * Returns the largest auction ID in use, plus one, rendering it safe to assign to new autions.
      * @return The next usable auction ID
      */
-    public long getNextUsableId() {
+    public int getNextUsableId() {
         maxId += 1;
         return maxId;
     }
@@ -53,7 +53,7 @@ public class AuctionManager {
     }
 
     public void refreshAvailableAuctions() {
-        currentAuctions = (ArrayList<AuctionItem>) Arrays.asList(store.getCurrentAuctions());
+        currentAuctions = new ArrayList<>(Arrays.asList(store.getCurrentAuctions()));
     }
 
     public AuctionItem[] getAllAuctions() {

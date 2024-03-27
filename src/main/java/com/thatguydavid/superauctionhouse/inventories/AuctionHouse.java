@@ -6,8 +6,10 @@ import com.thatguydavid.superauctionhouse.managers.AuctionManager;
 import com.thatguydavid.superauctionhouse.util.AuctionItem;
 import com.thatguydavid.superauctionhouse.util.MessageLoader;
 import de.themoep.inventorygui.GuiElementGroup;
+import de.themoep.inventorygui.GuiPageElement;
 import de.themoep.inventorygui.InventoryGui;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -56,12 +58,36 @@ public class AuctionHouse extends BaseInventory {
                 " iiiiiii ",
                 " iiiiiii ",
                 " iiiiiii ",
-                " brlosaf "
+                "zbrlosafm"
         };
     }
 
     @Override
     protected void populateGui() {
         gui.addElement(new AuctionsGuiElement('i', SuperAuctionHouse.getAuctionManager().getAllAuctions(), gui).getElement());
+        gui.addElement(new GuiPageElement('f', new ItemStack(Material.ARROW),
+                GuiPageElement.PageAction.NEXT,
+                ChatColor.RESET + "" + ChatColor.GREEN + "Next page",
+                ChatColor.RESET + "" + ChatColor.GRAY + "(%nextpage%/%pages%)",
+                " ",
+                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to turn page!"));
+        gui.addElement(new GuiPageElement('b', new ItemStack(Material.ARROW),
+                GuiPageElement.PageAction.PREVIOUS,
+                ChatColor.RESET + "" + ChatColor.GREEN + "Previous page",
+                ChatColor.RESET + "" + ChatColor.GRAY + "(%prevpage%/%pages%)",
+                " ",
+                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to turn page!"));
+
+        gui.addElement(new GuiPageElement('m', new ItemStack(Material.CROSSBOW),
+                GuiPageElement.PageAction.LAST,
+                ChatColor.RESET + "" + ChatColor.GREEN + "Last page",
+                ChatColor.RESET + "" + ChatColor.GRAY + "(%pages%)",
+                " ",
+                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to go to last!"));
+        gui.addElement(new GuiPageElement('z', new ItemStack(Material.CROSSBOW),
+                GuiPageElement.PageAction.FIRST,
+                ChatColor.RESET + "" + ChatColor.GREEN + "First page",
+                " ",
+                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to go to first!"));
     }
 }

@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Random;
 
 public class AHCommand implements CommandExecutor {
     @Override
@@ -30,15 +31,27 @@ public class AHCommand implements CommandExecutor {
 //                player.sendMessage(SuperAuctionHouse.prefix + "Pretend the auction house opened.");
                 break;
             case 1:
-                if (Objects.equals(args[0], "sell")) {
-                    SuperAuctionHouse.getAuctionManager().listAuction(new AuctionItem(
-                            1,
-                            new ItemStack(Material.ACACIA_BOAT),
-                            player,
-                            100,
-                            Duration.ofHours(20),
-                            AuctionType.AUCTION)
-                    );
+                if (args[0].equals("sell")) {
+                    for (int i = 0; i < 100; i++) {
+                        Random random = new Random();
+                        int material = random.nextInt(Material.values().length);
+                        int amount = random.nextInt(64);
+                        int auctionType = random.nextInt(2);
+                        double price = random.nextDouble() * 30000 + 1;
+                        int durationMins = random.nextInt(30);
+                        ItemStack item = new ItemStack(Material.values()[material], Math.min(Material.values()[material].getMaxStackSize(), amount));
+//                        if (item)
+                        SuperAuctionHouse.getAuctionManager().listAuction(new AuctionItem(
+                                SuperAuctionHouse.getAuctionManager().getNextUsableId(),
+                                item,
+                                player,
+                                price,
+                                Duration.ofMinutes(durationMins),
+                                auctionType == 0 ? AuctionType.AUCTION : AuctionType.BUY_IT_NOW)
+                        );
+                    }
+                } else if (args[0].equals("refresh")) {
+                    SuperAuctionHouse.getAuctionManager().refreshAvailableAuctions();
                 }
         }
         return true;

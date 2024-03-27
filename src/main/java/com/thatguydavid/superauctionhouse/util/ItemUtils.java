@@ -21,7 +21,7 @@ public class ItemUtils {
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             return item.getItemMeta().getDisplayName();
         }
-        return WordUtils.capitalizeFully(item.getType().name().replace("_", " "));
+        return ChatColor.RESET + WordUtils.capitalizeFully(item.getType().name().replace("_", " "));
     }
 
     public static String[] getSeparatorLoreArray() {
