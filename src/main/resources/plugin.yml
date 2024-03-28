@@ -1,11 +1,10 @@
 name: SuperAuctionHouse
 version: '1-0-SNAPSHOT'
-main: com.thatguydavid.superauctionhouse.SuperAuctionHouse
+main: com.highmarsorbit.superauctionhouse.SuperAuctionHouse
 api-version: 1.16
 prefix: SuperAuctionHouse
-authors: [ ThatGuyDavid ]
-dependencies:
-  - Vault
+authors: [ HighMarsOrbit ]
+depend: [ Vault ]
 description: A fully-featured auction house plugin for minecraft servers.
 
 commands:

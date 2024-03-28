@@ -1,11 +1,9 @@
-package com.thatguydavid.superauctionhouse.elements;
+package com.highmarsorbit.superauctionhouse.elements;
 
-import com.thatguydavid.superauctionhouse.inventories.AuctionHouse;
-import com.thatguydavid.superauctionhouse.util.AuctionOrderSort;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionHouse;
+import com.highmarsorbit.superauctionhouse.util.AuctionOrderSort;
 import de.themoep.inventorygui.GuiStateElement;
 import de.themoep.inventorygui.InventoryGui;
-import net.milkbowl.vault.chat.Chat;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

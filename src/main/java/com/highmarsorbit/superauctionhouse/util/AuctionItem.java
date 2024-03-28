@@ -1,12 +1,11 @@
-package com.thatguydavid.superauctionhouse.util;
+package com.highmarsorbit.superauctionhouse.util;
 
-import com.thatguydavid.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -113,11 +112,11 @@ public class AuctionItem {
 
         String[] allExist;
 
-        if (existingLore.length == 0) {
-            allExist = name;
-        } else {
-            allExist = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(name, existingLore), separatorLore);
-        }
+//        if (existingLore.length == 0) {
+//            allExist = name;
+//        } else {
+        allExist = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(name, existingLore), separatorLore);
+//        }
 
         return new DynamicGuiElement(character, (viewer) -> {
             String[] extraLore;

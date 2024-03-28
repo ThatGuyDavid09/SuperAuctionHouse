@@ -1,8 +1,8 @@
-package com.thatguydavid.superauctionhouse.inventories;
+package com.highmarsorbit.superauctionhouse.inventories;
 
-import com.thatguydavid.superauctionhouse.SuperAuctionHouse;
-import com.thatguydavid.superauctionhouse.util.MessageLoader;
+import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import de.themoep.inventorygui.InventoryGui;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -43,11 +43,23 @@ public class BaseInventory {
 
     protected void populateGui() { }
 
+    public InventoryGui getGui() {
+        return gui;
+    }
+
     public void open() {
         open(holder);
     }
 
     public void open(Player player) {
-        gui.show(player, true);
+        open(player, true);
+    }
+
+    public void open(boolean checkOpen) {
+        open(holder, checkOpen);
+    }
+
+    public void open(Player player, boolean checkOpen) {
+        gui.show(player, checkOpen);
     }
 }

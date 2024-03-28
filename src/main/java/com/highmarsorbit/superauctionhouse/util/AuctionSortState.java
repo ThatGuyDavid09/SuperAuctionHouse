@@ -1,4 +1,4 @@
-package com.thatguydavid.superauctionhouse.util;
+package com.highmarsorbit.superauctionhouse.util;
 
 public class AuctionSortState {
     public String textFilter;

@@ -1,6 +1,6 @@
-package com.thatguydavid.superauctionhouse.storage;
+package com.highmarsorbit.superauctionhouse.storage;
 
-import com.thatguydavid.superauctionhouse.util.AuctionItem;
+import com.highmarsorbit.superauctionhouse.util.AuctionItem;
 
 public interface Storage {
     boolean storeAuction(AuctionItem item);

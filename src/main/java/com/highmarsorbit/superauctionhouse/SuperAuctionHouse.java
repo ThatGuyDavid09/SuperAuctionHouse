@@ -1,21 +1,26 @@
-package com.thatguydavid.superauctionhouse;
+package com.highmarsorbit.superauctionhouse;
 
-import com.thatguydavid.superauctionhouse.commands.AHCommand;
-import com.thatguydavid.superauctionhouse.listeners.AuctionListListener;
-import com.thatguydavid.superauctionhouse.managers.AuctionManager;
-import com.thatguydavid.superauctionhouse.storage.DummyStorage;
-import com.thatguydavid.superauctionhouse.storage.Storage;
-import com.thatguydavid.superauctionhouse.util.MessageLoader;
+import com.highmarsorbit.superauctionhouse.commands.AHCommand;
+import com.highmarsorbit.superauctionhouse.listeners.AuctionListListener;
+import com.highmarsorbit.superauctionhouse.managers.AuctionManager;
+import com.highmarsorbit.superauctionhouse.storage.DummyStorage;
+import com.highmarsorbit.superauctionhouse.storage.Storage;
+import com.highmarsorbit.superauctionhouse.util.MessageLoader;
+import fr.cleymax.signgui.SignManager;
 import net.milkbowl.vault.economy.Economy;
+import net.minecraft.server.v1_16_R3.BlockPosition;
+import net.minecraft.server.v1_16_R3.PacketPlayOutBlockChange;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 
 public final class SuperAuctionHouse extends JavaPlugin {
     public final static String prefix = ChatColor.RESET + "[" + ChatColor.AQUA + "SuperAuctionHouse" + ChatColor.RESET + "] ";
@@ -26,6 +31,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
     private static AuctionManager auctionManager;
     private Economy econ;
     private Storage store;
+    private SignManager signGuiManager;
 
 
     @Override
@@ -43,6 +49,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
         registerEventListeners();
         createAuctionManager();
         registerScheduledTasks();
+
+        this.getLogger().info("Enabled SuperAuctionHouse");
     }
 
     private void registerScheduledTasks() {
@@ -53,6 +61,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     private void registerEventListeners() {
         getServer().getPluginManager().registerEvents(new AuctionListListener(), this);
+        signGuiManager = new SignManager(this);
+        signGuiManager.init();
     }
 
     private void createAuctionManager() {
@@ -107,4 +117,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
     public static AuctionManager getAuctionManager() { return auctionManager; }
 
     public Economy getEconomy() { return econ; }
+
+    public SignManager getSignGuiManager() {
+        return signGuiManager;
+    }
 }

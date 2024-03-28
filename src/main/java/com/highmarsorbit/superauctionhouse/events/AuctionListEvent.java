@@ -1,6 +1,6 @@
-package com.thatguydavid.superauctionhouse.events;
+package com.highmarsorbit.superauctionhouse.events;
 
-import com.thatguydavid.superauctionhouse.util.AuctionItem;
+import com.highmarsorbit.superauctionhouse.util.AuctionItem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

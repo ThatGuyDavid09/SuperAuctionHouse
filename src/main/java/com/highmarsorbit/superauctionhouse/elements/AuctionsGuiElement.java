@@ -1,9 +1,11 @@
-package com.thatguydavid.superauctionhouse.elements;
+package com.highmarsorbit.superauctionhouse.elements;
 
-import com.thatguydavid.superauctionhouse.util.AuctionItem;
-import com.thatguydavid.superauctionhouse.util.AuctionSortState;
+import com.highmarsorbit.superauctionhouse.util.AuctionItem;
+import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
+import com.highmarsorbit.superauctionhouse.util.ItemUtils;
 import de.themoep.inventorygui.GuiElementGroup;
 import de.themoep.inventorygui.InventoryGui;
+import org.bukkit.ChatColor;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -27,20 +29,24 @@ public class AuctionsGuiElement extends ElementBase {
 
     private List<AuctionItem> filterItems(AuctionItem[] items) {
         Instant now = Instant.ofEpochMilli(System.currentTimeMillis());
+        List<AuctionItem> nameFilteredItems = Arrays.stream(items)
+                .filter(item -> ChatColor.stripColor(ItemUtils.getItemName(item.getItem())).toLowerCase().contains(sortState.textFilter.toLowerCase()))
+                .collect(Collectors.toList());
+
         return switch (sortState.orderSort) {
-            case LOWEST_PRICE -> Arrays.stream(items)
+            case LOWEST_PRICE -> nameFilteredItems.stream()
                     .filter(item -> item.getEndTime().isAfter(now))
                     .sorted(Comparator.comparingDouble(AuctionItem::getPrice))
                     .collect(Collectors.toList());
-            case HIGHEST_PRICE -> Arrays.stream(items)
+            case HIGHEST_PRICE -> nameFilteredItems.stream()
                     .filter(item -> item.getEndTime().isAfter(now))
                     .sorted(Comparator.comparingDouble(AuctionItem::getPrice).reversed())
                     .collect(Collectors.toList());
-            case NEWEST_FIRST -> Arrays.stream(items)
+            case NEWEST_FIRST -> nameFilteredItems.stream()
                     .filter(item -> item.getEndTime().isAfter(now))
                     .sorted(Comparator.comparingLong(item -> ((AuctionItem) item).getCreateTime().getEpochSecond()).reversed())
                     .collect(Collectors.toList());
-            case ENDING_SOON -> Arrays.stream(items)
+            case ENDING_SOON -> nameFilteredItems.stream()
                     .filter(item -> item.getEndTime().isAfter(now))
                     .sorted(Comparator.comparingLong(item -> item.getEndTime().getEpochSecond()))
                     .collect(Collectors.toList());

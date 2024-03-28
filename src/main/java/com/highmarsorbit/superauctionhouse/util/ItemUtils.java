@@ -1,4 +1,4 @@
-package com.thatguydavid.superauctionhouse.util;
+package com.highmarsorbit.superauctionhouse.util;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;

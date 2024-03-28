@@ -1,9 +1,10 @@
-package com.thatguydavid.superauctionhouse.inventories;
+package com.highmarsorbit.superauctionhouse.inventories;
 
-import com.thatguydavid.superauctionhouse.SuperAuctionHouse;
-import com.thatguydavid.superauctionhouse.elements.AuctionSortElement;
-import com.thatguydavid.superauctionhouse.elements.AuctionsGuiElement;
-import com.thatguydavid.superauctionhouse.util.AuctionSortState;
+import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.elements.AuctionSortElement;
+import com.highmarsorbit.superauctionhouse.elements.AuctionsGuiElement;
+import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
+import com.highmarsorbit.superauctionhouse.elements.AuctionTextSortElement;
 import de.themoep.inventorygui.GuiPageElement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -71,6 +72,20 @@ public class AuctionHouse extends BaseInventory {
         };
     }
 
+    public void recreateElements() {
+        populateGui();
+        drawInventory();
+    }
+
+    public void recreateTextSortElement() {
+        createTextSortElement();
+        drawInventory();
+    }
+
+    private void createTextSortElement() {
+        gui.addElement(new AuctionTextSortElement('l', gui, this).getElement());
+    }
+
     public void recreateAuctionGroupElement() {
         createAuctionGroupElement();
         drawInventory();
@@ -82,8 +97,9 @@ public class AuctionHouse extends BaseInventory {
 
     @Override
     protected void populateGui() {
-        createAuctionGroupElement();
+        createTextSortElement();
         gui.addElement(new AuctionSortElement('s', gui, this).getElement());
+
         gui.addElement(new GuiPageElement('f', new ItemStack(Material.ARROW),
                 GuiPageElement.PageAction.NEXT,
                 ChatColor.RESET + "" + ChatColor.GREEN + "Next page",
@@ -108,5 +124,12 @@ public class AuctionHouse extends BaseInventory {
                 ChatColor.RESET + "" + ChatColor.GREEN + "First page",
                 " ",
                 ChatColor.RESET + "" + ChatColor.YELLOW + "Click to go to first!"));
+    }
+
+    @Override
+    public void open(Player player, boolean checkOpen) {
+        Bukkit.getLogger().info("Opened!");
+        createAuctionGroupElement();
+        super.open(player, checkOpen);
     }
 }

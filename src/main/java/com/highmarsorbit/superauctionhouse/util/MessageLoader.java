@@ -1,11 +1,8 @@
-package com.thatguydavid.superauctionhouse.util;
+package com.highmarsorbit.superauctionhouse.util;
 
-import com.google.gson.JsonParser;
-import com.thatguydavid.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
-
-import java.io.File;
 
 public class MessageLoader {
     private YamlConfiguration config;

@@ -1,4 +1,4 @@
-package com.thatguydavid.superauctionhouse.elements;
+package com.highmarsorbit.superauctionhouse.elements;
 
 import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.InventoryGui;

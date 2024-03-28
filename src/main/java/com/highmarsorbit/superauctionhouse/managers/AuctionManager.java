@@ -1,8 +1,8 @@
-package com.thatguydavid.superauctionhouse.managers;
+package com.highmarsorbit.superauctionhouse.managers;
 
-import com.thatguydavid.superauctionhouse.events.AuctionListEvent;
-import com.thatguydavid.superauctionhouse.storage.Storage;
-import com.thatguydavid.superauctionhouse.util.AuctionItem;
+import com.highmarsorbit.superauctionhouse.events.AuctionListEvent;
+import com.highmarsorbit.superauctionhouse.storage.Storage;
+import com.highmarsorbit.superauctionhouse.util.AuctionItem;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;

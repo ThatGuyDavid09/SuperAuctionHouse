@@ -1,9 +1,9 @@
-package com.thatguydavid.superauctionhouse.listeners;
+package com.highmarsorbit.superauctionhouse.listeners;
 
-import com.thatguydavid.superauctionhouse.SuperAuctionHouse;
-import com.thatguydavid.superauctionhouse.events.AuctionListEvent;
-import com.thatguydavid.superauctionhouse.util.AuctionItem;
-import com.thatguydavid.superauctionhouse.util.ItemUtils;
+import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.util.AuctionItem;
+import com.highmarsorbit.superauctionhouse.util.ItemUtils;
+import com.highmarsorbit.superauctionhouse.events.AuctionListEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;

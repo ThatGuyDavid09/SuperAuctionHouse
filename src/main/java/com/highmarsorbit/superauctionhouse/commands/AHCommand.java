@@ -1,20 +1,17 @@
-package com.thatguydavid.superauctionhouse.commands;
+package com.highmarsorbit.superauctionhouse.commands;
 
-import com.thatguydavid.superauctionhouse.SuperAuctionHouse;
-import com.thatguydavid.superauctionhouse.inventories.AuctionHouse;
-import com.thatguydavid.superauctionhouse.util.AuctionItem;
-import com.thatguydavid.superauctionhouse.util.AuctionType;
-import org.bukkit.ChatColor;
+import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.util.AuctionItem;
+import com.highmarsorbit.superauctionhouse.util.AuctionType;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionHouse;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.Duration;
-import java.util.Objects;
 import java.util.Random;
 
 public class AHCommand implements CommandExecutor {
