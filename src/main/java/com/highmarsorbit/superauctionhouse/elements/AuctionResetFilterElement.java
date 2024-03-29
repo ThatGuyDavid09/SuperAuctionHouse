@@ -1,19 +1,18 @@
 package com.highmarsorbit.superauctionhouse.elements;
 
-import com.highmarsorbit.superauctionhouse.inventories.AuctionHouse;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class AuctionResetFilterElement extends ElementBase {
-    private AuctionHouse ahRef;
+public class AuctionResetFilterElement extends BaseElement {
+    private AuctionBrowserMenu ahRef;
 
-    public AuctionResetFilterElement(char character, InventoryGui gui, AuctionHouse ahRef) {
+    public AuctionResetFilterElement(char character, InventoryGui gui, AuctionBrowserMenu ahRef) {
         super(character, gui);
 
         this.ahRef = ahRef;

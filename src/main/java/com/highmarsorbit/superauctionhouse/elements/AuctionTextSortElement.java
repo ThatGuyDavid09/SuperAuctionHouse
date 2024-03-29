@@ -1,23 +1,22 @@
 package com.highmarsorbit.superauctionhouse.elements;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
-import com.highmarsorbit.superauctionhouse.inventories.AuctionHouse;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
 import fr.cleymax.signgui.SignGUI;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class AuctionTextSortElement extends ElementBase {
+public class AuctionTextSortElement extends BaseElement {
 //    private AnvilGUI.Builder inputGui;
     private SignGUI signGui;
-    private AuctionHouse ahRef;
-    public AuctionTextSortElement(char character, InventoryGui gui, AuctionHouse ahRef) {
+    private AuctionBrowserMenu ahRef;
+    public AuctionTextSortElement(char character, InventoryGui gui, AuctionBrowserMenu ahRef) {
         super(character, gui);
         this.ahRef = ahRef;
 
@@ -44,7 +43,7 @@ public class AuctionTextSortElement extends ElementBase {
 //                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1F, 1F);
                     ahRef.sortState.textFilter = state.getLines()[0].strip();
                     AuctionSortState newState = ahRef.sortState;
-                    ahRef = new AuctionHouse(state.getPlayer(), SuperAuctionHouse.getMessages().getMessage("ah_title"));
+                    ahRef = new AuctionBrowserMenu(state.getPlayer(), SuperAuctionHouse.getMessages().getMessage("ah_title"));
                     ahRef.sortState = newState;
                     ahRef.recreateElements();
                     ahRef.recreateTextSortElement();

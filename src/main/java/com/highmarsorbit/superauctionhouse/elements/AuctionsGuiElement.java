@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AuctionsGuiElement extends ElementBase {
+public class AuctionsGuiElement extends BaseElement {
     private AuctionSortState sortState;
     public AuctionsGuiElement(char character, AuctionItem[] items, InventoryGui gui, AuctionSortState sortState) {
         super(character, gui);

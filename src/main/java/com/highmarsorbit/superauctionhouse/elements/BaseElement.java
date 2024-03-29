@@ -3,12 +3,12 @@ package com.highmarsorbit.superauctionhouse.elements;
 import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.InventoryGui;
 
-public class ElementBase {
+public class BaseElement {
     protected char character;
     protected GuiElement element;
     protected InventoryGui gui;
 
-    public ElementBase(char character, InventoryGui gui) {
+    public BaseElement(char character, InventoryGui gui) {
         this.gui = gui;
     }
 

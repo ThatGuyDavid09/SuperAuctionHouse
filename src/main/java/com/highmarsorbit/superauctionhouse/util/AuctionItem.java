@@ -105,7 +105,11 @@ public class AuctionItem {
     public GuiElement getGuiElement(char character, InventoryGui gui) {
         // FIXME this doesn't work properly with things like music discs and banners that have lore but technically don't.
         // more testing is required.
-        String[] name = {ItemUtils.getItemName(item)};
+//        String[] name = {ItemUtils.getItemName(item)};
+
+        // First item in array is null to prevent display name from being overwritten
+        // (this way maintains language settings)
+        String[] name = {null};
         String[] existingLore = ItemUtils.getItemLoreArray(item);
 
         String[] separatorLore = ItemUtils.getSeparatorLoreArray();

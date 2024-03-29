@@ -1,6 +1,6 @@
 package com.highmarsorbit.superauctionhouse.elements;
 
-import com.highmarsorbit.superauctionhouse.inventories.AuctionHouse;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionOrderSort;
 import de.themoep.inventorygui.GuiStateElement;
 import de.themoep.inventorygui.InventoryGui;
@@ -8,9 +8,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class AuctionOrderSortElement extends ElementBase {
-    private AuctionHouse ahRef;
-    public AuctionOrderSortElement(char character, InventoryGui gui, AuctionHouse ahRef) {
+public class AuctionOrderSortElement extends BaseElement {
+    private AuctionBrowserMenu ahRef;
+    public AuctionOrderSortElement(char character, InventoryGui gui, AuctionBrowserMenu ahRef) {
         super(character, gui);
 
         this.ahRef = ahRef;

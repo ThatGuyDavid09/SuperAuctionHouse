@@ -11,11 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-public class AuctionHouse extends BaseInventory {
+public class AuctionBrowserMenu extends BaseInventory {
     private BukkitTask refreshTask;
     public AuctionSortState sortState;
 
-    public AuctionHouse(Player holder, String pathTitle) {
+    public AuctionBrowserMenu(Player holder, String pathTitle) {
         super(holder, pathTitle);
 
         registerRefreshEvent();
