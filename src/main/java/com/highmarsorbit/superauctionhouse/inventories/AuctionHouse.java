@@ -1,11 +1,8 @@
 package com.highmarsorbit.superauctionhouse.inventories;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
-import com.highmarsorbit.superauctionhouse.elements.AuctionResetFilterElement;
-import com.highmarsorbit.superauctionhouse.elements.AuctionSortElement;
-import com.highmarsorbit.superauctionhouse.elements.AuctionsGuiElement;
+import com.highmarsorbit.superauctionhouse.elements.*;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
-import com.highmarsorbit.superauctionhouse.elements.AuctionTextSortElement;
 import de.themoep.inventorygui.GuiPageElement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -100,8 +97,9 @@ public class AuctionHouse extends BaseInventory {
     protected void populateGui() {
         createTextSortElement();
         gui.addElement(new AuctionResetFilterElement('r', gui, this).getElement());
+        gui.addElement(new AuctionTypeSortElement('a', gui, this).getElement());
 
-        gui.addElement(new AuctionSortElement('s', gui, this).getElement());
+        gui.addElement(new AuctionOrderSortElement('s', gui, this).getElement());
 
         gui.addElement(new GuiPageElement('f', new ItemStack(Material.ARROW),
                 GuiPageElement.PageAction.NEXT,
@@ -131,7 +129,6 @@ public class AuctionHouse extends BaseInventory {
 
     @Override
     public void open(Player player, boolean checkOpen) {
-        Bukkit.getLogger().info("Opened!");
         createAuctionGroupElement();
         super.open(player, checkOpen);
     }

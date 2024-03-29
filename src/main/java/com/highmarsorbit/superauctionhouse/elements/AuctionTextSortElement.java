@@ -46,6 +46,7 @@ public class AuctionTextSortElement extends ElementBase {
                     AuctionSortState newState = ahRef.sortState;
                     ahRef = new AuctionHouse(state.getPlayer(), SuperAuctionHouse.getMessages().getMessage("ah_title"));
                     ahRef.sortState = newState;
+                    ahRef.recreateElements();
                     ahRef.recreateTextSortElement();
                     ahRef.open(false);
 //                    ahRef.recreateElements();

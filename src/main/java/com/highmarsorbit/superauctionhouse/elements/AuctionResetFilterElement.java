@@ -28,6 +28,7 @@ public class AuctionResetFilterElement extends ElementBase {
                     click -> {
                         gui.playClickSound();
                         ahRef.sortState = baseState;
+                        ahRef.recreateElements();
                         ahRef.recreateAuctionGroupElement();
                         return true;
                     },

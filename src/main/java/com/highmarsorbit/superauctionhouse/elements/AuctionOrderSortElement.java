@@ -8,9 +8,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class AuctionSortElement extends ElementBase {
+public class AuctionOrderSortElement extends ElementBase {
     private AuctionHouse ahRef;
-    public AuctionSortElement(char character, InventoryGui gui, AuctionHouse ahRef) {
+    public AuctionOrderSortElement(char character, InventoryGui gui, AuctionHouse ahRef) {
         super(character, gui);
 
         this.ahRef = ahRef;
@@ -77,5 +77,7 @@ public class AuctionSortElement extends ElementBase {
                         ChatColor.RESET + "" + ChatColor.YELLOW + "Click to change sort!"
                 )
         );
+
+        ((GuiStateElement) element).setState(ahRef.sortState.orderSort.toString());
     }
 }
