@@ -1,6 +1,7 @@
 package com.highmarsorbit.superauctionhouse.inventories;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.elements.AuctionResetFilterElement;
 import com.highmarsorbit.superauctionhouse.elements.AuctionSortElement;
 import com.highmarsorbit.superauctionhouse.elements.AuctionsGuiElement;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
@@ -98,6 +99,8 @@ public class AuctionHouse extends BaseInventory {
     @Override
     protected void populateGui() {
         createTextSortElement();
+        gui.addElement(new AuctionResetFilterElement('r', gui, this).getElement());
+
         gui.addElement(new AuctionSortElement('s', gui, this).getElement());
 
         gui.addElement(new GuiPageElement('f', new ItemStack(Material.ARROW),

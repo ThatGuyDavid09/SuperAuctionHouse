@@ -14,4 +14,14 @@ public class AuctionSortState {
         this.typeSort = typeSort;
         this.orderSort = orderSort;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof AuctionSortState)) {
+            return false;
+        }
+
+        AuctionSortState otherState = (AuctionSortState) obj;
+        return otherState.textFilter.equals(textFilter) && otherState.orderSort == orderSort && otherState.typeSort == typeSort;
+    }
 }

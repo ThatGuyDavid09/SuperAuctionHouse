@@ -3,6 +3,7 @@ package com.highmarsorbit.superauctionhouse.elements;
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.inventories.AuctionHouse;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
+import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
 import fr.cleymax.signgui.SignGUI;
@@ -21,8 +22,7 @@ public class AuctionTextSortElement extends ElementBase {
         this.ahRef = ahRef;
 
         createSignGui();
-
-        element = new StaticGuiElement(character, new ItemStack(Material.OAK_SIGN),
+        element = new DynamicGuiElement(character, () -> new StaticGuiElement(character, new ItemStack(Material.OAK_SIGN),
                 click -> {
                     gui.playClickSound();
 //                    inputGui.open((Player) click.getWhoClicked());
@@ -31,7 +31,7 @@ public class AuctionTextSortElement extends ElementBase {
                 },
                 ChatColor.RESET + "" + ChatColor.BLUE + "Search with text: " + ChatColor.AQUA + ahRef.sortState.textFilter,
                 " ",
-                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to search items by title!");
+                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to search items by title!"));
     }
 
     private void createSignGui() {
