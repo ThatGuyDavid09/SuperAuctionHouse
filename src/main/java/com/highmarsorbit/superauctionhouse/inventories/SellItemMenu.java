@@ -3,6 +3,7 @@ package com.highmarsorbit.superauctionhouse.inventories;
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.elements.SellMenuDurationElement;
 import com.highmarsorbit.superauctionhouse.elements.SellMenuPriceElement;
+import com.highmarsorbit.superauctionhouse.elements.SellMenuSellerNameElement;
 import com.highmarsorbit.superauctionhouse.util.*;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.GuiStateElement;
@@ -95,6 +96,8 @@ public class SellItemMenu extends BaseInventory {
 
         gui.addElement(new SellMenuPriceElement('p', gui, this).getElement());
         gui.addElement(new SellMenuDurationElement('d', gui, this).getElement());
+        // TODO check if player has permission to do this
+        gui.addElement(new SellMenuSellerNameElement('n', gui, this).getElement());
 
         // TODO have this check if player has permission to sell specific type
         // actually need a check in general for setting auctiontype in constructor
