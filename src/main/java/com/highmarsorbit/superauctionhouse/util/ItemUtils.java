@@ -27,7 +27,7 @@ public class ItemUtils {
     public static String[] getSeparatorLoreArray() {
         return new String[]{
 //                " ",
-                ChatColor.RESET + "" +  ChatColor.GRAY + ChatColor.BOLD + "________________",
+                ChatUtils.RESET +  ChatColor.GRAY + ChatColor.BOLD + "________________",
                 " ",
         };
     }

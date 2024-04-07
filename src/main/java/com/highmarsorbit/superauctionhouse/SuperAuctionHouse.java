@@ -88,7 +88,9 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     private void loadConfigs() {
-        File messagesConfigFile = new File(getDataFolder(), "messages.yml");
+        getLogger().info("Loading configs");
+        // For testing only.
+        // TODO: uncomment for release
         saveResource("messages.yml", true);
         // Commented out for testing reasons.
         // TODO: when ready for release, uncomment
@@ -97,8 +99,11 @@ public final class SuperAuctionHouse extends JavaPlugin {
 //            saveResource("messages.yml", false);
 //        }
 
+        File messagesConfigFile = new File(getDataFolder(), "messages.yml");
+
         YamlConfiguration messagesConfig = YamlConfiguration.loadConfiguration(messagesConfigFile);
         messages = new MessageLoader(messagesConfig);
+        getLogger().info("Loaded messages.yml");
     }
 
     @Override
@@ -116,9 +121,13 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     public static AuctionManager getAuctionManager() { return auctionManager; }
 
-    public Economy getEconomy() { return econ; }
+    public static Economy getEconomy() { return instance.econ; }
 
     public SignManager getSignGuiManager() {
         return signGuiManager;
+    }
+
+    public static void sendMessageByPath(Player player, String messagePath) {
+        player.sendMessage(prefix + messages.getMessage(messagePath));
     }
 }

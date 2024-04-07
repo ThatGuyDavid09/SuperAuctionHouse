@@ -3,6 +3,7 @@ package com.highmarsorbit.superauctionhouse.inventories;
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.elements.*;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
+import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.GuiPageElement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,11 +16,20 @@ public class AuctionBrowserMenu extends BaseInventory {
     private BukkitTask refreshTask;
     public AuctionSortState sortState;
 
-    public AuctionBrowserMenu(Player holder, String pathTitle) {
-        super(holder, pathTitle);
+    public AuctionBrowserMenu(Player holder) {
+        super(holder, "ah_title");
 
         registerRefreshEvent();
         registerCloseAction();
+    }
+
+    public AuctionBrowserMenu(AuctionBrowserMenu copy) {
+        super(copy.holder, "ah_title");
+
+        registerRefreshEvent();
+        registerCloseAction();
+
+        sortState = copy.sortState;
     }
 
     @Override
@@ -33,10 +43,6 @@ public class AuctionBrowserMenu extends BaseInventory {
                 },
                 0L,
                 20L);
-    }
-
-    public void drawInventory() {
-        gui.draw();
     }
 
     private void registerCloseAction() {
@@ -54,6 +60,7 @@ public class AuctionBrowserMenu extends BaseInventory {
         b - Page back (arrow)
         r - Reset settings (only visible when different from default, barrier)
         l - Opens menu to filter by name (sign)
+        // TODO implement own auctions menu
         o - Own auctions (book)
         s - Sort by price, time, etc (hopper)
         a - Filter by auction type (auction, BIN, etc, diamond (all), clock (auction), gold ingot (BIN))
@@ -71,7 +78,7 @@ public class AuctionBrowserMenu extends BaseInventory {
     }
 
     public void recreateElements() {
-        populateGui();
+        populateBaseGuiElements();
         drawInventory();
     }
 
@@ -94,37 +101,73 @@ public class AuctionBrowserMenu extends BaseInventory {
     }
 
     @Override
-    protected void populateGui() {
+    protected void populateBaseGuiElements() {
         createTextSortElement();
         gui.addElement(new AuctionResetFilterElement('r', gui, this).getElement());
         gui.addElement(new AuctionTypeSortElement('a', gui, this).getElement());
 
         gui.addElement(new AuctionOrderSortElement('s', gui, this).getElement());
 
-        gui.addElement(new GuiPageElement('f', new ItemStack(Material.ARROW),
-                GuiPageElement.PageAction.NEXT,
-                ChatColor.RESET + "" + ChatColor.GREEN + "Next page",
-                ChatColor.RESET + "" + ChatColor.GRAY + "(%nextpage%/%pages%)",
-                " ",
-                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to turn page!"));
-        gui.addElement(new GuiPageElement('b', new ItemStack(Material.ARROW),
-                GuiPageElement.PageAction.PREVIOUS,
-                ChatColor.RESET + "" + ChatColor.GREEN + "Previous page",
-                ChatColor.RESET + "" + ChatColor.GRAY + "(%prevpage%/%pages%)",
-                " ",
-                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to turn page!"));
 
-        gui.addElement(new GuiPageElement('m', new ItemStack(Material.CROSSBOW),
-                GuiPageElement.PageAction.LAST,
-                ChatColor.RESET + "" + ChatColor.GREEN + "Last page",
-                ChatColor.RESET + "" + ChatColor.GRAY + "(%pages%)",
+        GuiPageElement forwardPage = new GuiPageElement('f', new ItemStack(Material.ARROW),
+                GuiPageElement.PageAction.NEXT,
+                ChatUtils.RESET + ChatColor.GREEN + "Next page",
+                ChatUtils.RESET + ChatColor.GRAY + "(%nextpage%/%pages%)",
                 " ",
-                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to go to last!"));
-        gui.addElement(new GuiPageElement('z', new ItemStack(Material.CROSSBOW),
-                GuiPageElement.PageAction.FIRST,
-                ChatColor.RESET + "" + ChatColor.GREEN + "First page",
+                ChatUtils.RESET + ChatColor.YELLOW + "Click to turn page!",
                 " ",
-                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to go to first!"));
+                ChatUtils.RESET + ChatColor.BLUE + "Shift click to go to the last page!");
+        forwardPage.setAction(click -> {
+            click.getGui().playClickSound();
+            switch (click.getType()) {
+                case LEFT -> {
+                    if (click.getGui().getPageNumber(click.getWhoClicked()) + 1 < click.getGui().getPageAmount(click.getWhoClicked())) {
+                        click.getGui().setPageNumber(click.getWhoClicked(), click.getGui().getPageNumber(click.getWhoClicked()) + 1);
+                    }
+                }
+                case SHIFT_LEFT -> {
+                    click.getGui().setPageNumber(click.getWhoClicked(), click.getGui().getPageAmount(click.getWhoClicked()) - 1);
+                }
+            }
+            return true;
+        });
+        gui.addElement(forwardPage);
+
+        GuiPageElement backPage = new GuiPageElement('b', new ItemStack(Material.ARROW),
+                GuiPageElement.PageAction.PREVIOUS,
+                ChatUtils.RESET + ChatColor.GREEN + "Previous page",
+                ChatUtils.RESET + ChatColor.GRAY + "(%prevpage%/%pages%)",
+                " ",
+                ChatUtils.RESET + ChatColor.YELLOW + "Click to turn page!",
+                " ",
+                ChatUtils.RESET + ChatColor.BLUE + "Shift click to go to the first page!");
+        backPage.setAction(click -> {
+            click.getGui().playClickSound();
+            switch (click.getType()) {
+                case LEFT -> {
+                    if (click.getGui().getPageNumber(click.getWhoClicked()) > 0) {
+                        click.getGui().setPageNumber(click.getWhoClicked(), click.getGui().getPageNumber(click.getWhoClicked()) - 1);
+                    }
+                }
+                case SHIFT_LEFT -> {
+                    click.getGui().setPageNumber(click.getWhoClicked(), 0);
+                }
+            }
+            return true;
+        });
+        gui.addElement(backPage);
+
+//        gui.addElement(new GuiPageElement('m', new ItemStack(Material.CROSSBOW),
+//                GuiPageElement.PageAction.LAST,
+//                ChatUtils.RESET + ChatColor.GREEN + "Last page",
+//                ChatUtils.RESET + ChatColor.GRAY + "(%pages%)",
+//                " ",
+//                ChatUtils.RESET + ChatColor.YELLOW + "Click to go to last!"));
+//        gui.addElement(new GuiPageElement('z', new ItemStack(Material.CROSSBOW),
+//                GuiPageElement.PageAction.FIRST,
+//                ChatUtils.RESET + ChatColor.GREEN + "First page",
+//                " ",
+//                ChatUtils.RESET + ChatColor.YELLOW + "Click to go to first!"));
     }
 
     @Override

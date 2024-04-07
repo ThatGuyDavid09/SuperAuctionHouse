@@ -2,6 +2,7 @@ package com.highmarsorbit.superauctionhouse.elements;
 
 import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
+import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
@@ -31,9 +32,9 @@ public class AuctionResetFilterElement extends BaseElement {
                         ahRef.recreateAuctionGroupElement();
                         return true;
                     },
-                    ChatColor.RESET + "" + ChatColor.RED + "Reset filters",
+                    ChatUtils.RESET + ChatColor.RED + "Reset filters",
                     " ",
-                    ChatColor.RESET + "" + ChatColor.YELLOW + "Click to reset search filters!!");
+                    ChatUtils.RESET + ChatColor.YELLOW + "Click to reset search filters!!");
         });
     }
 }

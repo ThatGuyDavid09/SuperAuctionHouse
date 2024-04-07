@@ -2,6 +2,7 @@ package com.highmarsorbit.superauctionhouse.elements;
 
 import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionTypeSort;
+import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.GuiStateElement;
 import de.themoep.inventorygui.InventoryGui;
 import org.bukkit.ChatColor;
@@ -23,12 +24,12 @@ public class AuctionTypeSortElement extends BaseElement {
                         },
                         "both",
                         new ItemStack(Material.DIAMOND),
-                        ChatColor.RESET + "" + ChatColor.BLUE + "Filter by:",
+                        ChatUtils.RESET + ChatColor.BLUE + "Filter by:",
                         ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Both",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Auctions only",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "BIN (Buy it Now) only",
+                        ChatUtils.RESET + ChatColor.GRAY + "Auctions only",
+                        ChatUtils.RESET + ChatColor.GRAY + "BIN (Buy it Now) only",
                         " ",
-                        ChatColor.RESET + "" + ChatColor.YELLOW + "Click to change filter!"
+                        ChatUtils.RESET + ChatColor.YELLOW + "Click to change filter!"
                 ),
                 new GuiStateElement.State(
                         change -> {
@@ -37,12 +38,12 @@ public class AuctionTypeSortElement extends BaseElement {
                         },
                         "auction_only",
                         new ItemStack(Material.CLOCK),
-                        ChatColor.RESET + "" + ChatColor.BLUE + "Filter by:",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Both",
+                        ChatUtils.RESET + ChatColor.BLUE + "Filter by:",
+                        ChatUtils.RESET + ChatColor.GRAY + "Both",
                         ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Auctions only",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "BIN (Buy it Now) only",
+                        ChatUtils.RESET + ChatColor.GRAY + "BIN (Buy it Now) only",
                         " ",
-                        ChatColor.RESET + "" + ChatColor.YELLOW + "Click to change filter!"
+                        ChatUtils.RESET + ChatColor.YELLOW + "Click to change filter!"
                 ),
                 new GuiStateElement.State(
                         change -> {
@@ -51,12 +52,12 @@ public class AuctionTypeSortElement extends BaseElement {
                         },
                         "bin_only",
                         new ItemStack(Material.GOLD_INGOT),
-                        ChatColor.RESET + "" + ChatColor.BLUE + "Filter by:",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Both",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Auctions only",
+                        ChatUtils.RESET + ChatColor.BLUE + "Filter by:",
+                        ChatUtils.RESET + ChatColor.GRAY + "Both",
+                        ChatUtils.RESET + ChatColor.GRAY + "Auctions only",
                         ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ BIN (Buy it Now) only",
                         " ",
-                        ChatColor.RESET + "" + ChatColor.YELLOW + "Click to change filter!"
+                        ChatUtils.RESET + ChatColor.YELLOW + "Click to change filter!"
                 )
         );
 

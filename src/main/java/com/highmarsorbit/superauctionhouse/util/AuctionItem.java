@@ -25,12 +25,12 @@ public class AuctionItem {
     private double price;
     private Player highestBidder;
 
-    public AuctionItem(int id, ItemStack item, Player seller, double price, Duration duration, AuctionType auctionType) {
-        this(id, item, seller, price, duration, auctionType, seller.getDisplayName());
+    public AuctionItem(ItemStack item, Player seller, double price, Duration duration, AuctionType auctionType) {
+        this(item, seller, price, duration, auctionType, seller.getDisplayName());
     }
 
-    public AuctionItem(int id, ItemStack item, Player seller, double price, Duration duration, AuctionType auctionType, String sellerName) {
-        this.id = id;
+    public AuctionItem(ItemStack item, Player seller, double price, Duration duration, AuctionType auctionType, String sellerName) {
+        this.id = SuperAuctionHouse.getAuctionManager().getNextUsableId();
         this.item = item;
         this.seller = seller;
         this.price = price;
@@ -133,11 +133,11 @@ public class AuctionItem {
                 String costWord = auctionType == AuctionType.AUCTION ? "Bid" : "Price";
                 String purchaseWord = auctionType == AuctionType.AUCTION ? "bid" : "buy";
                 extraLore = new String[]{
-                        ChatColor.RESET + "" + ChatColor.GRAY + costWord + ": " + ChatColor.GOLD + SuperAuctionHouse.getInstance().getEconomy().format(price),
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Seller: " + sellerName,
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + DurationUtils.formatDuration(getDurationRemaining()),
+                        ChatUtils.RESET + ChatColor.GRAY + costWord + ": " + ChatColor.GOLD + SuperAuctionHouse.getEconomy().format(price),
+                        ChatUtils.RESET + ChatColor.GRAY + "Seller: " + sellerName,
+                        ChatUtils.RESET + ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + DurationUtils.formatDuration(getDurationRemaining()),
                         " ",
-                        ChatColor.RESET + "" + ChatColor.YELLOW + String.format("Click to %s!", purchaseWord)
+                        ChatUtils.RESET + ChatColor.YELLOW + String.format("Click to %s!", purchaseWord)
                 };
             }
 

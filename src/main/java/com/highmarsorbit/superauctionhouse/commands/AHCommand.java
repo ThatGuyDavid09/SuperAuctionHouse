@@ -26,11 +26,10 @@ public class AHCommand implements CommandExecutor {
         }
         Player player = (Player) sender;
         switch (args.length) {
-            case 0:
-                new AuctionBrowserMenu(player, SuperAuctionHouse.getMessages().getMessage("ah_title")).open();
+            case 0 -> new AuctionBrowserMenu(player).open();
+
 //                player.sendMessage(SuperAuctionHouse.prefix + "Pretend the auction house opened.");
-                break;
-            case 1:
+            case 1 -> {
                 switch (args[0]) {
                     case "sell100" -> {
                         for (int i = 0; i < 100; i++) {
@@ -43,7 +42,6 @@ public class AHCommand implements CommandExecutor {
                             ItemStack item = new ItemStack(Material.values()[material], Math.min(Material.values()[material].getMaxStackSize(), amount));
 //                        if (item)
                             SuperAuctionHouse.getAuctionManager().listAuction(new AuctionItem(
-                                    SuperAuctionHouse.getAuctionManager().getNextUsableId(),
                                     item,
                                     player,
                                     price,
@@ -55,11 +53,15 @@ public class AHCommand implements CommandExecutor {
                     case "refresh" -> SuperAuctionHouse.getAuctionManager().refreshAvailableAuctions();
                     case "sell" -> {
                         ItemStack itemToSell = player.getInventory().getItemInMainHand();
+
                         Bukkit.getLogger().info(ItemUtils.getItemName(itemToSell));
-                        SellItemMenu sellMenu = new SellItemMenu(player, SuperAuctionHouse.getMessages().getMessage("sell_menu_title"), itemToSell);
+
+                        SellItemMenu sellMenu = new SellItemMenu(player);
+                        sellMenu.setSaleItem(itemToSell);
                         sellMenu.open();
                     }
                 }
+            }
         }
         return true;
     }

@@ -2,6 +2,7 @@ package com.highmarsorbit.superauctionhouse.elements;
 
 import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionOrderSort;
+import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.GuiStateElement;
 import de.themoep.inventorygui.InventoryGui;
 import org.bukkit.ChatColor;
@@ -23,13 +24,13 @@ public class AuctionOrderSortElement extends BaseElement {
                         },
                         "lowest_price",
                         new ItemStack(Material.HOPPER),
-                        ChatColor.RESET + "" + ChatColor.BLUE + "Sort by:",
+                        ChatUtils.RESET + ChatColor.BLUE + "Sort by:",
                         ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Lowest price",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Highest price",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Newest first",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Ending soon",
+                        ChatUtils.RESET + ChatColor.GRAY + "Highest price",
+                        ChatUtils.RESET + ChatColor.GRAY + "Newest first",
+                        ChatUtils.RESET + ChatColor.GRAY + "Ending soon",
                         " ",
-                        ChatColor.RESET + "" + ChatColor.YELLOW + "Click to change sort!"
+                        ChatUtils.RESET + ChatColor.YELLOW + "Click to change sort!"
                 ),
                 new GuiStateElement.State(
                         change -> {
@@ -38,13 +39,13 @@ public class AuctionOrderSortElement extends BaseElement {
                         },
                         "highest_price",
                         new ItemStack(Material.HOPPER),
-                        ChatColor.RESET + "" + ChatColor.BLUE + "Sort by:",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Lowest price",
+                        ChatUtils.RESET + ChatColor.BLUE + "Sort by:",
+                        ChatUtils.RESET + ChatColor.GRAY + "Lowest price",
                         ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Highest price",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Newest first",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Ending soon",
+                        ChatUtils.RESET + ChatColor.GRAY + "Newest first",
+                        ChatUtils.RESET + ChatColor.GRAY + "Ending soon",
                         " ",
-                        ChatColor.RESET + "" + ChatColor.YELLOW + "Click to change sort!"
+                        ChatUtils.RESET + ChatColor.YELLOW + "Click to change sort!"
                 ),
                 new GuiStateElement.State(
                         change -> {
@@ -53,13 +54,13 @@ public class AuctionOrderSortElement extends BaseElement {
                         },
                         "newest_first",
                         new ItemStack(Material.HOPPER),
-                        ChatColor.RESET + "" + ChatColor.BLUE + "Sort by:",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Lowest price",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Highest price",
+                        ChatUtils.RESET + ChatColor.BLUE + "Sort by:",
+                        ChatUtils.RESET + ChatColor.GRAY + "Lowest price",
+                        ChatUtils.RESET + ChatColor.GRAY + "Highest price",
                         ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Newest first",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Ending soon",
+                        ChatUtils.RESET + ChatColor.GRAY + "Ending soon",
                         " ",
-                        ChatColor.RESET + "" + ChatColor.YELLOW + "Click to change sort!"
+                        ChatUtils.RESET + ChatColor.YELLOW + "Click to change sort!"
                 ),
                 new GuiStateElement.State(
                         change -> {
@@ -68,13 +69,13 @@ public class AuctionOrderSortElement extends BaseElement {
                         },
                         "ending_soon",
                         new ItemStack(Material.HOPPER),
-                        ChatColor.RESET + "" + ChatColor.BLUE + "Sort by:",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Lowest price",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Highest price",
-                        ChatColor.RESET + "" + ChatColor.GRAY + "Newest first",
+                        ChatUtils.RESET + ChatColor.BLUE + "Sort by:",
+                        ChatUtils.RESET + ChatColor.GRAY + "Lowest price",
+                        ChatUtils.RESET + ChatColor.GRAY + "Highest price",
+                        ChatUtils.RESET + ChatColor.GRAY + "Newest first",
                         ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Ending soon",
                         " ",
-                        ChatColor.RESET + "" + ChatColor.YELLOW + "Click to change sort!"
+                        ChatUtils.RESET + ChatColor.YELLOW + "Click to change sort!"
                 )
         );
 

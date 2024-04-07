@@ -3,3 +3,7 @@ ah_command_not_player_error: ($PREFIX)($RED)Only players may open the auction ho
 ah_command_success: ($PREFIX)Pretend the auction house opened.
 ah_title: Auction House
 sell_menu_title: Sell Item
+sell_success: ($GREEN)Item successfully sold!
+sell_no_item_found: ($RED)Item not found in your inventory!
+sell_item_list_fail: ($RED)Item could not be listed! Contact a server administrator.
+sell_cannot_pay_fee: ($RED)You do not have enough money to pay the auction fee!

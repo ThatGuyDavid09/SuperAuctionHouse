@@ -3,6 +3,7 @@ package com.highmarsorbit.superauctionhouse.elements;
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
+import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
@@ -28,9 +29,9 @@ public class AuctionTextSortElement extends BaseElement {
                     signGui.open((Player) click.getWhoClicked());
                     return true;
                 },
-                ChatColor.RESET + "" + ChatColor.BLUE + "Search with text: " + ChatColor.AQUA + ahRef.sortState.textFilter,
+                ChatUtils.RESET + ChatColor.BLUE + "Search with text: " + ChatColor.AQUA + ahRef.sortState.textFilter,
                 " ",
-                ChatColor.RESET + "" + ChatColor.YELLOW + "Click to search items by title!"));
+                ChatUtils.RESET + ChatColor.YELLOW + "Click to search items by title!"));
     }
 
     private void createSignGui() {
@@ -42,11 +43,11 @@ public class AuctionTextSortElement extends BaseElement {
 //                    ahRef.getGui().playClickSound();
 //                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1F, 1F);
                     ahRef.sortState.textFilter = state.getLines()[0].strip();
-                    AuctionSortState newState = ahRef.sortState;
-                    ahRef = new AuctionBrowserMenu(state.getPlayer(), SuperAuctionHouse.getMessages().getMessage("ah_title"));
-                    ahRef.sortState = newState;
-                    ahRef.recreateElements();
-                    ahRef.recreateTextSortElement();
+//                    AuctionSortState newState = ahRef.sortState;
+                    ahRef = new AuctionBrowserMenu(ahRef);
+//                    ahRef.sortState = newState;
+//                    ahRef.recreateElements();
+//                    ahRef.recreateTextSortElement();
                     ahRef.open(false);
 //                    ahRef.recreateElements();
 //                    ahRef.open(false);
