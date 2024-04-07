@@ -137,9 +137,11 @@ public class SellItemMenu extends BaseInventory {
     }
 
     public void updateSellItemElement() {
-        if (sellingItem == null) {
+        if (sellingItem == null || sellingItem.getType().isAir()) {
             gui.addElement(new StaticGuiElement('i', new ItemStack(Material.CHEST),
-                    ChatUtils.RESET + ChatColor.RED + "Click an item in your inventory to sell it!"));
+                    // TODO IMPORTANT: make it so that if player clicks in their inventory it item as selling
+                    ChatUtils.RESET + ChatColor.GREEN + "Click an item in your inventory to sell it!"));
+            updateConfirmElement();
             return;
         }
 
@@ -161,7 +163,7 @@ public class SellItemMenu extends BaseInventory {
     }
 
     public void updateConfirmElement() {
-        if (sellingItem == null) {
+        if (sellingItem == null || sellingItem.getType().isAir()) {
             setConfirmFailElement("Please select an item to sell!");
             return;
         }
@@ -197,10 +199,12 @@ public class SellItemMenu extends BaseInventory {
                         return true;
                     }
 
-                    EconomyResponse feeDeduct = SuperAuctionHouse.getEconomy().withdrawPlayer(holder, calculateSaleFee());
-                    if (!feeDeduct.transactionSuccess()) {
+                    if (!SuperAuctionHouse.getEconomy().has(holder, calculateSaleFee())) {
                         SuperAuctionHouse.sendMessageByPath(holder, "sell_cannot_pay_fee");
+                        return true;
                     }
+
+                    SuperAuctionHouse.getEconomy().withdrawPlayer(holder, calculateSaleFee());
 
                     boolean succeeded = SuperAuctionHouse.getAuctionManager().listAuction(new AuctionItem(sellingItem, holder, price, duration, auctionType, sellerName));
                     if (!succeeded) {
