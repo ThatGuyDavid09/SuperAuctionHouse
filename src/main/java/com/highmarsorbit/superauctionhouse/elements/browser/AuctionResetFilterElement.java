@@ -1,5 +1,6 @@
-package com.highmarsorbit.superauctionhouse.elements;
+package com.highmarsorbit.superauctionhouse.elements.browser;
 
+import com.highmarsorbit.superauctionhouse.elements.BaseElement;
 import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;

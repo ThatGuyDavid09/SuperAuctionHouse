@@ -2,6 +2,7 @@ package com.highmarsorbit.superauctionhouse;
 
 import com.highmarsorbit.superauctionhouse.commands.AHCommand;
 import com.highmarsorbit.superauctionhouse.listeners.AuctionListListener;
+import com.highmarsorbit.superauctionhouse.listeners.InventoryClickListener;
 import com.highmarsorbit.superauctionhouse.managers.AuctionManager;
 import com.highmarsorbit.superauctionhouse.storage.DummyStorage;
 import com.highmarsorbit.superauctionhouse.storage.Storage;
@@ -84,6 +85,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     private void registerEventListeners() {
         getServer().getPluginManager().registerEvents(new AuctionListListener(), this);
+        getServer().getPluginManager().registerEvents(new InventoryClickListener(), this);
+
         signGuiManager = new SignManager(this);
         signGuiManager.init();
 

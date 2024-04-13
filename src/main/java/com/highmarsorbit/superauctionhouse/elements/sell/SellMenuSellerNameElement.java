@@ -1,6 +1,7 @@
-package com.highmarsorbit.superauctionhouse.elements;
+package com.highmarsorbit.superauctionhouse.elements.sell;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.elements.BaseElement;
 import com.highmarsorbit.superauctionhouse.inventories.SellItemMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionType;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;
@@ -60,6 +61,7 @@ public class SellMenuSellerNameElement extends BaseElement {
                     Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {
                         sellMenu.sellerName = state.getText();
                         sellMenu.getGui().close();
+                        sellMenu.getGui().playClickSound();
                         sellMenu = new SellItemMenu(sellMenu);
                         sellMenu.open(false);
                         sellMenu.updateConfirmElement();
@@ -75,7 +77,7 @@ public class SellMenuSellerNameElement extends BaseElement {
                 })
                 .preventClose()
                 .title("Input seller name:")
-                .text(sellMenu.getHolder().getDisplayName())
+                .text(sellMenu.sellerName)
                 .plugin(SuperAuctionHouse.getInstance());
     }
 }

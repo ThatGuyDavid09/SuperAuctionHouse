@@ -1,4 +1,4 @@
-package com.highmarsorbit.superauctionhouse.elements;
+package com.highmarsorbit.superauctionhouse.elements.sell;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.inventories.SellItemMenu;

@@ -1,9 +1,10 @@
 package com.highmarsorbit.superauctionhouse.inventories;
 
+import com.highmarsorbit.superauctionhouse.Globals;
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
-import com.highmarsorbit.superauctionhouse.elements.SellMenuDurationElement;
-import com.highmarsorbit.superauctionhouse.elements.SellMenuPriceElement;
-import com.highmarsorbit.superauctionhouse.elements.SellMenuSellerNameElement;
+import com.highmarsorbit.superauctionhouse.elements.sell.SellMenuDurationElement;
+import com.highmarsorbit.superauctionhouse.elements.sell.SellMenuPriceElement;
+import com.highmarsorbit.superauctionhouse.elements.sell.SellMenuSellerNameElement;
 import com.highmarsorbit.superauctionhouse.util.*;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.GuiStateElement;
@@ -57,6 +58,7 @@ public class SellItemMenu extends BaseInventory {
     public void setSaleItem(ItemStack item) {
         this.sellingItem = item;
         updateSellItemElement();
+        drawInventory();
     }
 
     @Override
@@ -82,6 +84,8 @@ public class SellItemMenu extends BaseInventory {
 
     @Override
     protected void populateBaseGuiElements() {
+        populateInputGuiElements();
+
         gui.addElement(new StaticGuiElement('x', new ItemStack(Material.BARRIER), click -> {
             gui.playClickSound();
             gui.close();
@@ -91,11 +95,6 @@ public class SellItemMenu extends BaseInventory {
         " ",
         ChatUtils.RESET + ChatColor.YELLOW + "Click to cancel the sale",
         ChatUtils.RESET + ChatColor.YELLOW + "and close the menu!"));
-
-        gui.addElement(new SellMenuPriceElement('p', gui, this).getElement());
-        gui.addElement(new SellMenuDurationElement('d', gui, this).getElement());
-        // TODO check if player has permission to do this
-        gui.addElement(new SellMenuSellerNameElement('n', gui, this).getElement());
 
         // TODO have this check if player has permission to sell specific type
         // actually need a check in general for setting auctiontype in constructor
@@ -129,6 +128,13 @@ public class SellItemMenu extends BaseInventory {
         ));
     }
 
+    public void populateInputGuiElements() {
+        gui.addElement(new SellMenuPriceElement('p', gui, this).getElement());
+        gui.addElement(new SellMenuDurationElement('d', gui, this).getElement());
+        // TODO check if player has permission to do this
+        gui.addElement(new SellMenuSellerNameElement('n', gui, this).getElement());
+    }
+
     private boolean isSellItemValid() {
         // TODO: implement actual logic for detecting if an item is valid
         return true;
@@ -140,8 +146,13 @@ public class SellItemMenu extends BaseInventory {
                     // TODO IMPORTANT: make it so that if player clicks in their inventory it item as selling
                     ChatUtils.RESET + ChatColor.GREEN + "Click an item in your inventory to sell it!"));
             updateConfirmElement();
+            Globals.waitingForClick.put(holder, this);
+
             return;
         }
+
+        // Just in case
+        Globals.waitingForClick.remove(holder);
 
         String[] name = {null};
         String[] existingLore = ItemUtils.getItemLoreArray(sellingItem);
@@ -237,6 +248,14 @@ public class SellItemMenu extends BaseInventory {
                 ChatUtils.RESET + "Sale fee: " + ChatColor.GOLD + SuperAuctionHouse.getEconomy().format(fee),
                 " ",
                 ChatUtils.RESET + ChatColor.YELLOW + "Click to list this item!")));
+    }
+
+    @Override
+    public void drawInventory() {
+        populateInputGuiElements();
+        updateConfirmElement();
+
+        super.drawInventory();
     }
 
     private String getPriceWord() {

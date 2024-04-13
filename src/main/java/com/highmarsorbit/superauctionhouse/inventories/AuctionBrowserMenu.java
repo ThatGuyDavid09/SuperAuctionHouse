@@ -1,7 +1,7 @@
 package com.highmarsorbit.superauctionhouse.inventories;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
-import com.highmarsorbit.superauctionhouse.elements.*;
+import com.highmarsorbit.superauctionhouse.elements.browser.*;
 import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.GuiPageElement;
