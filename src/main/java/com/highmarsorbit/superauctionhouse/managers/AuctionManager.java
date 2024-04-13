@@ -1,8 +1,10 @@
 package com.highmarsorbit.superauctionhouse.managers;
 
+import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.events.AuctionListEvent;
 import com.highmarsorbit.superauctionhouse.storage.Storage;
 import com.highmarsorbit.superauctionhouse.util.AuctionItem;
+import com.highmarsorbit.superauctionhouse.util.AuctionListStatus;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
@@ -35,21 +37,30 @@ public class AuctionManager {
         return maxId;
     }
 
-    public boolean listAuction(AuctionItem auction) {
+    public AuctionListStatus listAuction(AuctionItem auction) {
         // Fire event and abort if canceled
         AuctionListEvent event = new AuctionListEvent(auction, auction.getSeller());
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
-            return false;
+            return new AuctionListStatus(false, true, auction);
         }
 
-        boolean success = store.storeAuction(auction);
+        boolean success;
+
+        // General catchall with database faults.
+        try {
+            success = store.storeAuction(auction);
+        } catch (Exception e) {
+            SuperAuctionHouse.getInstance().getLogger().severe("Error while listing item!");
+            e.printStackTrace();
+            success = false;
+        }
         if (!success) {
-            return false;
+            return new AuctionListStatus(false, false, auction);
         }
         currentAuctions.add(auction);
-        return true;
+        return new AuctionListStatus(true, false, auction);
     }
 
     public void refreshAvailableAuctions() {

@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 public class AuctionListListener implements Listener {
     @EventHandler( priority = EventPriority.MONITOR)
     public void onAuctionList(AuctionListEvent event) {
+        // TODO just for testing. Remove when done
         AuctionItem auction = event.getAuction();
         String message = String.format(
                 "Player %s "
@@ -23,7 +24,7 @@ public class AuctionListListener implements Listener {
                 ItemUtils.getItemName(auction.getItem()),
                 event.getAuction().getPrice());
         // FIXME sort out this nonsense with the fine logs not showing up
-        Bukkit.getLogger().info(SuperAuctionHouse.prefixNoColor + message);
+        SuperAuctionHouse.getInstance().getLogger().fine(message);
         auction.getSeller().sendMessage(SuperAuctionHouse.prefix + message);
     }
 }

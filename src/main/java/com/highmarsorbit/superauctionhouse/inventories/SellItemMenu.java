@@ -8,8 +8,6 @@ import com.highmarsorbit.superauctionhouse.util.*;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.GuiStateElement;
 import de.themoep.inventorygui.StaticGuiElement;
-import net.milkbowl.vault.chat.Chat;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -206,10 +204,17 @@ public class SellItemMenu extends BaseInventory {
 
                     SuperAuctionHouse.getEconomy().withdrawPlayer(holder, calculateSaleFee());
 
-                    boolean succeeded = SuperAuctionHouse.getAuctionManager().listAuction(new AuctionItem(sellingItem, holder, price, duration, auctionType, sellerName));
-                    if (!succeeded) {
+                    AuctionListStatus auctionStatus = SuperAuctionHouse.getAuctionManager().listAuction(new AuctionItem(sellingItem, holder, price, duration, auctionType, sellerName));
+                    if (auctionStatus.isListFail()) {
+                        // Log technical failures to console
                         SuperAuctionHouse.sendMessageByPath(holder, "sell_item_list_fail");
-                        SuperAuctionHouse.getInstance().getLogger().warning(String.format("Player %s attempted to sell an item and it failed to list", holder.getDisplayName()));
+                        SuperAuctionHouse.getInstance().getLogger().severe(String.format("Player %s attempted to sell " +
+                                "an item and it failed to list. Check to see if the database is working properly", holder.getDisplayName()));
+                        return true;
+                    }
+
+                    if (!auctionStatus.isSuccessful()) {
+                        SuperAuctionHouse.sendMessageByPath(holder, "sell_item_list_cancel");
                         return true;
                     }
 
