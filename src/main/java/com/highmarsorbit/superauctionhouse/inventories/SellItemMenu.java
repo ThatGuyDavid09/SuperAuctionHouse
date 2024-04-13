@@ -191,24 +191,25 @@ public class SellItemMenu extends BaseInventory {
                 click -> {
                     gui.playClickSound();
                     gui.close();
+
+                    // If player dropped item out of inventory during selling process
                     boolean inventoryContainsItem = holder.getInventory().contains(sellingItem);
                     if (!inventoryContainsItem) {
                         SuperAuctionHouse.sendMessageByPath(holder, "sell_no_item_found");
                         return true;
                     }
 
+                    // Need to check this here if player somehow lost money from the last time the confirm item refreshed
                     if (!SuperAuctionHouse.getEconomy().has(holder, calculateSaleFee())) {
                         SuperAuctionHouse.sendMessageByPath(holder, "sell_cannot_pay_fee");
                         return true;
                     }
 
-                    SuperAuctionHouse.getEconomy().withdrawPlayer(holder, calculateSaleFee());
-
                     AuctionListStatus auctionStatus = SuperAuctionHouse.getAuctionManager().listAuction(new AuctionItem(sellingItem, holder, price, duration, auctionType, sellerName));
                     if (auctionStatus.isListFail()) {
                         // Log technical failures to console
                         SuperAuctionHouse.sendMessageByPath(holder, "sell_item_list_fail");
-                        SuperAuctionHouse.getInstance().getLogger().severe(String.format("Player %s attempted to sell " +
+                        SuperAuctionHouse.getInstance().getLogger().warning(String.format("Player %s attempted to sell " +
                                 "an item and it failed to list. Check to see if the database is working properly", holder.getDisplayName()));
                         return true;
                     }
@@ -218,7 +219,10 @@ public class SellItemMenu extends BaseInventory {
                         return true;
                     }
 
+                    // Actually withdrawing fee and removing item should happen
                     holder.getInventory().remove(sellingItem);
+                    SuperAuctionHouse.getEconomy().withdrawPlayer(holder, calculateSaleFee());
+
                     SuperAuctionHouse.sendMessageByPath(holder, "sell_success");
 
                   return true;

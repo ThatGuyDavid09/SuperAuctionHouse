@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class AuctionManager {
     private ArrayList<AuctionItem> currentAuctions;
@@ -52,7 +53,7 @@ public class AuctionManager {
         try {
             success = store.storeAuction(auction);
         } catch (Exception e) {
-            SuperAuctionHouse.getInstance().getLogger().severe("Error while listing item!");
+            SuperAuctionHouse.getInstance().getLogger().warning("Error while listing item!");
             e.printStackTrace();
             success = false;
         }

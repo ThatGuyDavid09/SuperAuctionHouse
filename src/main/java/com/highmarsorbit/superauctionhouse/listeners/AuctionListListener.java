@@ -9,6 +9,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.yaml.snakeyaml.emitter.ScalarAnalysis;
+
+import java.util.Random;
 
 public class AuctionListListener implements Listener {
     @EventHandler( priority = EventPriority.MONITOR)
@@ -26,5 +29,12 @@ public class AuctionListListener implements Listener {
         // FIXME sort out this nonsense with the fine logs not showing up
         SuperAuctionHouse.getInstance().getLogger().fine(message);
         auction.getSeller().sendMessage(SuperAuctionHouse.prefix + message);
+
+        Random random = new Random();
+        boolean cancel = random.nextBoolean();
+        if (cancel) {
+            event.setCancelled(true);
+            SuperAuctionHouse.getInstance().getLogger().info("Canceled auction list");
+        }
     }
 }

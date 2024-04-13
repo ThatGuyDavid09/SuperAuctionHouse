@@ -10,4 +10,5 @@ public interface Storage {
     int getMaxId();
     boolean updateAuction(int id, AuctionItem item);
     boolean reset();
+    boolean selfTest();
 }

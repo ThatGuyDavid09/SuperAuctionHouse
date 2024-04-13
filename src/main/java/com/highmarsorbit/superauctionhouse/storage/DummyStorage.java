@@ -55,4 +55,9 @@ public class DummyStorage implements Storage {
         items.clear();
         return true;
     }
+
+    @Override
+    public boolean selfTest() {
+        return true;
+    }
 }

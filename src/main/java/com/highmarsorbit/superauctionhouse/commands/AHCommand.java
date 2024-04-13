@@ -54,8 +54,6 @@ public class AHCommand implements CommandExecutor {
                     case "sell" -> {
                         ItemStack itemToSell = player.getInventory().getItemInMainHand();
 
-                        Bukkit.getLogger().info(ItemUtils.getItemName(itemToSell));
-
                         SellItemMenu sellMenu = new SellItemMenu(player);
                         sellMenu.setSaleItem(itemToSell);
                         sellMenu.open();

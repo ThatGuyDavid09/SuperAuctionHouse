@@ -13,7 +13,7 @@ public class DurationUtils {
 
     public static String formatDuration(Duration duration, boolean shortenToDay) {
         if (shortenToDay) {
-            if (duration.toDays() > 1) {
+            if (duration.toDays() >= 1) {
                 return String.format("%dd", duration.toDays());
             }
 
