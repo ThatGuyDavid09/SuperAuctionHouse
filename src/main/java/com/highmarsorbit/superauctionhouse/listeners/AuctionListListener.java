@@ -26,7 +26,7 @@ public class AuctionListListener implements Listener {
                 event.getAuction().getItem().getAmount(),
                 ItemUtils.getItemName(auction.getItem()),
                 event.getAuction().getPrice());
-        // FIXME sort out this nonsense with the fine logs not showing up
+
         SuperAuctionHouse.getInstance().getLogger().fine(message);
         auction.getSeller().sendMessage(SuperAuctionHouse.prefix + message);
     }
