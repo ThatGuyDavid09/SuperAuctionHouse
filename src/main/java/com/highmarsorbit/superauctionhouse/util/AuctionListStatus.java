@@ -1,13 +1,13 @@
 package com.highmarsorbit.superauctionhouse.util;
 
 public class AuctionListStatus {
-    private final boolean eventCanceled;
-    private final boolean listSucceeded; // False if eventCanceled is true
+    private final boolean eventCancelled;
+    private final boolean listSucceeded; // False if eventCancelled is true
     private final AuctionItem auction;
 
-    public AuctionListStatus(boolean listSucceeded, boolean eventCanceled, AuctionItem auction) {
+    public AuctionListStatus(boolean listSucceeded, boolean eventCancelled, AuctionItem auction) {
         this.listSucceeded = listSucceeded;
-        this.eventCanceled = eventCanceled;
+        this.eventCancelled = eventCancelled;
         this.auction = auction;
     }
 
@@ -19,15 +19,15 @@ public class AuctionListStatus {
         return listSucceeded;
     }
 
-    public boolean isCanceled() {
-        return eventCanceled;
+    public boolean isCancelled() {
+        return eventCancelled;
     }
 
     /**
-     * Returns whether an auction failed for technical reasons, not because an event canceled it
+     * Returns whether an auction failed for technical reasons, not because an event cancelled it
      * @return
      */
     public boolean isListFail() {
-        return !listSucceeded && !eventCanceled;
+        return !listSucceeded && !eventCancelled;
     }
 }

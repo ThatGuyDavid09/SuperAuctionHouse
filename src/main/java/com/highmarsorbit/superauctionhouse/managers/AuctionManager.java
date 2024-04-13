@@ -39,7 +39,7 @@ public class AuctionManager {
     }
 
     public AuctionListStatus listAuction(AuctionItem auction) {
-        // Fire event and abort if canceled
+        // Fire event and abort if cancelled
         AuctionListEvent event = new AuctionListEvent(auction, auction.getSeller());
         Bukkit.getPluginManager().callEvent(event);
 
