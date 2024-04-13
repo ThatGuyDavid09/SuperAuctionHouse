@@ -143,7 +143,6 @@ public class SellItemMenu extends BaseInventory {
     public void updateSellItemElement() {
         if (sellingItem == null || sellingItem.getType().isAir()) {
             gui.addElement(new StaticGuiElement('i', new ItemStack(Material.CHEST),
-                    // TODO IMPORTANT: make it so that if player clicks in their inventory it item as selling
                     ChatUtils.RESET + ChatColor.GREEN + "Click an item in your inventory to sell it!"));
             updateConfirmElement();
             Globals.waitingForClick.put(holder, this);
