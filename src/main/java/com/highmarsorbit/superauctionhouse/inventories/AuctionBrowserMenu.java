@@ -17,24 +17,26 @@ public class AuctionBrowserMenu extends BaseInventory {
     public AuctionSortState sortState;
 
     public AuctionBrowserMenu(Player holder) {
-        super(holder, "ah_title");
+        super(holder, "ah_title", false);
+
+        sortState = new AuctionSortState();
+
+        initalizeGui();
 
         registerRefreshEvent();
         registerCloseAction();
     }
 
     public AuctionBrowserMenu(AuctionBrowserMenu copy) {
-        super(copy.holder, "ah_title");
+        super(copy.holder, "ah_title", false);
+
+        sortState = copy.sortState;
+
+        initalizeGui();
 
         registerRefreshEvent();
         registerCloseAction();
 
-        sortState = copy.sortState;
-    }
-
-    @Override
-    protected void initializeOtherVariables() {
-        sortState = new AuctionSortState();
     }
 
     private void registerRefreshEvent() {

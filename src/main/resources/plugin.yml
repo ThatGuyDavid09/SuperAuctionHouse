@@ -1,5 +1,5 @@
 name: SuperAuctionHouse
-version: '1-0-SNAPSHOT'
+version: 1-0-SNAPSHOT
 main: com.highmarsorbit.superauctionhouse.SuperAuctionHouse
 api-version: 1.16
 prefix: SuperAuctionHouse

@@ -2,6 +2,7 @@ package com.highmarsorbit.superauctionhouse.inventories;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import de.themoep.inventorygui.InventoryGui;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,15 +14,22 @@ public class BaseInventory {
     protected String titlePath;
 
     public BaseInventory(Player holder, String titlePath) {
+        this(holder, titlePath, true);
+    }
+
+    public BaseInventory(Player holder, String titlePath, boolean autoInit) {
         this.holder = holder;
         this.titlePath = titlePath;
-        initializeOtherVariables();
+
+        if (autoInit) {
+            initalizeGui();
+        }
+    }
+
+    public void initalizeGui() {
         createGuiLayout();
         createGuiBase();
         populateBaseGuiElements();
-    }
-
-    protected void initializeOtherVariables() {
     }
 
     protected void createGuiLayout() {
@@ -59,7 +67,16 @@ public class BaseInventory {
     }
 
     public void open(Player player, boolean checkOpen) {
+        // TODO remove
+        for (InventoryGui gui : InventoryGui.getHistory(holder)) {
+            Bukkit.getLogger().info(gui.getTitle());
+        }
+
         gui.show(player, checkOpen);
+    }
+
+    public void close() {
+        gui.close(false);
     }
 
     public void drawInventory() {

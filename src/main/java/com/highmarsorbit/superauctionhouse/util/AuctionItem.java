@@ -1,11 +1,8 @@
 package com.highmarsorbit.superauctionhouse.util;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
-import de.themoep.inventorygui.DynamicGuiElement;
-import de.themoep.inventorygui.GuiElement;
-import de.themoep.inventorygui.InventoryGui;
-import de.themoep.inventorygui.StaticGuiElement;
-import org.apache.commons.lang.ArrayUtils;
+import com.mojang.datafixers.util.Pair;
+import org.apache.commons.collections.map.LinkedMap;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -21,9 +18,11 @@ public class AuctionItem {
     private final Instant createTime;
     private final Instant endTime;
     private final AuctionType auctionType;
+    private boolean bought = false;
 
+    private final double initialPrice;
     private double price;
-    private Player highestBidder;
+    private LinkedMap bidders = new LinkedMap();
 
     public AuctionItem(ItemStack item, Player seller, double price, Duration duration, AuctionType auctionType) {
         this(item, seller, price, duration, auctionType, seller.getDisplayName());
@@ -33,10 +32,10 @@ public class AuctionItem {
         this.id = SuperAuctionHouse.getAuctionManager().getNextUsableId();
         this.item = item;
         this.seller = seller;
+        this.initialPrice = price;
         this.price = price;
         this.auctionType = auctionType;
         this.sellerName = sellerName;
-        this.highestBidder = null;
 
         this.createTime = Instant.ofEpochMilli(System.currentTimeMillis());
         this.endTime = createTime.plusSeconds(duration.getSeconds());
@@ -78,10 +77,6 @@ public class AuctionItem {
         return price;
     }
 
-    public Player getHighestBidder() {
-        return highestBidder;
-    }
-
     public String toString() {
         String itemName = "";
 
@@ -93,61 +88,45 @@ public class AuctionItem {
         return itemName + ChatColor.RESET;
     }
 
-    /**
-     * For use in something like a GuiElementGroup, when it does not matter what the character is
-     *
-     * @return
-     */
-    public GuiElement getGuiElement(InventoryGui gui) {
-        return getGuiElement('a', gui);
+    public void setBought(boolean bought) {
+        this.bought = bought;
     }
 
-    public GuiElement getGuiElement(char character, InventoryGui gui) {
-        // FIXME this doesn't work properly with things like music discs and banners that have lore but technically don't.
-        // more testing is required.
-//        String[] name = {ItemUtils.getItemName(item)};
+    public boolean getBought() {
+        return bought;
+    }
 
-        // First item in array is null to prevent display name from being overwritten
-        // (this way maintains language settings)
-        String[] name = {null};
-        String[] existingLore = ItemUtils.getItemLoreArray(item);
+    public void setBid(double bid, Player bidder) {
+        if (!isValid()) {
+            return;
+        }
 
-        String[] separatorLore = ItemUtils.getSeparatorLoreArray();
+        this.price = bid;
+        this.bidders.put(bidder, bid);
 
-        String[] allExist;
+        if (auctionType == AuctionType.BUY_IT_NOW) {
+            bought = true;
+        }
+    }
 
-//        if (existingLore.length == 0) {
-//            allExist = name;
-//        } else {
-        allExist = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(name, existingLore), separatorLore);
-//        }
+    public Pair<Player, Double> getLastBidder() {
+//        return bidders.get(bidders.size() - 1);
+        Object lastBidder = bidders.lastKey();
+        Object lastPrice = bidders.get(lastBidder);
 
-        return new DynamicGuiElement(character, (viewer) -> {
-            String[] extraLore;
+        return new Pair<>((Player) lastBidder, (Double) lastPrice);
+    }
 
-            if (getDurationRemaining().isNegative()) {
-                extraLore = new String[]{
-                        ChatColor.RED + "This auction is expired!"
-                };
-            } else {
-                String costWord = auctionType == AuctionType.AUCTION ? "Bid" : "Price";
-                String purchaseWord = auctionType == AuctionType.AUCTION ? "bid" : "buy";
-                extraLore = new String[]{
-                        ChatUtils.RESET + ChatColor.GRAY + costWord + ": " + ChatColor.GOLD + SuperAuctionHouse.getEconomy().format(price),
-                        ChatUtils.RESET + ChatColor.GRAY + "Seller: " + sellerName,
-                        ChatUtils.RESET + ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + DurationUtils.formatDuration(getDurationRemaining()),
-                        " ",
-                        ChatUtils.RESET + ChatColor.YELLOW + String.format("Click to %s!", purchaseWord)
-                };
-            }
+    public LinkedMap getBidders() {
+        return bidders;
+    }
 
-            return new StaticGuiElement(character, item,
-                    click -> {
-                        gui.playClickSound();
-                        // TODO implement buy menu here
-                        return true;
-                    },
-                    (String[]) ArrayUtils.addAll(allExist, extraLore));
-        });
+    public boolean isExpired() {
+        return getDurationRemaining().isNegative();
+    }
+
+    public boolean isValid() {
+        // An auction is valid (can be bid on) if it is not already bought and is not expired
+        return !(bought || isExpired());
     }
 }

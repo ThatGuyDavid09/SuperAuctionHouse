@@ -60,12 +60,12 @@ public class SellMenuSellerNameElement extends BaseElement {
                 .onClose(state -> {
                     Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {
                         sellMenu.sellerName = state.getText();
-                        sellMenu.getGui().close();
+                        sellMenu.getGui().close(false);
                         sellMenu.getGui().playClickSound();
-                        sellMenu = new SellItemMenu(sellMenu);
-                        sellMenu.open(false);
-                        sellMenu.updateConfirmElement();
                         sellMenu.drawInventory();
+
+//                        sellMenu = new SellItemMenu(sellMenu);
+                        sellMenu.open(false);
                     });
                 })
                 .onClick((slot, state) -> {

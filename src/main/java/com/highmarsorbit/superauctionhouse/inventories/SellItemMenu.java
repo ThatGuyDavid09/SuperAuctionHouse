@@ -29,12 +29,14 @@ public class SellItemMenu extends BaseInventory {
     private double fee;
 
     public SellItemMenu(Player holder) {
-        super(holder, "sell_menu_title");
+        super(holder, "sell_menu_title", false);
         sellerName = holder.getDisplayName();
 
         // TODO temp for testing. Remove later.
         Random random = new Random();
         fee = random.nextDouble() * 100;
+
+        initalizeGui();
     }
 
     public SellItemMenu(SellItemMenu copy) {
@@ -53,6 +55,7 @@ public class SellItemMenu extends BaseInventory {
 
         updateSellItemElement();
         updateConfirmElement();
+        drawInventory();
     }
 
     public void setSaleItem(ItemStack item) {
@@ -88,7 +91,7 @@ public class SellItemMenu extends BaseInventory {
 
         gui.addElement(new StaticGuiElement('x', new ItemStack(Material.BARRIER), click -> {
             gui.playClickSound();
-            gui.close();
+            gui.close(false);
             return true;
         },
         ChatUtils.RESET + ChatColor.RED + "Cancel Sale",
@@ -200,7 +203,7 @@ public class SellItemMenu extends BaseInventory {
         gui.addElement(new DynamicGuiElement('c', () -> new StaticGuiElement('c', new ItemStack(Material.GREEN_CONCRETE),
                 click -> {
                     gui.playClickSound();
-                    gui.close();
+                    gui.close(false);
 
                     // If player dropped item out of inventory during selling process
                     boolean inventoryContainsItem = holder.getInventory().contains(sellingItem);
@@ -215,21 +218,21 @@ public class SellItemMenu extends BaseInventory {
                         return true;
                     }
 
-                    AuctionListStatus auctionStatus = SuperAuctionHouse.getAuctionManager().listAuction(new AuctionItem(sellingItem, holder, price, duration, auctionType, sellerName));
-                    if (auctionStatus.isListFail()) {
+                    AuctionUpdateStatus auctionStatus = SuperAuctionHouse.getAuctionManager().listAuction(new AuctionItem(sellingItem, holder, price, duration, auctionType, sellerName));
+                    if (auctionStatus.isTechnicalFailure()) {
                         // Log technical failures to console
-                        SuperAuctionHouse.sendMessageByPath(holder, "sell_item_list_fail");
+                        SuperAuctionHouse.sendMessageByPath(holder, "sell_item_technical_fail");
                         SuperAuctionHouse.getInstance().getLogger().warning(String.format("Player %s attempted to sell " +
                                 "an item and it failed to list. Check to see if the database is working properly", holder.getDisplayName()));
                         return true;
                     }
 
                     if (!auctionStatus.isSuccessful()) {
-                        SuperAuctionHouse.sendMessageByPath(holder, "sell_item_list_cancel");
+                        SuperAuctionHouse.sendMessageByPath(holder, "sell_item_fail");
                         return true;
                     }
 
-                    // Actually withdrawing fee and removing item should happen
+                    // Actually withdrawing fee and removing item should happen after all checks are compelte
                     holder.getInventory().remove(sellingItem);
                     SuperAuctionHouse.getEconomy().withdrawPlayer(holder, calculateSaleFee());
 

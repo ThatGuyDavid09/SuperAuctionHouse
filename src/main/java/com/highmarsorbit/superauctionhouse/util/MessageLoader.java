@@ -5,14 +5,28 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class MessageLoader {
-    private YamlConfiguration config;
+    private final YamlConfiguration config;
+    private final boolean upToDate;
     public MessageLoader(YamlConfiguration yamlConfig) {
         config = yamlConfig;
+        String configVersion = config.getString("version");
+        upToDate = SuperAuctionHouse.getInstance().getDescription().getVersion().equals(configVersion);
+        if (!upToDate) {
+            SuperAuctionHouse.getInstance().getLogger().severe("messages.yml not up to date! Some chat messages " +
+                    "won't display properly. Delete messages.yml and reload the plugin to recreate a new version.");
+        }
     }
 
     public String getMessage(String path) {
         String unReplaced = config.getString(path);
         if (unReplaced == null) {
+            if (upToDate) {
+                SuperAuctionHouse.getInstance().getLogger().warning(String.format("%s not found in up-to-date messages.yml! " +
+                        "Did you remove any entries? If not, this is a bug.", path));
+            } else {
+                SuperAuctionHouse.getInstance().getLogger().warning(String.format("%s not found in up-to-date messages.yml! " +
+                        "This is likely because your messages.yml is out of date.", path));
+            }
             return path;
         }
         String replaced = unReplaced.replace("($PREFIX)", SuperAuctionHouse.prefix);

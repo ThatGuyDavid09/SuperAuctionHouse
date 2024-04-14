@@ -8,7 +8,9 @@ public interface Storage {
     AuctionItem[] getAllAuctions();
     AuctionItem[] getCurrentAuctions();
     int getMaxId();
-    boolean updateAuction(int id, AuctionItem item);
+    boolean updateAuction(AuctionItem item);
+    boolean deleteAuction(int auctionId);
+    boolean close();
     boolean reset();
     boolean selfTest();
 }

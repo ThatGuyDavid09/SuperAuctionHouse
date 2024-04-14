@@ -1,10 +1,7 @@
 package com.highmarsorbit.superauctionhouse.elements.browser;
 
 import com.highmarsorbit.superauctionhouse.elements.BaseElement;
-import com.highmarsorbit.superauctionhouse.util.AuctionItem;
-import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
-import com.highmarsorbit.superauctionhouse.util.AuctionType;
-import com.highmarsorbit.superauctionhouse.util.ItemUtils;
+import com.highmarsorbit.superauctionhouse.util.*;
 import de.themoep.inventorygui.GuiElementGroup;
 import de.themoep.inventorygui.InventoryGui;
 import org.bukkit.ChatColor;
@@ -26,13 +23,17 @@ public class AuctionsGuiElement extends BaseElement {
 
         List<AuctionItem> filteredItems = filterItems(items);
         for (AuctionItem auction : filteredItems) {
-            ((GuiElementGroup) element).addElement(auction.getGuiElement(gui));
+            ((GuiElementGroup) element).addElement(AuctionItemElementHelper.getAuctionGuiElement(auction, gui));
         }
     }
 
     private List<AuctionItem> filterItems(AuctionItem[] items) {
         Instant now = Instant.ofEpochMilli(System.currentTimeMillis());
-        Stream<AuctionItem> typeFilteredItems = Arrays.stream(items)
+
+        Stream<AuctionItem> showableItems = Arrays.stream(items)
+                .filter(AuctionItem::isValid);
+
+        Stream<AuctionItem> typeFilteredItems = showableItems
                 .filter(item -> switch (sortState.typeSort) {
                     case BOTH -> true;
                     case AUCTION_ONLY -> item.getAuctionType() == AuctionType.AUCTION;
@@ -45,19 +46,15 @@ public class AuctionsGuiElement extends BaseElement {
 
         return switch (sortState.orderSort) {
             case LOWEST_PRICE -> nameFilteredItems
-                    .filter(item -> item.getEndTime().isAfter(now))
                     .sorted(Comparator.comparingDouble(AuctionItem::getPrice))
                     .collect(Collectors.toList());
             case HIGHEST_PRICE -> nameFilteredItems
-                    .filter(item -> item.getEndTime().isAfter(now))
                     .sorted(Comparator.comparingDouble(AuctionItem::getPrice).reversed())
                     .collect(Collectors.toList());
             case NEWEST_FIRST -> nameFilteredItems
-                    .filter(item -> item.getEndTime().isAfter(now))
                     .sorted(Comparator.comparingLong(item -> ((AuctionItem) item).getCreateTime().getEpochSecond()).reversed())
                     .collect(Collectors.toList());
             case ENDING_SOON -> nameFilteredItems
-                    .filter(item -> item.getEndTime().isAfter(now))
                     .sorted(Comparator.comparingLong(item -> item.getEndTime().getEpochSecond()))
                     .collect(Collectors.toList());
         };

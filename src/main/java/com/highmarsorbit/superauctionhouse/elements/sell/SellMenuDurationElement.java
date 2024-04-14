@@ -50,11 +50,10 @@ public class SellMenuDurationElement extends BaseElement {
                     // Needed to run task synchronously as otherwise Bukkit throws an error. Why does this work in
                     // AuctionTextSortElement but not here?
                     Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {
-                        sellMenu.getGui().close();
-                        sellMenu = new SellItemMenu(sellMenu);
-                        sellMenu.open(false);
-                        sellMenu.updateConfirmElement();
+                        sellMenu.getGui().close(false);
                         sellMenu.drawInventory();
+//                        sellMenu = new SellItemMenu(sellMenu);
+                        sellMenu.open(false);
                     });
                 })
                 .withLines(

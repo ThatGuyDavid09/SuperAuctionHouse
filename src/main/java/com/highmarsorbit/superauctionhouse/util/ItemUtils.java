@@ -1,5 +1,7 @@
 package com.highmarsorbit.superauctionhouse.util;
 
+import de.themoep.inventorygui.GuiElement;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
@@ -30,5 +32,23 @@ public class ItemUtils {
                 ChatUtils.RESET +  ChatColor.GRAY + ChatColor.BOLD + "________________",
                 " ",
         };
+    }
+
+    public static String[] getLoreWithSeparator(ItemStack item) {
+        // First item in array is null to prevent display name from being overwritten
+        // (this way maintains language settings)
+        String[] name = {null};
+        String[] existingLore = getItemLoreArray(item);
+
+        String[] separatorLore = getSeparatorLoreArray();
+
+        String[] allExist;
+
+//        if (existingLore.length == 0) {
+//            allExist = name;
+//        } else {
+        allExist = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(name, existingLore), separatorLore);
+//        }
+        return allExist;
     }
 }

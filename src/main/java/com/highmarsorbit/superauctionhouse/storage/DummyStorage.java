@@ -5,59 +5,70 @@ import com.highmarsorbit.superauctionhouse.util.AuctionItem;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A non-persistent storage for testing.
  */
 public class DummyStorage implements Storage {
-    private ArrayList<AuctionItem> items = new ArrayList<>();
+    private ArrayList<AuctionItem> auctions = new ArrayList<>();
     @Override
     public boolean storeAuction(AuctionItem item) {
-        items.add(item);
+        auctions.add(item);
         return true;
     }
 
     @Override
     public boolean storeAuctions(AuctionItem[] items) {
-        this.items.addAll(List.of(items));
+        this.auctions.addAll(List.of(items));
         return true;
     }
 
     @Override
     public AuctionItem[] getAllAuctions() {
-        return items.toArray(new AuctionItem[0]);
+        return auctions.toArray(new AuctionItem[0]);
     }
     @Override
     public AuctionItem[] getCurrentAuctions() {
-        return items.stream()
-                .filter(i -> Instant.ofEpochMilli(System.currentTimeMillis()).isBefore(i.getEndTime()))
+        return auctions.stream()
+                .filter(i -> !i.isExpired())
                 .toArray(AuctionItem[]::new);
     }
 
     @Override
     public int getMaxId() {
-        return items.stream()
+        return auctions.stream()
                 .mapToInt(AuctionItem::getId)
                 .max().orElse(0);
     }
 
     @Override
-    public boolean updateAuction(int id, AuctionItem item) {
-        items = (ArrayList<AuctionItem>) items.stream()
-                .filter(i -> i.getId() != id)
-                .collect(Collectors.toList());
+    public boolean updateAuction(AuctionItem item) {
+        int id = item.getId();
+        auctions.removeIf(i -> i.getId() == id);
+        auctions.add(item);
+        return true;
+    }
+
+    @Override
+    public boolean deleteAuction(int auctionId) {
+        auctions.removeIf(i -> i.getId() == auctionId);
         return true;
     }
 
     @Override
     public boolean reset() {
-        items.clear();
+        auctions.clear();
         return true;
     }
 
     @Override
     public boolean selfTest() {
+        return true;
+    }
+
+    @Override
+    public boolean close() {
+        // TODO make this save to file
         return true;
     }
 }
