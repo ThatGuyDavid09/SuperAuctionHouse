@@ -164,4 +164,9 @@ public class AuctionManager {
     public AuctionItem[] getAllAuctions() {
         return currentAuctions.toArray(new AuctionItem[0]);
     }
+
+    public boolean disable() {
+        boolean success = store.close();
+        return success;
+    }
 }

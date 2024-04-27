@@ -149,6 +149,12 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getLogger().info("Closing auction storage");
+        boolean success = auctionManager.disable();
+        if (!success) {
+            getLogger().severe("Error while closing storage! Some information may be lost or corrupted.");
+        }
+        getLogger().info("SuperAuctionHouse disabled");
 //        getLogger().info("onDisable called!");
     }
 
