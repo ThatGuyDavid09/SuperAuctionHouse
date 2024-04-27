@@ -29,11 +29,22 @@ public class SellItemMenu extends BaseInventory {
     public AuctionType auctionType = AuctionType.AUCTION;
 
     public SellItemMenu(Player holder) {
+        this(holder, -1, null);
+    }
+
+    public SellItemMenu(Player holder, double price, String duration) {
         super(holder, "sell_menu_title", false);
         sellerName = holder.getDisplayName();
 
-        initalizeGui();
+        if (price > 0) {
+            this.price = price;
+        }
+
+        if (duration != null && duration.trim().length() > 0) {
+            this.duration = DurationUtils.fromString(duration);
+        }
         equation = SuperAuctionHouse.getConfiguration().getString("fee_equation");
+        initalizeGui();
     }
 
     public SellItemMenu(SellItemMenu copy) {

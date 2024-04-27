@@ -1,10 +1,8 @@
 package com.highmarsorbit.superauctionhouse.config;
 
-import com.mojang.datafixers.types.templates.Check;
-
 public class Messages {
     public static String ah_command_not_player_error = "($PREFIX)($RED)Only players may open the auction house!";
-    public static String ah_command_success = "($PREFIX)Pretend the auction house opened.";
+    public static String ah_refresh_success = "($GREEN)Successfully refreshed auction house!";
     public static String ah_title = "Auction House";
     public static String sell_menu_title = "Sell Item";
     public static String bid_title = "Place bid";

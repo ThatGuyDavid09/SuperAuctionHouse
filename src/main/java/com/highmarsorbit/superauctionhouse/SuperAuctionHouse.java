@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import redempt.redlib.commandmanager.CommandParser;
 import redempt.redlib.config.ConfigManager;
 
 import java.io.File;
@@ -112,7 +113,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     private void registerCommands() {
-        this.getCommand("ah").setExecutor(new AHCommand());
+//        this.getCommand("ah").setExecutor(new AHCommand());
+        new CommandParser(this.getResource("command.rdcml")).parse().register("superauctionhouse", new AHCommand());
     }
 
     private boolean setupEconomy() {
