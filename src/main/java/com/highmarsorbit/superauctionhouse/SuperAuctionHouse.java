@@ -1,36 +1,28 @@
 package com.highmarsorbit.superauctionhouse;
 
 import com.highmarsorbit.superauctionhouse.commands.AHCommand;
+import com.highmarsorbit.superauctionhouse.config.Config;
+import com.highmarsorbit.superauctionhouse.config.Messages;
 import com.highmarsorbit.superauctionhouse.listeners.AuctionListListener;
 import com.highmarsorbit.superauctionhouse.listeners.InventoryClickListener;
 import com.highmarsorbit.superauctionhouse.managers.AuctionManager;
 import com.highmarsorbit.superauctionhouse.storage.DummyStorage;
 import com.highmarsorbit.superauctionhouse.storage.Storage;
-import com.highmarsorbit.superauctionhouse.util.MessageLoader;
-import fr.cleymax.signgui.SignCompleteEvent;
-import fr.cleymax.signgui.SignGUI;
+import com.highmarsorbit.superauctionhouse.config.MessageLoader;
 import fr.cleymax.signgui.SignManager;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
 import net.milkbowl.vault.economy.Economy;
-import net.minecraft.server.v1_16_R3.BlockPosition;
-import net.minecraft.server.v1_16_R3.PacketPlayInUpdateSign;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import redempt.redlib.config.ConfigManager;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 public final class SuperAuctionHouse extends JavaPlugin {
@@ -43,7 +35,6 @@ public final class SuperAuctionHouse extends JavaPlugin {
     private Economy econ;
     private Storage store;
     private SignManager signGuiManager;
-
 
     @Override
     public void onEnable() {
@@ -137,23 +128,17 @@ public final class SuperAuctionHouse extends JavaPlugin {
         return econ != null;
     }
 
+
     private void loadConfigs() {
         getLogger().info("Loading configs");
         // For testing only.
-        // TODO: comment for release
-        saveResource("messages.yml", true);
-        saveResource("config.yml", true);
-        // Commented out for testing reasons.
-        // TODO: when ready for release, uncomment
-//        if (!messagesConfigFile.exists()) {
-//            messagesConfigFile.getParentFile().mkdirs();
-//            saveResource("messages.yml", false);
-//        }
+        // TODO: remove for release
 
-        // TODO uncomment for release
-//        saveDefaultConfig();
+        ConfigManager.create(this).target(Config.class).saveDefaults().load();
         getLogger().info("Loaded config.yml");
 
+
+        ConfigManager messagesMan = ConfigManager.create(this, "messages.yml").target(Messages.class).saveDefaults().load();
         File messagesConfigFile = new File(getDataFolder(), "messages.yml");
         YamlConfiguration messagesConfig = YamlConfiguration.loadConfiguration(messagesConfigFile);
         messages = new MessageLoader(messagesConfig);

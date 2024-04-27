@@ -45,8 +45,12 @@
                                     <pattern>de.themoep</pattern>
                                     <shadedPattern>com.highmarsorbit.superauctionhouse.libs</shadedPattern>
                                 </relocation>
+<!--                                <relocation>-->
+<!--                                    <pattern>de.tr7zw.item-nbt-api</pattern>-->
+<!--                                    <shadedPattern>com.highmarsorbit.superauctionhouse.libs</shadedPattern>-->
+<!--                                </relocation>-->
                                 <relocation>
-                                    <pattern>de.tr7zw.changeme.nbtapi</pattern>
+                                    <pattern>com.github.Redempt.RedLib</pattern>
                                     <shadedPattern>com.highmarsorbit.superauctionhouse.libs</shadedPattern>
                                 </relocation>
                             </relocations>
@@ -92,6 +96,10 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.org/repository/maven-public/</url>
             <layout>default</layout>
+        </repository>
+        <repository>
+            <id>redempt.dev</id>
+            <url>https://redempt.dev</url>
         </repository>
     </repositories>
 
@@ -145,6 +153,17 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.objecthunter</groupId>
+            <artifactId>exp4j</artifactId>
+            <version>0.4.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.Redempt</groupId>
+            <artifactId>RedLib</artifactId>
+            <version>6.6.1</version>
+            <scope>compile</scope>
         </dependency>
         <!--        <dependency>-->
 <!--            <groupId>de.tr7zw</groupId>-->

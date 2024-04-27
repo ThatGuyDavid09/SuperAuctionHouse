@@ -9,6 +9,8 @@ import com.highmarsorbit.superauctionhouse.util.*;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.GuiStateElement;
 import de.themoep.inventorygui.StaticGuiElement;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,24 +21,19 @@ import java.time.Duration;
 import java.util.Random;
 
 public class SellItemMenu extends BaseInventory {
+    private final String equation;
     private ItemStack sellingItem = null;
     public double price = 0;
     public Duration duration = Duration.ZERO;
     public String sellerName;
     public AuctionType auctionType = AuctionType.AUCTION;
 
-    // TODO temp for testing. Remove later.
-    private double fee;
-
     public SellItemMenu(Player holder) {
         super(holder, "sell_menu_title", false);
         sellerName = holder.getDisplayName();
 
-        // TODO temp for testing. Remove later.
-        Random random = new Random();
-        fee = random.nextDouble() * 100;
-
         initalizeGui();
+        equation = SuperAuctionHouse.getConfiguration().getString("fee_equation");
     }
 
     public SellItemMenu(SellItemMenu copy) {
@@ -47,8 +44,6 @@ public class SellItemMenu extends BaseInventory {
         duration = copy.duration;
         sellerName = copy.sellerName;
         auctionType = copy.auctionType;
-        // TODO remove
-        fee = copy.fee;
 
         GuiStateElement typeElement = (GuiStateElement) gui.getElement('t');
         typeElement.setState(auctionType.toString());
@@ -56,6 +51,7 @@ public class SellItemMenu extends BaseInventory {
         updateSellItemElement();
         updateConfirmElement();
         drawInventory();
+        equation = SuperAuctionHouse.getConfiguration().getString("fee_equation");
     }
 
     public void setSaleItem(ItemStack item) {
@@ -283,7 +279,18 @@ public class SellItemMenu extends BaseInventory {
     }
 
     private double calculateSaleFee() {
-        // TODO: actually implement sale fee logic
-        return fee;
+        Expression expression = new ExpressionBuilder(equation)
+                .variables("d", "h", "m", "s", "p")
+                .build()
+                .setVariable("d", duration.toDays())
+                .setVariable("h", duration.toHours())
+                .setVariable("m", duration.toMinutes())
+                .setVariable("s", duration.toSeconds())
+                .setVariable("p", price);
+
+        double result = expression.evaluate();
+        // Rounds to 2 decimal places
+        double rounded = Math.round(result * 100.0) / 100.0;
+        return rounded;
     }
 }

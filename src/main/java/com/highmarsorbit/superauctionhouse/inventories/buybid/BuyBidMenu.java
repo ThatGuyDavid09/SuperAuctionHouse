@@ -116,7 +116,7 @@ public class BuyBidMenu extends BaseInventory {
             return;
         }
 
-        // TODO maybe implement a minimum bid?
+        // TODO maybe implement a minimum bid increase?
         if (auctionType == AuctionType.AUCTION && price < item.getPrice()) {
             setConfirmFailElement("Bid must be greater than previous bid!");
             return;
