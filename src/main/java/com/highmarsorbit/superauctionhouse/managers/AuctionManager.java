@@ -178,4 +178,8 @@ public class AuctionManager {
         boolean success = store.close();
         return success;
     }
+
+    public boolean clear() {
+        return store.clear();
+    }
 }

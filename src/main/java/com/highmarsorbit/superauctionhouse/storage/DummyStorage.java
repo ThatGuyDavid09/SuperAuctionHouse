@@ -71,7 +71,6 @@ public class DummyStorage implements Storage {
 
     @Override
     public boolean open() {
-        // TODO needs testing
         File databaseFile = new File(SuperAuctionHouse.getInstance().getDataFolder().getAbsolutePath(), "auctions");
         try (FileInputStream fis = new FileInputStream(databaseFile);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
@@ -97,8 +96,12 @@ public class DummyStorage implements Storage {
 
     @Override
     public boolean close() {
-        // TODO needs testing
         File databaseFile = new File(SuperAuctionHouse.getInstance().getDataFolder().getAbsolutePath(), "auctions");
+        // Delete old database
+        if (databaseFile.exists()) {
+            databaseFile.delete();
+        }
+
         try (FileOutputStream fos = new FileOutputStream(databaseFile);
             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
 
@@ -109,6 +112,12 @@ public class DummyStorage implements Storage {
             SuperAuctionHouse.getLogging().severe("Error while saving database to file!");
             return false;
         }
+        return true;
+    }
+
+    @Override
+    public boolean clear() {
+        auctions.clear();
         return true;
     }
 }

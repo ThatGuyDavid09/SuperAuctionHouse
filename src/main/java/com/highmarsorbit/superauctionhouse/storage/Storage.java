@@ -15,4 +15,6 @@ public interface Storage {
     boolean reset();
 
     boolean selfTest();
+
+    boolean clear();
 }

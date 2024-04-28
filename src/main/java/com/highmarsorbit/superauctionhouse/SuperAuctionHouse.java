@@ -11,6 +11,7 @@ import com.highmarsorbit.superauctionhouse.storage.Storage;
 import com.highmarsorbit.superauctionhouse.config.MessageLoader;
 import com.mojang.datafixers.util.Pair;
 import fr.cleymax.signgui.SignManager;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import net.objecthunter.exp4j.ExpressionBuilder;
