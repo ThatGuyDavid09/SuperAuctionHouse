@@ -1,8 +1,9 @@
 package com.highmarsorbit.superauctionhouse.storage;
 
+import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.util.AuctionItem;
 
-import java.time.Instant;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * A non-persistent storage for testing.
  */
 public class DummyStorage implements Storage {
-    private ArrayList<AuctionItem> auctions = new ArrayList<>();
+    private ArrayList<AuctionItem> auctions;
     @Override
     public boolean storeAuction(AuctionItem item) {
         auctions.add(item);
@@ -66,9 +67,40 @@ public class DummyStorage implements Storage {
         return true;
     }
 
+
+    @Override
+    public boolean open() {
+        File databaseFile = new File(SuperAuctionHouse.getInstance().getDataFolder().getAbsolutePath(), "auctions");
+        try (FileInputStream fis = new FileInputStream(databaseFile);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+
+            auctions = (ArrayList<AuctionItem>) ois.readObject();
+        } catch (FileNotFoundException e) {
+            auctions = new ArrayList<>();
+            return true;
+        } catch (IOException ioe) {
+            return false;
+        } catch (ClassNotFoundException e) {
+            SuperAuctionHouse.getInstance().getLogger().warning("Database deserialization failed! Using empty array");
+            auctions = new ArrayList<>();
+            return true;
+        }
+        return true;
+    }
+
     @Override
     public boolean close() {
         // TODO make this save to file
+        File databaseFile = new File(SuperAuctionHouse.getInstance().getDataFolder().getAbsolutePath(), "auctions");
+        try (FileOutputStream fos = new FileOutputStream(databaseFile);
+            ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+
+            oos.writeObject(auctions);
+        } catch (IOException e) {
+            e.printStackTrace();
+            SuperAuctionHouse.getInstance().getLogger().severe("Error while saving database to file!");
+            return false;
+        }
         return true;
     }
 }

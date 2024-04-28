@@ -23,9 +23,18 @@ public class AuctionManager {
     private int maxId;
 
     public AuctionManager(Storage store) {
-        currentAuctions = new ArrayList<>();
         this.store = store;
         maxId = store.getMaxId();
+    }
+
+    public boolean init() {
+        boolean success = store.open();
+        if (!success) {
+            return false;
+        }
+
+        refreshAvailableAuctions();
+        return true;
     }
 
     /**

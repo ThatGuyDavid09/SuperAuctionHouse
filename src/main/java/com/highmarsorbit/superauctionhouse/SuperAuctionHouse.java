@@ -119,7 +119,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
         if (!testResult) return false;
 
         auctionManager = new AuctionManager(store);
-        return true;
+        boolean success = auctionManager.init();
+        return success;
     }
 
     private void registerCommands() {
@@ -204,6 +205,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
         boolean success = auctionManager.disable();
         if (!success) {
             getLogger().severe("Error while closing storage! Some information may be lost or corrupted.");
+        } else {
+            getLogger().info("Auction storage closed");
         }
         getLogger().info("SuperAuctionHouse disabled");
 //        getLogger().info("onDisable called!");

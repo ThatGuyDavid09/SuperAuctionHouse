@@ -7,10 +7,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 
-public class AuctionItem {
+public class AuctionItem implements Serializable {
     private final int id;
     private final ItemStack item;
     private final Player seller;
@@ -22,7 +23,7 @@ public class AuctionItem {
 
     private final double initialPrice;
     private double price;
-    private LinkedMap bidders = new LinkedMap();
+    private final LinkedMap bidders = new LinkedMap();
 
     public AuctionItem(ItemStack item, Player seller, double price, Duration duration, AuctionType auctionType) {
         this(item, seller, price, duration, auctionType, seller.getDisplayName());
