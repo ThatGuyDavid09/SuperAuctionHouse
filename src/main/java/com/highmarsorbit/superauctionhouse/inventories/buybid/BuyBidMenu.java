@@ -74,6 +74,7 @@ public class BuyBidMenu extends BaseInventory {
     protected void populateBaseGuiElements() {
         gui.addElement(new StaticGuiElement('b', new ItemStack(Material.ARROW),
                 click -> {
+                    gui.playClickSound();
                     gui.close(false);
                     return true;
                 },
@@ -129,7 +130,7 @@ public class BuyBidMenu extends BaseInventory {
                     if (auctionStatus.isTechnicalFailure()) {
                         // Log technical failures to console
                         SuperAuctionHouse.sendMessageByPath(holder, "buy_item_technical_fail");
-                        SuperAuctionHouse.getInstance().getLogger().warning(String.format("Player %s attempted to bid on " +
+                        SuperAuctionHouse.getLogging().warning(String.format("Player %s attempted to bid on " +
                                 "an item and it failed. Check to see if the database is working properly", holder.getDisplayName()));
                         return true;
                     }

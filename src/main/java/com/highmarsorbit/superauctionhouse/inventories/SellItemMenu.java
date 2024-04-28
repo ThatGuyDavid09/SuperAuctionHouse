@@ -55,6 +55,7 @@ public class SellItemMenu extends BaseInventory {
      * @return Whether a default type was set or not.
      */
     private boolean setDefaultAuctionType() {
+        // TODO needs testing
         boolean auctionPerm = holder.hasPermission("sah.sell.auction");
         boolean binPerm = holder.hasPermission("sah.sell.bin");
 
@@ -127,6 +128,7 @@ public class SellItemMenu extends BaseInventory {
         ChatUtils.RESET + ChatColor.YELLOW + "and close the menu!"));
 
         // Only add an element to change auction type if user has permission for both types
+        // TODO needs testing
         if (holder.hasPermission("sah.sell.auction") && holder.hasPermission("sah.sell.bin")) {
             gui.addElement(new GuiStateElement('t',
                     new GuiStateElement.State(
@@ -168,8 +170,9 @@ public class SellItemMenu extends BaseInventory {
     }
 
     private boolean isSellItemValid() {
+        // TODO needs testing
         boolean isInvalidMaterial = Config.invalid_item_material.stream().anyMatch(x -> x == sellingItem.getType());
-        if (!isInvalidMaterial) {
+        if (isInvalidMaterial) {
             return false;
         }
 
@@ -261,7 +264,7 @@ public class SellItemMenu extends BaseInventory {
                     if (auctionStatus.isTechnicalFailure()) {
                         // Log technical failures to console
                         SuperAuctionHouse.sendMessageByPath(holder, "sell_item_technical_fail");
-                        SuperAuctionHouse.getInstance().getLogger().warning(String.format("Player %s attempted to sell " +
+                        SuperAuctionHouse.getLogging().warning(String.format("Player %s attempted to sell " +
                                 "an item and it failed to list. Check to see if the database is working properly", holder.getDisplayName()));
                         return true;
                     }

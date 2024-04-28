@@ -2,6 +2,7 @@ package com.highmarsorbit.superauctionhouse.storage;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.util.AuctionItem;
+import org.apache.commons.lang.SerializationException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -70,18 +71,24 @@ public class DummyStorage implements Storage {
 
     @Override
     public boolean open() {
+        // TODO needs testing
         File databaseFile = new File(SuperAuctionHouse.getInstance().getDataFolder().getAbsolutePath(), "auctions");
         try (FileInputStream fis = new FileInputStream(databaseFile);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
 
             auctions = (ArrayList<AuctionItem>) ois.readObject();
+            if (auctions == null) {
+                throw new SerializationException("Deserialized into null object");
+            }
         } catch (FileNotFoundException e) {
             auctions = new ArrayList<>();
             return true;
         } catch (IOException ioe) {
+            ioe.printStackTrace();
             return false;
-        } catch (ClassNotFoundException e) {
-            SuperAuctionHouse.getInstance().getLogger().warning("Database deserialization failed! Using empty array");
+        } catch (ClassNotFoundException|SerializationException e) {
+            e.printStackTrace();
+            SuperAuctionHouse.getLogging().warning("Database deserialization failed! Using empty array");
             auctions = new ArrayList<>();
             return true;
         }
@@ -90,15 +97,16 @@ public class DummyStorage implements Storage {
 
     @Override
     public boolean close() {
-        // TODO make this save to file
+        // TODO needs testing
         File databaseFile = new File(SuperAuctionHouse.getInstance().getDataFolder().getAbsolutePath(), "auctions");
         try (FileOutputStream fos = new FileOutputStream(databaseFile);
             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
 
             oos.writeObject(auctions);
         } catch (IOException e) {
+            // TODO consider removing
             e.printStackTrace();
-            SuperAuctionHouse.getInstance().getLogger().severe("Error while saving database to file!");
+            SuperAuctionHouse.getLogging().severe("Error while saving database to file!");
             return false;
         }
         return true;

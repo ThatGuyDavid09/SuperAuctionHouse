@@ -13,7 +13,7 @@ public class MessageLoader {
     public String getMessage(String path) {
         String unReplaced = config.getString(path);
         if (unReplaced == null) {
-            SuperAuctionHouse.getInstance().getLogger().warning(String.format("%s not found in up-to-date messages.yml! " +
+            SuperAuctionHouse.getLogging().warning(String.format("%s not found in up-to-date messages.yml! " +
                     "Did you remove any entries? If not, this is a bug.", path));
             return path;
         }

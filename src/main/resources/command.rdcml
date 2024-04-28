@@ -17,6 +17,12 @@ ah,sah,superauctionhouse,auctionhouse {
         hook refresh
     }
 
+    clear string:confirmCode*? {
+        permission sah.clear
+        help Clears all auctions. This is not reversible!
+        hook clear
+    }
+
     // TODO: remove for release
     sell100 {
             permission sah.sell100

@@ -9,10 +9,10 @@ import com.highmarsorbit.superauctionhouse.managers.AuctionManager;
 import com.highmarsorbit.superauctionhouse.storage.DummyStorage;
 import com.highmarsorbit.superauctionhouse.storage.Storage;
 import com.highmarsorbit.superauctionhouse.config.MessageLoader;
+import com.mojang.datafixers.util.Pair;
 import fr.cleymax.signgui.SignManager;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
-import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,6 +28,7 @@ import redempt.redlib.config.ConfigManager;
 
 import java.io.File;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class SuperAuctionHouse extends JavaPlugin {
     public final static String prefix = ChatColor.RESET + "[" + ChatColor.AQUA + "SuperAuctionHouse" + ChatColor.RESET + "] ";
@@ -46,7 +47,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
         loadConfigs();
         validateConfigs();
 
-        if (getConfig().getBoolean("settings.log-fine")) {
+        if (Config.log_fine) {
             getLogger().setLevel(Level.ALL);
             Bukkit.getLogger().setLevel(Level.ALL);
         }
@@ -63,15 +64,26 @@ public final class SuperAuctionHouse extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        getLogger().info("Loaded Vault hooks");
 
         registerCommands();
         registerEventListeners();
-        boolean storageTestResult = createAuctionManager();
-        if (!storageTestResult) {
+
+        Pair<Boolean, Storage> storeResult = createStorage();
+        if (!storeResult.getFirst()) {
             getLogger().severe("Disabled due to auction database self test failed! Check your database configuration.");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        getLogger().info("Loaded database");
+
+        boolean auctionManagerResult = createAuctionManager(storeResult.getSecond());
+        if (!auctionManagerResult) {
+            getLogger().severe("Disabled due to auction manager init fail! Check your database.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+        getLogger().info("Loaded auctions");
 
         registerScheduledTasks();
 
@@ -112,12 +124,14 @@ public final class SuperAuctionHouse extends JavaPlugin {
         }
     }
 
-    private boolean createAuctionManager() {
+    private Pair<Boolean, Storage> createStorage() {
         Storage store = new DummyStorage();
         boolean testResult = store.selfTest();
 
-        if (!testResult) return false;
+        return new Pair<>(testResult, store);
+    }
 
+    private boolean createAuctionManager(Storage store) {
         auctionManager = new AuctionManager(store);
         boolean success = auctionManager.init();
         return success;
@@ -225,6 +239,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
     public static Economy getEconomy() { return instance.econ; }
 
     public static Permission getPermissions() { return instance.perms; }
+
+    public static Logger getLogging() { return instance.getLogger(); }
 
     public static FileConfiguration getConfiguration() { return instance.getConfig(); }
 

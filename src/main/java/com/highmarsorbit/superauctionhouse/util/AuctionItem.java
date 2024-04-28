@@ -3,6 +3,7 @@ package com.highmarsorbit.superauctionhouse.util;
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.mojang.datafixers.util.Pair;
 import org.apache.commons.collections.map.LinkedMap;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -10,11 +11,13 @@ import org.bukkit.inventory.ItemStack;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
 public class AuctionItem implements Serializable {
     private final int id;
-    private final ItemStack item;
-    private final Player seller;
+    private final SerializableItemStack item;
+    private final UUID sellerUuid;
+    private transient Player seller;
     private final String sellerName;
     private final Instant createTime;
     private final Instant endTime;
@@ -31,8 +34,9 @@ public class AuctionItem implements Serializable {
 
     public AuctionItem(ItemStack item, Player seller, double price, Duration duration, AuctionType auctionType, String sellerName) {
         this.id = SuperAuctionHouse.getAuctionManager().getNextUsableId();
-        this.item = item;
+        this.item = new SerializableItemStack(item);
         this.seller = seller;
+        this.sellerUuid = seller.getUniqueId();
         this.initialPrice = price;
         this.price = price;
         this.auctionType = auctionType;
@@ -47,10 +51,13 @@ public class AuctionItem implements Serializable {
     }
 
     public ItemStack getItem() {
-        return item;
+        return item.getItem();
     }
 
     public Player getSeller() {
+        if (seller == null) {
+            seller = Bukkit.getPlayer(sellerUuid);
+        }
         return seller;
     }
 
@@ -81,10 +88,10 @@ public class AuctionItem implements Serializable {
     public String toString() {
         String itemName = "";
 
-        if (item.hasItemMeta() && !item.getItemMeta().hasDisplayName()) {
-            itemName = item.getItemMeta().getDisplayName();
+        if (item.getItem().hasItemMeta() && !item.getItem().getItemMeta().hasDisplayName()) {
+            itemName = item.getItem().getItemMeta().getDisplayName();
         } else {
-            itemName = item.getType().name();
+            itemName = item.getItem().getType().name();
         }
         return itemName + ChatColor.RESET;
     }
@@ -103,7 +110,7 @@ public class AuctionItem implements Serializable {
         }
 
         this.price = bid;
-        this.bidders.put(bidder, bid);
+        this.bidders.put(bidder.getUniqueId(), bid);
 
         if (auctionType == AuctionType.BUY_IT_NOW) {
             bought = true;
@@ -112,7 +119,7 @@ public class AuctionItem implements Serializable {
 
     public Pair<Player, Double> getLastBidder() {
 //        return bidders.get(bidders.size() - 1);
-        Object lastBidder = bidders.lastKey();
+        Object lastBidder = Bukkit.getPlayer((UUID) bidders.lastKey());
         Object lastPrice = bidders.get(lastBidder);
 
         return new Pair<>((Player) lastBidder, (Double) lastPrice);

@@ -27,7 +27,7 @@ public class AuctionListListener implements Listener {
                 ItemUtils.getItemName(auction.getItem()),
                 event.getAuction().getPrice());
 
-        SuperAuctionHouse.getInstance().getLogger().fine(message);
+        SuperAuctionHouse.getLogging().fine(message);
         auction.getSeller().sendMessage(SuperAuctionHouse.prefix + message);
     }
 }

@@ -24,7 +24,6 @@ public class AuctionManager {
 
     public AuctionManager(Storage store) {
         this.store = store;
-        maxId = store.getMaxId();
     }
 
     public boolean init() {
@@ -33,6 +32,7 @@ public class AuctionManager {
             return false;
         }
 
+        maxId = store.getMaxId();
         refreshAvailableAuctions();
         return true;
     }
@@ -71,7 +71,7 @@ public class AuctionManager {
         try {
             success = store.storeAuction(auction);
         } catch (Exception e) {
-            SuperAuctionHouse.getInstance().getLogger().warning("Error while listing item!");
+            SuperAuctionHouse.getLogging().warning("Error while listing item!");
             e.printStackTrace();
             success = false;
         }
@@ -98,7 +98,7 @@ public class AuctionManager {
         try {
             success = store.updateAuction(auction);
         } catch (Exception e) {
-            SuperAuctionHouse.getInstance().getLogger().warning("Error while placing bid on item!");
+            SuperAuctionHouse.getLogging().warning("Error while placing bid on item!");
             e.printStackTrace();
             success = false;
         }
@@ -155,7 +155,7 @@ public class AuctionManager {
         try {
             success = store.deleteAuction(id);
         } catch (Exception e) {
-            SuperAuctionHouse.getInstance().getLogger().warning("Error while deleting auction!");
+            SuperAuctionHouse.getLogging().warning("Error while deleting auction!");
             e.printStackTrace();
             success = false;
         }
