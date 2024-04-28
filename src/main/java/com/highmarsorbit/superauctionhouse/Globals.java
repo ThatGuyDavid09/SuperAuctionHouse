@@ -8,4 +8,5 @@ import java.util.List;
 
 public class Globals {
     public static HashMap<Player, SellItemMenu> waitingForClick = new HashMap<>();
+    public static String feeEquation;
 }

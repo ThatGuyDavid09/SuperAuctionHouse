@@ -2,6 +2,7 @@ package com.highmarsorbit.superauctionhouse.inventories;
 
 import com.highmarsorbit.superauctionhouse.Globals;
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.config.Config;
 import com.highmarsorbit.superauctionhouse.elements.sell.SellMenuDurationElement;
 import com.highmarsorbit.superauctionhouse.elements.sell.SellMenuPriceElement;
 import com.highmarsorbit.superauctionhouse.elements.sell.SellMenuSellerNameElement;
@@ -18,10 +19,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.time.Duration;
-import java.util.Random;
 
 public class SellItemMenu extends BaseInventory {
-    private final String equation;
     private ItemStack sellingItem = null;
     public double price = 0;
     public Duration duration = Duration.ZERO;
@@ -43,7 +42,6 @@ public class SellItemMenu extends BaseInventory {
         if (duration != null && duration.trim().length() > 0) {
             this.duration = DurationUtils.fromString(duration);
         }
-        equation = SuperAuctionHouse.getConfiguration().getString("fee_equation");
         initalizeGui();
     }
 
@@ -62,7 +60,6 @@ public class SellItemMenu extends BaseInventory {
         updateSellItemElement();
         updateConfirmElement();
         drawInventory();
-        equation = SuperAuctionHouse.getConfiguration().getString("fee_equation");
     }
 
     public void setSaleItem(ItemStack item) {
@@ -290,7 +287,7 @@ public class SellItemMenu extends BaseInventory {
     }
 
     private double calculateSaleFee() {
-        Expression expression = new ExpressionBuilder(equation)
+        Expression expression = new ExpressionBuilder(Globals.feeEquation)
                 .variables("d", "h", "m", "s", "p")
                 .build()
                 .setVariable("d", duration.toDays())

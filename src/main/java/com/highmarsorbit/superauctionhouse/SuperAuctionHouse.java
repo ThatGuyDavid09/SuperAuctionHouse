@@ -11,6 +11,8 @@ import com.highmarsorbit.superauctionhouse.storage.Storage;
 import com.highmarsorbit.superauctionhouse.config.MessageLoader;
 import fr.cleymax.signgui.SignManager;
 import net.milkbowl.vault.economy.Economy;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -41,6 +43,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
     public void onEnable() {
         instance = this;
         loadConfigs();
+        validateConfigs();
 
         if (getConfig().getBoolean("settings.log-fine")) {
             getLogger().setLevel(Level.ALL);
@@ -140,11 +143,36 @@ public final class SuperAuctionHouse extends JavaPlugin {
         getLogger().info("Loaded config.yml");
 
 
-        ConfigManager messagesMan = ConfigManager.create(this, "messages.yml").target(Messages.class).saveDefaults().load();
+        ConfigManager.create(this, "messages.yml").target(Messages.class).saveDefaults().load();
         File messagesConfigFile = new File(getDataFolder(), "messages.yml");
         YamlConfiguration messagesConfig = YamlConfiguration.loadConfiguration(messagesConfigFile);
         messages = new MessageLoader(messagesConfig);
         getLogger().info("Loaded messages.yml");
+    }
+
+
+    private void validateConfigs() {
+        // Run fee equation through a sample evaluation to make sure there are no errors. If there are, output warning
+        // to console and replace with default.
+        String eqn = getConfig().getString("fee_equation");
+
+        try {
+            new ExpressionBuilder(eqn)
+                    .variables("d", "h", "m", "s", "p")
+                    .build()
+                    .setVariable("d", 1)
+                    .setVariable("h", 1)
+                    .setVariable("m", 1)
+                    .setVariable("s", 1)
+                    .setVariable("p", 1)
+                    .evaluate();
+
+            Globals.feeEquation = eqn;
+        } catch (Exception e) {
+            String defaultEqn = "p * 0.06 + h";
+            getLogger().warning(String.format("Fee equation is invalid! Using default value %s", defaultEqn));
+            Globals.feeEquation = defaultEqn;
+        }
     }
 
     @Override

@@ -33,12 +33,12 @@ public class AuctionManager {
      *
      * @return The largest auction ID currently in use.
      */
-    public long queryMaxId() {
+    public long getMaxId() {
         return maxId;
     }
 
     /**
-     * Returns the largest auction ID in use, plus one, rendering it safe to assign to new autions.
+     * Returns the largest auction ID in use, plus one, rendering it safe to assign to new auctions.
      *
      * @return The next usable auction ID
      */
