@@ -25,7 +25,7 @@ public class SellItemMenu extends BaseInventory {
     public double price = 0;
     public Duration duration = Duration.ZERO;
     public String sellerName;
-    public AuctionType auctionType = AuctionType.AUCTION;
+    public AuctionType auctionType;
 
     public SellItemMenu(Player holder) {
         this(holder, -1, null);
@@ -42,7 +42,30 @@ public class SellItemMenu extends BaseInventory {
         if (duration != null && duration.trim().length() > 0) {
             this.duration = DurationUtils.fromString(duration);
         }
-        initalizeGui();
+
+        boolean success = setDefaultAuctionType();
+        if (success) {
+            initializeGui();
+        }
+    }
+
+    /**
+     * Sets default auction type. If user has permission, default is AUCTION. If no permission for that, then BIN.
+     * If no permission for that, returns false.
+     * @return Whether a default type was set or not.
+     */
+    private boolean setDefaultAuctionType() {
+        boolean auctionPerm = holder.hasPermission("sah.sell.auction");
+        boolean binPerm = holder.hasPermission("sah.sell.bin");
+
+        if (auctionPerm) {
+            auctionType = AuctionType.AUCTION;
+        } else if (binPerm) {
+            auctionType = AuctionType.BUY_IT_NOW;
+        } else {
+            return false;
+        }
+        return true;
     }
 
     public SellItemMenu(SellItemMenu copy) {
@@ -103,47 +126,59 @@ public class SellItemMenu extends BaseInventory {
         ChatUtils.RESET + ChatColor.YELLOW + "Click to cancel the sale",
         ChatUtils.RESET + ChatColor.YELLOW + "and close the menu!"));
 
-        // TODO have this check if player has permission to sell specific type
-        // actually need a check in general for setting auctiontype in constructor
-        gui.addElement(new GuiStateElement('t',
-                new GuiStateElement.State(
-                        change -> {
-                            auctionType = AuctionType.AUCTION;
-                            drawInventory();
-                        },
-                        "auction",
-                        new ItemStack(Material.GOLD_BLOCK),
-                        ChatUtils.RESET + ChatColor.BLUE + "Set auction type:",
-                        ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Auction",
-                        ChatUtils.RESET + "Buy It Now",
-                        " ",
-                        ChatUtils.RESET + ChatColor.YELLOW + "Click to change the type of auction!"
-                ),
-                new GuiStateElement.State(
-                        change -> {
-                            auctionType = AuctionType.BUY_IT_NOW;
-                            drawInventory();
-                        },
-                        "buy_it_now",
-                        new ItemStack(Material.GOLD_BLOCK),
-                        ChatUtils.RESET + ChatColor.BLUE +"Set auction type:",
-                        ChatUtils.RESET + "Auction",
-                        ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Buy It Now",
-                        " ",
-                        ChatUtils.RESET + ChatColor.YELLOW + "Click to change the type of auction!"
-                )
-        ));
+        // Only add an element to change auction type if user has permission for both types
+        if (holder.hasPermission("sah.sell.auction") && holder.hasPermission("sah.sell.bin")) {
+            gui.addElement(new GuiStateElement('t',
+                    new GuiStateElement.State(
+                            change -> {
+                                auctionType = AuctionType.AUCTION;
+                                drawInventory();
+                            },
+                            "auction",
+                            new ItemStack(Material.GOLD_BLOCK),
+                            ChatUtils.RESET + ChatColor.BLUE + "Set auction type:",
+                            ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Auction",
+                            ChatUtils.RESET + "Buy It Now",
+                            " ",
+                            ChatUtils.RESET + ChatColor.YELLOW + "Click to change the type of auction!"
+                    ),
+                    new GuiStateElement.State(
+                            change -> {
+                                auctionType = AuctionType.BUY_IT_NOW;
+                                drawInventory();
+                            },
+                            "buy_it_now",
+                            new ItemStack(Material.GOLD_BLOCK),
+                            ChatUtils.RESET + ChatColor.BLUE +"Set auction type:",
+                            ChatUtils.RESET + "Auction",
+                            ChatColor.BOLD + "" + ChatColor.DARK_AQUA + "▶ Buy It Now",
+                            " ",
+                            ChatUtils.RESET + ChatColor.YELLOW + "Click to change the type of auction!"
+                    )
+            ));
+        }
     }
 
     public void populateInputGuiElements() {
         gui.addElement(new SellMenuPriceElement('p', gui, this).getElement());
         gui.addElement(new SellMenuDurationElement('d', gui, this).getElement());
-        // TODO check if player has permission to do this
-        gui.addElement(new SellMenuSellerNameElement('n', gui, this).getElement());
+        if (holder.hasPermission("sah.sell.changesellername")) {
+            gui.addElement(new SellMenuSellerNameElement('n', gui, this).getElement());
+        }
     }
 
     private boolean isSellItemValid() {
-        // TODO: implement actual logic for detecting if an item is valid
+        boolean isInvalidMaterial = Config.invalid_item_material.stream().anyMatch(x -> x == sellingItem.getType());
+        if (!isInvalidMaterial) {
+            return false;
+        }
+
+        String itemName = ItemUtils.getItemName(sellingItem);
+        for (String reg : Config.invalid_item_name_regex) {
+            if (itemName.matches(reg)) {
+                return false;
+            }
+        }
         return true;
     }
 

@@ -1,25 +1,25 @@
 // FIXME: this is currently not working for some reason
 ah,sah,superauctionhouse,auctionhouse {
-    permission superauctionhouse.ah
+    permission sah.ah
     help Opens the auction house.
     user player
     hook ah
 
     sell double:initialPrice*?(-1) string:duration*? {
-        permission superauctionhouse.sell
+        permission sah.sell
         help Opens a menu to sell an item.
         hook sell
     }
 
     refresh {
-        permission superauctionhouse.refresh
+        permission sah.refresh
         help Refreshes available auctions from the database.
         hook refresh
     }
 
     // TODO: remove for release
     sell100 {
-            permission superauctionhouse.sell100
+            permission sah.sell100
             help Sells 100 random items. For testing only.
             hook sell100
         }

@@ -21,7 +21,7 @@ public class AuctionBrowserMenu extends BaseInventory {
 
         sortState = new AuctionSortState();
 
-        initalizeGui();
+        initializeGui();
 
         registerRefreshEvent();
         registerCloseAction();
@@ -32,7 +32,7 @@ public class AuctionBrowserMenu extends BaseInventory {
 
         sortState = copy.sortState;
 
-        initalizeGui();
+        initializeGui();
 
         registerRefreshEvent();
         registerCloseAction();

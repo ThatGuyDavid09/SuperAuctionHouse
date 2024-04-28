@@ -5,13 +5,10 @@ import com.highmarsorbit.superauctionhouse.elements.buybid.BuyBidPriceElement;
 import com.highmarsorbit.superauctionhouse.inventories.BaseInventory;
 import com.highmarsorbit.superauctionhouse.util.*;
 import de.themoep.inventorygui.DynamicGuiElement;
-import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class BuyBidMenu extends BaseInventory {
@@ -27,12 +24,7 @@ public class BuyBidMenu extends BaseInventory {
         this.bidWord = auctionType == AuctionType.AUCTION ? "bid" : "buy";
         this.titlePath = bidWord + "_title";
 
-        // TODO remove
-        for (InventoryGui gui : InventoryGui.getHistory(holder)) {
-            Bukkit.getLogger().info(gui.getTitle());
-        }
-
-        initalizeGui();
+        initializeGui();
     }
 
     public BuyBidMenu(BuyBidMenu copy) {
@@ -42,7 +34,7 @@ public class BuyBidMenu extends BaseInventory {
         this.bidWord = copy.bidWord;
         this.titlePath = copy.titlePath;
 
-        initalizeGui();
+        initializeGui();
         updateConfirmElement();
         drawInventory();
     }

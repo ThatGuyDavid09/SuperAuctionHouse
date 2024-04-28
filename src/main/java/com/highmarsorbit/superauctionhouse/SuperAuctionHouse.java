@@ -11,6 +11,7 @@ import com.highmarsorbit.superauctionhouse.storage.Storage;
 import com.highmarsorbit.superauctionhouse.config.MessageLoader;
 import fr.cleymax.signgui.SignManager;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
@@ -36,8 +37,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
     private static SuperAuctionHouse instance;
     private static AuctionManager auctionManager;
     private Economy econ;
-    private Storage store;
     private SignManager signGuiManager;
+    private Permission perms;
 
     @Override
     public void onEnable() {
@@ -52,6 +53,12 @@ public final class SuperAuctionHouse extends JavaPlugin {
 //        getLogger().getHandlers()[0].setLevel(Level.ALL);
 
         if (!setupEconomy()) {
+            this.getLogger().severe("Disabled due to no Vault dependency found!");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        if (!setupPermissions()) {
             this.getLogger().severe("Disabled due to no Vault dependency found!");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
@@ -106,7 +113,7 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     private boolean createAuctionManager() {
-        store = new DummyStorage();
+        Storage store = new DummyStorage();
         boolean testResult = store.selfTest();
 
         if (!testResult) return false;
@@ -134,10 +141,22 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
 
+    private boolean setupPermissions() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+
+        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        if (rsp == null) {
+            return false;
+        }
+        perms = rsp.getProvider();
+        return perms != null;
+    }
+
+
     private void loadConfigs() {
         getLogger().info("Loading configs");
-        // For testing only.
-        // TODO: remove for release
 
         ConfigManager.create(this).target(Config.class).saveDefaults().load();
         getLogger().info("Loaded config.yml");
@@ -152,9 +171,11 @@ public final class SuperAuctionHouse extends JavaPlugin {
 
 
     private void validateConfigs() {
+        getLogger().info("Validating configs");
+
         // Run fee equation through a sample evaluation to make sure there are no errors. If there are, output warning
         // to console and replace with default.
-        String eqn = getConfig().getString("fee_equation");
+        String eqn = Config.fee_equation;
 
         try {
             new ExpressionBuilder(eqn)
@@ -173,6 +194,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
             getLogger().warning(String.format("Fee equation is invalid! Using default value %s", defaultEqn));
             Globals.feeEquation = defaultEqn;
         }
+
+        getLogger().info("Validated configs");
     }
 
     @Override
@@ -197,6 +220,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
     public static AuctionManager getAuctionManager() { return auctionManager; }
 
     public static Economy getEconomy() { return instance.econ; }
+
+    public static Permission getPermissions() { return instance.perms; }
 
     public static FileConfiguration getConfiguration() { return instance.getConfig(); }
 
