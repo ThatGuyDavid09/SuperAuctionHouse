@@ -78,18 +78,22 @@ public class SellItemMenu extends BaseInventory {
         sellerName = copy.sellerName;
         auctionType = copy.auctionType;
 
-        GuiStateElement typeElement = (GuiStateElement) gui.getElement('t');
-        typeElement.setState(auctionType.toString());
+        if (guiInitialized) {
+            GuiStateElement typeElement = (GuiStateElement) gui.getElement('t');
+            typeElement.setState(auctionType.toString());
 
-        updateSellItemElement();
-        updateConfirmElement();
-        drawInventory();
+            updateSellItemElement();
+            updateConfirmElement();
+            drawInventory();
+        }
     }
 
     public void setSaleItem(ItemStack item) {
         this.sellingItem = item;
-        updateSellItemElement();
-        drawInventory();
+        if (guiInitialized) {
+            updateSellItemElement();
+            drawInventory();
+        }
     }
 
     @Override

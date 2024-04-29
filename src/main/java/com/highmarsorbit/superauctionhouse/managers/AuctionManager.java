@@ -180,6 +180,7 @@ public class AuctionManager {
     }
 
     public boolean clear() {
+        SuperAuctionHouse.getLogging().info("Auction house cleared");
         return store.clear();
     }
 }
