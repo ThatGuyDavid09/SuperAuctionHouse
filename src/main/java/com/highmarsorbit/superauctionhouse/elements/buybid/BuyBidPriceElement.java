@@ -35,7 +35,7 @@ public class BuyBidPriceElement extends BaseElement {
             return new StaticGuiElement(character, new ItemStack(Material.GOLD_NUGGET),
                     click -> {
                         gui.playClickSound();
-//                        gui.close();
+//                        gui.close(false);
                         signGui.open((Player) click.getWhoClicked());
                         return true;
                     },
@@ -53,14 +53,15 @@ public class BuyBidPriceElement extends BaseElement {
                     try {
                         buyBidMenu.setPrice(Double.parseDouble(strippedPrice));
                     } catch (NumberFormatException ignored) {
-//                        Bukkit.getLogger().warning(ignored.toString());
+                        Bukkit.getLogger().warning(ignored.toString());
                     }
-                    // Needed to run task synchronously as otherwise Bukkit throws an error. Why does this work in
-                    // AuctionTextSortElement but not here?
+
+                    // FIXME URGENT this does not fucking work WHYYYYYYYTYYYYYTYYY
                     Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {
                         buyBidMenu.getGui().close(false);
-//                        buyBidMenu = new BuyBidMenu(buyBidMenu);
+                        buyBidMenu = new BuyBidMenu(buyBidMenu);
                         buyBidMenu.drawInventory();
+                        SuperAuctionHouse.getLogging().info("??????");
                         buyBidMenu.open(false);
                     });
                 })

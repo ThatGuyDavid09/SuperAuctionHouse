@@ -7,6 +7,7 @@ import com.highmarsorbit.superauctionhouse.listeners.AuctionListListener;
 import com.highmarsorbit.superauctionhouse.listeners.InventoryClickListener;
 import com.highmarsorbit.superauctionhouse.managers.AuctionManager;
 import com.highmarsorbit.superauctionhouse.storage.DummyStorage;
+import com.highmarsorbit.superauctionhouse.storage.SQLiteStorage;
 import com.highmarsorbit.superauctionhouse.storage.Storage;
 import com.highmarsorbit.superauctionhouse.config.MessageLoader;
 import com.mojang.datafixers.util.Pair;
@@ -126,7 +127,8 @@ public final class SuperAuctionHouse extends JavaPlugin {
     }
 
     private Pair<Boolean, Storage> createStorage() {
-        Storage store = new DummyStorage();
+//        Storage store = new DummyStorage();
+        Storage store = new SQLiteStorage();
         boolean testResult = store.selfTest();
 
         return new Pair<>(testResult, store);

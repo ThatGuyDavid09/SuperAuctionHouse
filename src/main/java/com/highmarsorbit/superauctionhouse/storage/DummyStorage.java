@@ -7,6 +7,7 @@ import org.apache.commons.lang.SerializationException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A non-persistent storage for testing.
@@ -26,14 +27,14 @@ public class DummyStorage implements Storage {
     }
 
     @Override
-    public AuctionItem[] getAllAuctions() {
-        return auctions.toArray(new AuctionItem[0]);
+    public List<AuctionItem> getAllAuctions() {
+        return auctions;
     }
     @Override
-    public AuctionItem[] getCurrentAuctions() {
+    public List<AuctionItem> getCurrentAuctions() {
         return auctions.stream()
                 .filter(i -> !i.isExpired())
-                .toArray(AuctionItem[]::new);
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -54,12 +55,6 @@ public class DummyStorage implements Storage {
     @Override
     public boolean deleteAuction(int auctionId) {
         auctions.removeIf(i -> i.getId() == auctionId);
-        return true;
-    }
-
-    @Override
-    public boolean reset() {
-        auctions.clear();
         return true;
     }
 

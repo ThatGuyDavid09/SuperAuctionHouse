@@ -167,7 +167,7 @@ public class AuctionManager {
     }
 
     public void refreshAvailableAuctions() {
-        currentAuctions = new ArrayList<>(Arrays.asList(store.getCurrentAuctions()));
+        currentAuctions = (ArrayList<AuctionItem>) store.getCurrentAuctions();
     }
 
     public AuctionItem[] getAllAuctions() {
@@ -181,6 +181,10 @@ public class AuctionManager {
 
     public boolean clear() {
         SuperAuctionHouse.getLogging().info("Auction house cleared");
-        return store.clear();
+        maxId = 0;
+        boolean success = store.clear();
+        currentAuctions.clear();
+        refreshAvailableAuctions();
+        return success;
     }
 }

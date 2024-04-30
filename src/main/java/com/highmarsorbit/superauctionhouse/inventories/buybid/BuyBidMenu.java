@@ -30,9 +30,10 @@ public class BuyBidMenu extends BaseInventory {
     public BuyBidMenu(BuyBidMenu copy) {
         super(copy.holder, copy.titlePath, false);
         this.item = copy.item;
-        auctionType = copy.auctionType;
+        this.auctionType = copy.auctionType;
         this.bidWord = copy.bidWord;
         this.titlePath = copy.titlePath;
+        this.price = copy.price;
 
         initializeGui();
         updateConfirmElement();
