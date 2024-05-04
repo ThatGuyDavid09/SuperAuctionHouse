@@ -102,7 +102,7 @@ public class DummyStorage implements Storage {
 
             oos.writeObject(auctions);
         } catch (IOException e) {
-            // TODO consider removing
+            // TODO change to simple error print
             e.printStackTrace();
             SuperAuctionHouse.getLogging().severe("Error while saving database to file!");
             return false;

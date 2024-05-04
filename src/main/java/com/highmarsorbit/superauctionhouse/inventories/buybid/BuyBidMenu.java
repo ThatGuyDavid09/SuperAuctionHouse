@@ -21,7 +21,14 @@ public class BuyBidMenu extends BaseInventory {
         super(holder, "bid_title", false);
         this.item = item;
         auctionType = item.getAuctionType();
-        this.bidWord = auctionType == AuctionType.AUCTION ? "bid" : "buy";
+
+        if (auctionType == AuctionType.AUCTION) {
+            price = 0;
+            bidWord = "bid";
+        } else if (auctionType == AuctionType.BUY_IT_NOW) {
+            price = item.getPrice();
+            bidWord = "buy";
+        }
         this.titlePath = bidWord + "_title";
 
         initializeGui();

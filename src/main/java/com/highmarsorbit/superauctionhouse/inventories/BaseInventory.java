@@ -76,7 +76,11 @@ public class BaseInventory {
     }
 
     public void close() {
-        gui.close(false);
+        this.close(false);
+    }
+
+    public void close(boolean clearHistory) {
+        gui.close(clearHistory);
     }
 
     public void drawInventory() {

@@ -18,6 +18,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Deque;
+
 public class BuyBidPriceElement extends BaseElement {
     private SignGUI signGui;
     private BuyBidMenu buyBidMenu;
@@ -53,16 +55,24 @@ public class BuyBidPriceElement extends BaseElement {
                     try {
                         buyBidMenu.setPrice(Double.parseDouble(strippedPrice));
                     } catch (NumberFormatException ignored) {
-                        Bukkit.getLogger().warning(ignored.toString());
                     }
 
-                    // FIXME URGENT this does not fucking work WHYYYYYYYTYYYYYTYYY
+                    Deque<InventoryGui> history = InventoryGui.getHistory(state.getPlayer());
+                    buyBidMenu.drawInventory();
+
                     Bukkit.getScheduler().runTask(SuperAuctionHouse.getInstance(), () -> {
-                        buyBidMenu.getGui().close(false);
-                        buyBidMenu = new BuyBidMenu(buyBidMenu);
-                        buyBidMenu.drawInventory();
-                        SuperAuctionHouse.getLogging().info("??????");
+                        buyBidMenu.close(true);
                         buyBidMenu.open(false);
+
+                        InventoryGui.clearHistory(state.getPlayer());
+                        // For some reason the history gets cleared at some point when opening inventory
+                        // (not because it is told to, it happens regardless), so we manually re-add in all the previously
+                        // opened stuff so when menu is closed it still works
+
+                        for (InventoryGui item : history) {
+                            InventoryGui.addHistory(state.getPlayer(), item);
+                        }
+                        InventoryGui.addHistory(state.getPlayer(), buyBidMenu.getGui());
                     });
                 })
                 .withLines(

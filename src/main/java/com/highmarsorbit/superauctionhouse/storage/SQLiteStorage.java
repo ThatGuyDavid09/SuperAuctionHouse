@@ -240,10 +240,10 @@ public class SQLiteStorage implements Storage {
                 case UPDATE -> {
                     String updateAuctionSql = """
                             UPDATE auctions
-                            WHERE id = ?
                             SET bought = ?,
                                 currentPrice = ?,
-                                auctionData = ?""";
+                                auctionData = ?
+                            WHERE id = ?""";
 
                     PreparedStatement pstmt = conn.prepareStatement(updateAuctionSql);
                     pstmt.setInt(1, auction.getId());
@@ -280,6 +280,7 @@ public class SQLiteStorage implements Storage {
                 }
             }
         } catch (SQLException | IOException e) {
+            // TODO change stack trace prints into simple error prints (like e.toString())
             e.printStackTrace();
             SuperAuctionHouse.getLogging().warning("Error while performing auction update!");
             return false;

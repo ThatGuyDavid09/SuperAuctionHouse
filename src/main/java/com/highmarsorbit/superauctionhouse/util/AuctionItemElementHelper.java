@@ -20,7 +20,6 @@ public class AuctionItemElementHelper {
     }
 
     public static GuiElement getAuctionGuiElement(AuctionItem auction, char character, InventoryGui gui) {
-        // FIXME this doesn't work properly with things like music discs and banners that have lore but technically don't.
         // more testing is required.
 //        String[] name = {ItemUtils.getItemName(item)};
         String[] allExist = ItemUtils.getLoreWithSeparator(auction.getItem());
@@ -58,7 +57,6 @@ public class AuctionItemElementHelper {
     }
 
     public static GuiElement getAuctionPurchaseElement(AuctionItem auction, char character) {
-        // TODO implement. This is for when a user wants to purchase/place a bid on an item.
         String[] allExist = ItemUtils.getLoreWithSeparator(auction.getItem());
         String buyWord = auction.getAuctionType() == AuctionType.AUCTION ? "bid on!" : "purchase!";
         String costWord = auction.getAuctionType() == AuctionType.AUCTION ? "Bid" : "Price";
