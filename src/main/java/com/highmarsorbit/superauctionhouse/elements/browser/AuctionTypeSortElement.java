@@ -2,7 +2,6 @@ package com.highmarsorbit.superauctionhouse.elements.browser;
 
 import com.highmarsorbit.superauctionhouse.elements.BaseElement;
 import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
-import com.highmarsorbit.superauctionhouse.util.AuctionTypeSort;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.GuiStateElement;
 import de.themoep.inventorygui.InventoryGui;
@@ -20,7 +19,7 @@ public class AuctionTypeSortElement extends BaseElement {
         element = new GuiStateElement(character,
                 new GuiStateElement.State(
                         change -> {
-                            ahRef.sortState.typeSort = AuctionTypeSort.BOTH;
+                            ahRef.sortState.typeSort = AuctionBrowserMenu.AuctionTypeSort.BOTH;
                             ahRef.recreateAuctionGroupElement();
                         },
                         "both",
@@ -34,7 +33,7 @@ public class AuctionTypeSortElement extends BaseElement {
                 ),
                 new GuiStateElement.State(
                         change -> {
-                            ahRef.sortState.typeSort = AuctionTypeSort.AUCTION_ONLY;
+                            ahRef.sortState.typeSort = AuctionBrowserMenu.AuctionTypeSort.AUCTION_ONLY;
                             ahRef.recreateAuctionGroupElement();
                         },
                         "auction_only",
@@ -48,7 +47,7 @@ public class AuctionTypeSortElement extends BaseElement {
                 ),
                 new GuiStateElement.State(
                         change -> {
-                            ahRef.sortState.typeSort = AuctionTypeSort.BIN_ONLY;
+                            ahRef.sortState.typeSort = AuctionBrowserMenu.AuctionTypeSort.BIN_ONLY;
                             ahRef.recreateAuctionGroupElement();
                         },
                         "bin_only",

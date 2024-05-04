@@ -1,8 +1,8 @@
 package com.highmarsorbit.superauctionhouse.storage;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionItem;
-import com.highmarsorbit.superauctionhouse.util.AuctionType;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -80,7 +80,7 @@ public class SQLiteStorage implements Storage {
             }
 
             PreparedStatement pstmt = conn.prepareStatement(getCurrentSql);
-            pstmt.setTimestamp(1, Timestamp.from(Instant.ofEpochSecond(System.currentTimeMillis())));
+            pstmt.setTimestamp(1, Timestamp.from(Instant.now()));
             ResultSet results = pstmt.executeQuery();
             if (results == null) {
                 isRunningSynchronousCommand = false;
@@ -225,7 +225,7 @@ public class SQLiteStorage implements Storage {
                     pstmt.setString(2, auction.getSeller().getUniqueId().toString());
                     pstmt.setTimestamp(3, Timestamp.from(auction.getCreateTime()));
                     pstmt.setTimestamp(4, Timestamp.from(auction.getEndTime()));
-                    pstmt.setString(5, auction.getAuctionType() == AuctionType.AUCTION ? "ACT" : "BIN");
+                    pstmt.setString(5, auction.getAuctionType() == AuctionBrowserMenu.AuctionType.AUCTION ? "ACT" : "BIN");
                     pstmt.setBoolean(6, auction.getBought());
                     pstmt.setDouble(7, auction.getPrice());
 
@@ -328,7 +328,7 @@ public class SQLiteStorage implements Storage {
                         pstmt.setString(2, auction.getSeller().getUniqueId().toString());
                         pstmt.setTimestamp(3, Timestamp.from(auction.getCreateTime()));
                         pstmt.setTimestamp(4, Timestamp.from(auction.getEndTime()));
-                        pstmt.setString(5, auction.getAuctionType() == AuctionType.AUCTION ? "ACT" : "BIN");
+                        pstmt.setString(5, auction.getAuctionType() == AuctionBrowserMenu.AuctionType.AUCTION ? "ACT" : "BIN");
                         pstmt.setBoolean(6, auction.getBought());
                         pstmt.setDouble(7, auction.getPrice());
 

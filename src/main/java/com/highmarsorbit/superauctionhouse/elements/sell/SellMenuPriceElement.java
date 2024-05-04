@@ -1,9 +1,9 @@
 package com.highmarsorbit.superauctionhouse.elements.sell;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.inventories.SellItemMenu;
 import com.highmarsorbit.superauctionhouse.elements.BaseElement;
-import com.highmarsorbit.superauctionhouse.util.AuctionType;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.InventoryGui;
@@ -25,8 +25,8 @@ public class SellMenuPriceElement extends BaseElement {
         createSignGui();
 
         element = new DynamicGuiElement(character, () -> {
-            String setItemMessage = sellMenu.auctionType == AuctionType.AUCTION ? "Set initial bid: " : "Set item price: ";
-            String setDetailedMessage = sellMenu.auctionType == AuctionType.AUCTION ? "Click to set the minimum bit for the item!"
+            String setItemMessage = sellMenu.auctionType == AuctionBrowserMenu.AuctionType.AUCTION ? "Set initial bid: " : "Set item price: ";
+            String setDetailedMessage = sellMenu.auctionType == AuctionBrowserMenu.AuctionType.AUCTION ? "Click to set the minimum bit for the item!"
                     : "Click to set the item's sale price";
 
             return new StaticGuiElement(character, new ItemStack(Material.GOLD_NUGGET),

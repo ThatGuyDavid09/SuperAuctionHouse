@@ -2,7 +2,6 @@ package com.highmarsorbit.superauctionhouse.elements.browser;
 
 import com.highmarsorbit.superauctionhouse.elements.BaseElement;
 import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
-import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.InventoryGui;
@@ -20,7 +19,7 @@ public class AuctionResetFilterElement extends BaseElement {
         this.ahRef = ahRef;
 
         element = new DynamicGuiElement(character, () -> {
-            AuctionSortState baseState = new AuctionSortState();
+            AuctionBrowserMenu.AuctionSortState baseState = new AuctionBrowserMenu.AuctionSortState();
 
             if (ahRef.sortState.equals(baseState)) {
                 return ahRef.getGui().getFiller();

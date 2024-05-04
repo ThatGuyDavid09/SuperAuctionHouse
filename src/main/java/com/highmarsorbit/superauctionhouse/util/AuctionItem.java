@@ -1,15 +1,13 @@
 package com.highmarsorbit.superauctionhouse.util;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.mojang.datafixers.util.Pair;
 import org.apache.commons.collections.map.LinkedMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.*;
 import java.time.Duration;
@@ -23,29 +21,31 @@ public class AuctionItem implements Serializable {
     private transient Player seller;
     private final String sellerName;
     private final Instant createTime;
+    private Instant updateTime;
     private final Instant endTime;
-    private final AuctionType auctionType;
+    private final AuctionBrowserMenu.AuctionType auctionType;
     private boolean bought = false;
 
-    private final double initialPrice;
+//    private final double initialPrice;
     private double price;
     private final LinkedMap bidders = new LinkedMap();
 
-    public AuctionItem(ItemStack item, Player seller, double price, Duration duration, AuctionType auctionType) {
+    public AuctionItem(ItemStack item, Player seller, double price, Duration duration, AuctionBrowserMenu.AuctionType auctionType) {
         this(item, seller, price, duration, auctionType, seller.getDisplayName());
     }
 
-    public AuctionItem(ItemStack item, Player seller, double price, Duration duration, AuctionType auctionType, String sellerName) {
+    public AuctionItem(ItemStack item, Player seller, double price, Duration duration, AuctionBrowserMenu.AuctionType auctionType, String sellerName) {
         this.id = SuperAuctionHouse.getAuctionManager().getNextUsableId();
         this.item = new SerializableItemStack(item);
         this.seller = seller;
         this.sellerUuid = seller.getUniqueId();
-        this.initialPrice = price;
+//        this.initialPrice = price;
         this.price = price;
         this.auctionType = auctionType;
         this.sellerName = sellerName;
 
-        this.createTime = Instant.ofEpochMilli(System.currentTimeMillis());
+        this.createTime = Instant.now();
+        this.updateTime = this.createTime;
         this.endTime = createTime.plusSeconds(duration.getSeconds());
     }
 
@@ -77,10 +77,10 @@ public class AuctionItem implements Serializable {
     }
 
     public Duration getDurationRemaining() {
-        return Duration.between(Instant.ofEpochMilli(System.currentTimeMillis()), endTime);
+        return Duration.between(Instant.now(), endTime);
     }
 
-    public AuctionType getAuctionType() {
+    public AuctionBrowserMenu.AuctionType getAuctionType() {
         return auctionType;
     }
 
@@ -101,6 +101,7 @@ public class AuctionItem implements Serializable {
 
     public void setBought(boolean bought) {
         this.bought = bought;
+        this.updateTime = Instant.now();
     }
 
     public boolean getBought() {
@@ -115,7 +116,7 @@ public class AuctionItem implements Serializable {
         this.price = bid;
         this.bidders.put(bidder.getUniqueId(), bid);
 
-        if (auctionType == AuctionType.BUY_IT_NOW) {
+        if (auctionType == AuctionBrowserMenu.AuctionType.BUY_IT_NOW) {
             bought = true;
         }
     }

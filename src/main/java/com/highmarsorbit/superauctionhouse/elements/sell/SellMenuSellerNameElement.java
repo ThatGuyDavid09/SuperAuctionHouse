@@ -3,23 +3,18 @@ package com.highmarsorbit.superauctionhouse.elements.sell;
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.elements.BaseElement;
 import com.highmarsorbit.superauctionhouse.inventories.SellItemMenu;
-import com.highmarsorbit.superauctionhouse.util.AuctionType;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
-import fr.cleymax.signgui.SignGUI;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

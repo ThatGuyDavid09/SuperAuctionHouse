@@ -20,4 +20,5 @@ public class Messages {
     public static String buy_insert_fail = "($GREEN)Purchase successful, but no room in inventory. Check your auctions page to claim.";
     public static String generic_no_money = "($RED)You do not have enough money!";
     public static String menu_no_initialize = "($RED)You do not have permission to open this menu!";
+    public static String own_auctions_title = "Your auctions, bids, and claims";
 }

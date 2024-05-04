@@ -2,7 +2,6 @@ package com.highmarsorbit.superauctionhouse.elements.browser;
 
 import com.highmarsorbit.superauctionhouse.elements.BaseElement;
 import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
-import com.highmarsorbit.superauctionhouse.util.AuctionOrderSort;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.GuiStateElement;
 import de.themoep.inventorygui.InventoryGui;
@@ -20,7 +19,7 @@ public class AuctionOrderSortElement extends BaseElement {
         element = new GuiStateElement(character,
                 new GuiStateElement.State(
                         change -> {
-                            ahRef.sortState.orderSort = AuctionOrderSort.LOWEST_PRICE;
+                            ahRef.sortState.orderSort = AuctionBrowserMenu.AuctionOrderSort.LOWEST_PRICE;
                             ahRef.recreateAuctionGroupElement();
                         },
                         "lowest_price",
@@ -35,7 +34,7 @@ public class AuctionOrderSortElement extends BaseElement {
                 ),
                 new GuiStateElement.State(
                         change -> {
-                            ahRef.sortState.orderSort = AuctionOrderSort.HIGHEST_PRICE;
+                            ahRef.sortState.orderSort = AuctionBrowserMenu.AuctionOrderSort.HIGHEST_PRICE;
                             ahRef.recreateAuctionGroupElement();
                         },
                         "highest_price",
@@ -50,7 +49,7 @@ public class AuctionOrderSortElement extends BaseElement {
                 ),
                 new GuiStateElement.State(
                         change -> {
-                            ahRef.sortState.orderSort = AuctionOrderSort.NEWEST_FIRST;
+                            ahRef.sortState.orderSort = AuctionBrowserMenu.AuctionOrderSort.NEWEST_FIRST;
                             ahRef.recreateAuctionGroupElement();
                         },
                         "newest_first",
@@ -65,7 +64,7 @@ public class AuctionOrderSortElement extends BaseElement {
                 ),
                 new GuiStateElement.State(
                         change -> {
-                            ahRef.sortState.orderSort = AuctionOrderSort.ENDING_SOON;
+                            ahRef.sortState.orderSort = AuctionBrowserMenu.AuctionOrderSort.ENDING_SOON;
                             ahRef.recreateAuctionGroupElement();
                         },
                         "ending_soon",

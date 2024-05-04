@@ -4,15 +4,11 @@ import com.highmarsorbit.superauctionhouse.Globals;
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.inventories.SellItemMenu;
 import com.highmarsorbit.superauctionhouse.util.AuctionItem;
-import com.highmarsorbit.superauctionhouse.util.AuctionType;
 import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.util.DurationUtils;
-import com.highmarsorbit.superauctionhouse.util.ItemUtils;
 import net.md_5.bungee.api.chat.*;
-import net.md_5.bungee.api.chat.hover.content.Content;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.apache.commons.lang.RandomStringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -23,8 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import redempt.redlib.commandmanager.CommandHook;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class AHCommand implements CommandExecutor {
@@ -74,7 +68,7 @@ public class AHCommand implements CommandExecutor {
                     player,
                     price,
                     Duration.ofMinutes(durationMins),
-                    auctionType == 0 ? AuctionType.AUCTION : AuctionType.BUY_IT_NOW)
+                    auctionType == 0 ? AuctionBrowserMenu.AuctionType.AUCTION : AuctionBrowserMenu.AuctionType.BUY_IT_NOW)
             );
         }
     }

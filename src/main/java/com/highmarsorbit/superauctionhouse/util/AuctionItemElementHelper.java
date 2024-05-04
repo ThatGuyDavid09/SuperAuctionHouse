@@ -1,6 +1,7 @@
 package com.highmarsorbit.superauctionhouse.util;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.inventories.buybid.BuyBidMenu;
 import de.themoep.inventorygui.DynamicGuiElement;
 import de.themoep.inventorygui.GuiElement;
@@ -32,8 +33,8 @@ public class AuctionItemElementHelper {
                         ChatColor.RED + "This auction is expired!"
                 };
             } else {
-                String costWord = auction.getAuctionType() == AuctionType.AUCTION ? "Bid" : "Price";
-                String purchaseWord = auction.getAuctionType() == AuctionType.AUCTION ? "bid" : "buy";
+                String costWord = auction.getAuctionType() == AuctionBrowserMenu.AuctionType.AUCTION ? "Bid" : "Price";
+                String purchaseWord = auction.getAuctionType() == AuctionBrowserMenu.AuctionType.AUCTION ? "bid" : "buy";
                 extraLore = new String[]{
                         ChatUtils.RESET + ChatColor.GRAY + costWord + ": " + ChatColor.GOLD + SuperAuctionHouse.getEconomy().format(auction.getPrice()),
                         ChatUtils.RESET + ChatColor.GRAY + "Seller: " + auction.getSellerName(),
@@ -58,8 +59,8 @@ public class AuctionItemElementHelper {
 
     public static GuiElement getAuctionPurchaseElement(AuctionItem auction, char character) {
         String[] allExist = ItemUtils.getLoreWithSeparator(auction.getItem());
-        String buyWord = auction.getAuctionType() == AuctionType.AUCTION ? "bid on!" : "purchase!";
-        String costWord = auction.getAuctionType() == AuctionType.AUCTION ? "Bid" : "Price";
+        String buyWord = auction.getAuctionType() == AuctionBrowserMenu.AuctionType.AUCTION ? "bid on!" : "purchase!";
+        String costWord = auction.getAuctionType() == AuctionBrowserMenu.AuctionType.AUCTION ? "Bid" : "Price";
         String[] extraLore = {
                 ChatUtils.RESET + ChatColor.GRAY + costWord + ": " + ChatColor.GOLD + SuperAuctionHouse.getEconomy().format(auction.getPrice()),
                 ChatUtils.RESET + ChatColor.GRAY + "Seller: " + auction.getSellerName(),

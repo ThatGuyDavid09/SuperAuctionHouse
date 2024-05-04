@@ -2,6 +2,7 @@ package com.highmarsorbit.superauctionhouse.inventories.buybid;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.elements.buybid.BuyBidPriceElement;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.inventories.BaseInventory;
 import com.highmarsorbit.superauctionhouse.util.*;
 import de.themoep.inventorygui.DynamicGuiElement;
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class BuyBidMenu extends BaseInventory {
     private AuctionItem item;
-    public AuctionType auctionType;
+    public AuctionBrowserMenu.AuctionType auctionType;
     private double price;
     private String bidWord;
 
@@ -22,10 +23,10 @@ public class BuyBidMenu extends BaseInventory {
         this.item = item;
         auctionType = item.getAuctionType();
 
-        if (auctionType == AuctionType.AUCTION) {
+        if (auctionType == AuctionBrowserMenu.AuctionType.AUCTION) {
             price = 0;
             bidWord = "bid";
-        } else if (auctionType == AuctionType.BUY_IT_NOW) {
+        } else if (auctionType == AuctionBrowserMenu.AuctionType.BUY_IT_NOW) {
             price = item.getPrice();
             bidWord = "buy";
         }
@@ -112,13 +113,13 @@ public class BuyBidMenu extends BaseInventory {
     public void updateConfirmElement() {
         boolean userCanAffordItem = SuperAuctionHouse.getEconomy().has(holder, price);
         if (!userCanAffordItem) {
-            String auctionWord = auctionType == AuctionType.AUCTION ? "bid" : "item";
+            String auctionWord = auctionType == AuctionBrowserMenu.AuctionType.AUCTION ? "bid" : "item";
             setConfirmFailElement(String.format("You do not have money to pay for this %s!", auctionWord));
             return;
         }
 
         // TODO maybe implement a minimum bid increase?
-        if (auctionType == AuctionType.AUCTION && price < item.getPrice()) {
+        if (auctionType == AuctionBrowserMenu.AuctionType.AUCTION && price < item.getPrice()) {
             setConfirmFailElement("Bid must be greater than previous bid!");
             return;
         }
@@ -150,7 +151,7 @@ public class BuyBidMenu extends BaseInventory {
 
 
                     // BIN items can be given straight to the player
-                    if (auctionType == AuctionType.BUY_IT_NOW) {
+                    if (auctionType == AuctionBrowserMenu.AuctionType.BUY_IT_NOW) {
                         AuctionUpdateStatus giveStatus = SuperAuctionHouse.getAuctionManager().giveBINToPlayer(item.getId(), holder);
 
                         // Messy logic, but here is the flow:
@@ -177,11 +178,11 @@ public class BuyBidMenu extends BaseInventory {
 
                     return true;
                 },
-                ChatUtils.RESET + ChatColor.GREEN + "Confirm item " + (auctionType == AuctionType.AUCTION ? "bid" : "purchase"),
+                ChatUtils.RESET + ChatColor.GREEN + "Confirm item " + (auctionType == AuctionBrowserMenu.AuctionType.AUCTION ? "bid" : "purchase"),
                 " ",
                 ChatUtils.RESET + "Price: " + ChatColor.GOLD + SuperAuctionHouse.getEconomy().format(price),
                 " ",
-                ChatUtils.RESET + ChatColor.YELLOW + String.format("Click to %s!", auctionType == AuctionType.AUCTION ? "place bid" : "purchase item"))));
+                ChatUtils.RESET + ChatColor.YELLOW + String.format("Click to %s!", auctionType == AuctionBrowserMenu.AuctionType.AUCTION ? "place bid" : "purchase item"))));
     }
 
     private void setConfirmFailElement(String message) {

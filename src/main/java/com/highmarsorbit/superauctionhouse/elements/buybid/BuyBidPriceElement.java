@@ -2,19 +2,16 @@ package com.highmarsorbit.superauctionhouse.elements.buybid;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.elements.BaseElement;
-import com.highmarsorbit.superauctionhouse.inventories.SellItemMenu;
+import com.highmarsorbit.superauctionhouse.inventories.AuctionBrowserMenu;
 import com.highmarsorbit.superauctionhouse.inventories.buybid.BuyBidMenu;
-import com.highmarsorbit.superauctionhouse.util.AuctionType;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.DynamicGuiElement;
-import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
 import fr.cleymax.signgui.SignGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -30,8 +27,8 @@ public class BuyBidPriceElement extends BaseElement {
         createSignGui();
 
         element = new DynamicGuiElement(character, () -> {
-            String setItemMessage = buyBidMenu.auctionType == AuctionType.AUCTION ? "Set initial bid: " : "Set item price: ";
-            String setDetailedMessage = buyBidMenu.auctionType == AuctionType.AUCTION ? "Click to set the minimum bit for the item!"
+            String setItemMessage = buyBidMenu.auctionType == AuctionBrowserMenu.AuctionType.AUCTION ? "Set initial bid: " : "Set item price: ";
+            String setDetailedMessage = buyBidMenu.auctionType == AuctionBrowserMenu.AuctionType.AUCTION ? "Click to set the minimum bit for the item!"
                     : "Click to set the item's sale price";
 
             return new StaticGuiElement(character, new ItemStack(Material.GOLD_NUGGET),

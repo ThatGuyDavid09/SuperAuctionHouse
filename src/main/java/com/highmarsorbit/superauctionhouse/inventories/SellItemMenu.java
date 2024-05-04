@@ -25,7 +25,7 @@ public class SellItemMenu extends BaseInventory {
     public double price = 0;
     public Duration duration = Duration.ZERO;
     public String sellerName;
-    public AuctionType auctionType;
+    public AuctionBrowserMenu.AuctionType auctionType;
 
     public SellItemMenu(Player holder) {
         this(holder, -1, null);
@@ -59,9 +59,9 @@ public class SellItemMenu extends BaseInventory {
         boolean binPerm = holder.hasPermission("sah.sell.bin");
 
         if (auctionPerm) {
-            auctionType = AuctionType.AUCTION;
+            auctionType = AuctionBrowserMenu.AuctionType.AUCTION;
         } else if (binPerm) {
-            auctionType = AuctionType.BUY_IT_NOW;
+            auctionType = AuctionBrowserMenu.AuctionType.BUY_IT_NOW;
         } else {
             return false;
         }
@@ -135,7 +135,7 @@ public class SellItemMenu extends BaseInventory {
             gui.addElement(new GuiStateElement('t',
                     new GuiStateElement.State(
                             change -> {
-                                auctionType = AuctionType.AUCTION;
+                                auctionType = AuctionBrowserMenu.AuctionType.AUCTION;
                                 drawInventory();
                             },
                             "auction",
@@ -148,7 +148,7 @@ public class SellItemMenu extends BaseInventory {
                     ),
                     new GuiStateElement.State(
                             change -> {
-                                auctionType = AuctionType.BUY_IT_NOW;
+                                auctionType = AuctionBrowserMenu.AuctionType.BUY_IT_NOW;
                                 drawInventory();
                             },
                             "buy_it_now",
@@ -304,7 +304,7 @@ public class SellItemMenu extends BaseInventory {
     }
 
     private String getPriceWord() {
-        return auctionType == AuctionType.AUCTION ? "initial bid" : "price";
+        return auctionType == AuctionBrowserMenu.AuctionType.AUCTION ? "initial bid" : "price";
     }
 
     private void setConfirmFailElement(String message) {

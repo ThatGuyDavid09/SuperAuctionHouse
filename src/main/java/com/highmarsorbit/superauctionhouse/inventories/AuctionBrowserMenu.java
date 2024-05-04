@@ -2,7 +2,6 @@ package com.highmarsorbit.superauctionhouse.inventories;
 
 import com.highmarsorbit.superauctionhouse.SuperAuctionHouse;
 import com.highmarsorbit.superauctionhouse.elements.browser.*;
-import com.highmarsorbit.superauctionhouse.util.AuctionSortState;
 import com.highmarsorbit.superauctionhouse.util.ChatUtils;
 import de.themoep.inventorygui.GuiPageElement;
 import org.bukkit.Bukkit;
@@ -58,7 +57,6 @@ public class AuctionBrowserMenu extends BaseInventory {
     protected void createGuiLayout() {
         /*
         i - General auction items
-        z - First page (crossbow)
         b - Page back (arrow)
         r - Reset settings (only visible when different from default, barrier)
         l - Opens menu to filter by name (sign)
@@ -67,7 +65,6 @@ public class AuctionBrowserMenu extends BaseInventory {
         s - Sort by price, time, etc (hopper)
         a - Filter by auction type (auction, BIN, etc, diamond (all), clock (auction), gold ingot (BIN))
         f - Page forward (arrow)
-        z - Last page (crossbow)
          */
         this.guiLayout = new String[]{
                 " iiiiiii ",
@@ -75,7 +72,7 @@ public class AuctionBrowserMenu extends BaseInventory {
                 " iiiiiii ",
                 " iiiiiii ",
                 " iiiiiii ",
-                "zbrlosafm"
+                " brlosaf "
         };
     }
 
@@ -176,5 +173,86 @@ public class AuctionBrowserMenu extends BaseInventory {
     public void open(Player player, boolean checkOpen) {
         createAuctionGroupElement();
         super.open(player, checkOpen);
+    }
+
+    public static class AuctionSortState {
+        public String textFilter;
+        public AuctionTypeSort typeSort;
+        public AuctionOrderSort orderSort;
+
+        public AuctionSortState() {
+            this("", AuctionTypeSort.BOTH, AuctionOrderSort.LOWEST_PRICE);
+        }
+
+        public AuctionSortState(String textFilter, AuctionTypeSort typeSort, AuctionOrderSort orderSort) {
+            this.textFilter = textFilter;
+            this.typeSort = typeSort;
+            this.orderSort = orderSort;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof AuctionSortState)) {
+                return false;
+            }
+
+            AuctionSortState otherState = (AuctionSortState) obj;
+            return otherState.textFilter.equals(textFilter) && otherState.orderSort == orderSort && otherState.typeSort == typeSort;
+        }
+    }
+
+    public enum AuctionOrderSort {
+        LOWEST_PRICE("lowest_price"),
+        HIGHEST_PRICE("highest_price"),
+        NEWEST_FIRST("newest_price"),
+        ENDING_SOON("ending_soon");
+
+        private final String value;
+        AuctionOrderSort(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    public enum AuctionType {
+        AUCTION("auction", "Auction"),
+        BUY_IT_NOW("buy_it_now", "Buy It Now");
+
+        private final String internalName;
+        private final String readableName;
+        AuctionType(String internalName, String readableName) {
+            this.internalName = internalName;
+            this.readableName = readableName;
+        }
+
+        @Override
+        public String toString() {
+            return internalName;
+        }
+
+        public String getReadableName() {
+            return readableName;
+        }
+
+    }
+
+    public enum AuctionTypeSort {
+        BOTH("both"),
+        AUCTION_ONLY("auction_only"),
+        BIN_ONLY("bin_only");
+
+        private String value;
+        AuctionTypeSort(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 }
